@@ -1,4 +1,4 @@
-﻿name: validate-prompt-repo
+name: validate-prompt-repo
 
 on:
   push:

@@ -129,8 +129,9 @@ REFERENCE_REPOS = [
 LOCAL_LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 HTML_SRC_RE = re.compile(r"src=[\"']([^\"']+)[\"']")
 C1_CONTROL_RE = re.compile(r"[\u0080-\u009f]")
-TEXT_SCAN_SUFFIXES = {".md", ".py", ".json", ".yml", ".yaml", ".txt"}
+TEXT_SCAN_SUFFIXES = {".md", ".py", ".json", ".jsonl", ".yml", ".yaml", ".txt", ".csv", ".ps1"}
 TEXT_SCAN_NAMES = {".gitignore", ".gitattributes", ".editorconfig"}
+IGNORED_TEXT_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".venv", "venv", "env", "tmp", "temp"}
 SECRET_PATTERNS = [
     ("OpenAI API key", re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b")),
     ("GitHub token", re.compile(r"\bgh[pousr]_[A-Za-z0-9_]{20,}\b")),
@@ -150,6 +151,18 @@ def configure_stdout() -> None:
 
 def rel(path: Path) -> str:
     return path.relative_to(ROOT).as_posix()
+
+
+def is_text_scan_file(path: Path) -> bool:
+    if not path.is_file():
+        return False
+    if any(part in IGNORED_TEXT_DIRS for part in path.relative_to(ROOT).parts):
+        return False
+    return path.suffix.lower() in TEXT_SCAN_SUFFIXES or path.name in TEXT_SCAN_NAMES
+
+
+def iter_text_scan_files() -> list[Path]:
+    return [path for path in sorted(ROOT.rglob("*")) if is_text_scan_file(path)]
 
 
 def is_external(target: str) -> bool:
@@ -308,6 +321,17 @@ def check_repo_style_config(errors: list[str]) -> None:
                 errors.append(f".gitignore 缺少规则：{required}")
 
 
+def check_text_file_hygiene(errors: list[str]) -> None:
+    for path in iter_text_scan_files():
+        data = path.read_bytes()
+        if data.startswith(b"\xef\xbb\xbf"):
+            errors.append(f"文本文件不应包含 UTF-8 BOM：{rel(path)}")
+        if b"\r\n" in data or b"\r" in data:
+            errors.append(f"文本文件必须使用 LF 换行：{rel(path)}")
+        if data and not data.endswith(b"\n"):
+            errors.append(f"文本文件末尾必须保留换行：{rel(path)}")
+
+
 def check_required_dirs(errors: list[str]) -> None:
     for item in REQUIRED_DIRS:
         path = ROOT / item
@@ -355,14 +379,7 @@ def check_local_links(errors: list[str]) -> None:
 
 
 def check_secret_leaks(errors: list[str]) -> None:
-    for path in sorted(ROOT.rglob("*")):
-        if not path.is_file():
-            continue
-        parts = set(path.parts)
-        if ".git" in parts or "__pycache__" in parts:
-            continue
-        if path.suffix.lower() not in TEXT_SCAN_SUFFIXES and path.name not in TEXT_SCAN_NAMES:
-            continue
+    for path in iter_text_scan_files():
         try:
             lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
         except Exception as exc:  # noqa: BLE001
@@ -850,6 +867,7 @@ def main() -> int:
     check_required_dirs(errors)
     check_required_files(errors)
     check_repo_style_config(errors)
+    check_text_file_hygiene(errors)
     check_markdown_health(errors, warnings)
     check_local_links(errors)
     check_readme_badges(errors)
@@ -881,7 +899,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、标签覆盖矩阵、API 请求 JSONL、Python 源码编译、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、文本文件卫生、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、标签覆盖矩阵、API 请求 JSONL、Python 源码编译、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

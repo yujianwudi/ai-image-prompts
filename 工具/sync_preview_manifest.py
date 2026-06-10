@@ -107,7 +107,7 @@ def main() -> int:
         print("OK：预览图 manifest 尺寸元数据无需更新。")
         return 0
 
-    args.manifest.write_text(expected, encoding="utf-8")
+    args.manifest.write_text(expected, encoding="utf-8", newline="\n")
     print(f"OK：已同步预览图 manifest 尺寸元数据：{args.manifest}")
     return 0
 

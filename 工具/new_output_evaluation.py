@@ -194,7 +194,7 @@ def main() -> int:
     if args.out:
         out_path = args.out if args.out.is_absolute() else ROOT / args.out
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(output, encoding="utf-8")
+        out_path.write_text(output, encoding="utf-8", newline="\n")
         print(f"已写入出图评分骨架：{out_path}")
         return 0
 

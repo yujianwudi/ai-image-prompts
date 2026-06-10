@@ -276,7 +276,7 @@ def main() -> int:
         print("\nOK：失败修正词库校验通过，Markdown 已同步。")
         return 0
 
-    args.markdown.write_text(rendered, encoding="utf-8")
+    args.markdown.write_text(rendered, encoding="utf-8", newline="\n")
     print(f"\n已写入失败修正词库 Markdown：{args.markdown}")
     print("OK：失败修正词库校验通过。")
     return 0

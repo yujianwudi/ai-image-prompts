@@ -48,6 +48,7 @@ from audit_character_prompts import audit, render_report  # noqa: E402
 from check_prompt_repo import (  # noqa: E402
     SECRET_PATTERNS,
     check_github_workflow,
+    check_text_file_hygiene,
     check_unified_quality_gate,
     classify_orientation,
     image_dimensions,
@@ -729,6 +730,11 @@ class PromptPackToolTests(unittest.TestCase):
         gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
         for required in ["__pycache__/", "*.py[cod]", ".venv/", ".env", "原图/", "*.psd", ".DS_Store", "Thumbs.db"]:
             self.assertIn(required, gitignore)
+
+    def test_text_files_use_lf_without_bom(self) -> None:
+        errors: list[str] = []
+        check_text_file_hygiene(errors)
+        self.assertEqual(errors, [])
 
     def test_secret_patterns_catch_realistic_tokens_not_placeholders(self) -> None:
         suspicious_samples = [

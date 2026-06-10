@@ -1,4 +1,4 @@
-﻿# Security Policy
+# Security Policy
 
 This repository is a prompt-template and documentation project.  
 For content-safety, prompt-safety, privacy, or public-preview concerns, please see:

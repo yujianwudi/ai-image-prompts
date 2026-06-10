@@ -194,7 +194,7 @@ def main() -> int:
         return 0
 
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(report, encoding="utf-8")
+    args.report.write_text(report, encoding="utf-8", newline="\n")
     if validation.errors:
         print("出图评分汇总校验失败：")
         for item in validation.errors:

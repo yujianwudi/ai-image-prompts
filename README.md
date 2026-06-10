@@ -135,7 +135,7 @@ python -m compileall -q 工具 tests
 python -m unittest discover -s tests -v
 ```
 
-统一质量门禁会检查 Prompt Pack 配置、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件、Python 源码编译和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
+统一质量门禁会检查 Prompt Pack 配置、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件、文本文件 LF / BOM / 末尾换行、Python 源码编译和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 
@@ -166,7 +166,7 @@ python -m unittest discover -s tests -v
 - 项目仪表盘：`评估/项目仪表盘.md` 自动汇总角色、Prompt Pack、tags、预览图、失败规则和评分记录数量。
 - 出图评分骨架：通过 `工具/new_output_evaluation.py` 从 Prompt Pack 和图片路径生成结构化评分 JSON，减少手写漏字段和 failure_id 写错。
 - Issue / PR 模板：规范角色新增、模板优化、出图问题反馈和提交检查。
-- 仓库格式规范：通过 `.gitattributes` 和 `.editorconfig` 固定 UTF-8、LF 和缩进规则。
+- 仓库格式规范：通过 `.gitattributes` 和 `.editorconfig` 固定 UTF-8、LF 和缩进规则，质量门禁会检查实际文本文件无 CRLF、无 UTF-8 BOM 且保留末尾换行。
 - 忽略规则：通过 `.gitignore` 避免提交缓存、虚拟环境、本地密钥和未压缩原图。
 - 密钥扫描：质量门禁会检查常见 API key、GitHub token、AWS key 和高风险明文 secret。
 - 内容安全政策：明确非低俗、不性感化、不儿童化、隐私和真实品牌 logo 规则。

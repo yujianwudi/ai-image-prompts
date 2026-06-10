@@ -223,7 +223,7 @@ def main() -> int:
             return 1
     else:
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(report, encoding="utf-8")
+        out_path.write_text(report, encoding="utf-8", newline="\n")
         print(f"已写入角色防串审计报告：{out_path}")
 
     if result.errors:

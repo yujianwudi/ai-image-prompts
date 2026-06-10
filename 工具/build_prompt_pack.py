@@ -855,28 +855,28 @@ def export_all(data: dict[str, Any], out_dir: Path = DEFAULT_OUTPUT_DIR) -> list
     out_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
     index_path = out_dir / "README.md"
-    index_path.write_text(render_generated_index(data), encoding="utf-8")
+    index_path.write_text(render_generated_index(data), encoding="utf-8", newline="\n")
     written.append(index_path)
     matrix_path = out_dir / "覆盖矩阵.md"
-    matrix_path.write_text(render_coverage_matrix(data), encoding="utf-8")
+    matrix_path.write_text(render_coverage_matrix(data), encoding="utf-8", newline="\n")
     written.append(matrix_path)
     tag_index_path = out_dir / GENERATED_TAG_INDEX
-    tag_index_path.write_text(render_tag_index(data), encoding="utf-8")
+    tag_index_path.write_text(render_tag_index(data), encoding="utf-8", newline="\n")
     written.append(tag_index_path)
     tag_coverage_path = out_dir / GENERATED_TAG_COVERAGE_MATRIX
-    tag_coverage_path.write_text(render_tag_coverage_matrix(data), encoding="utf-8")
+    tag_coverage_path.write_text(render_tag_coverage_matrix(data), encoding="utf-8", newline="\n")
     written.append(tag_coverage_path)
     json_bundle_path = out_dir / GENERATED_JSON_BUNDLE
-    json_bundle_path.write_text(render_json_bundle(data), encoding="utf-8")
+    json_bundle_path.write_text(render_json_bundle(data), encoding="utf-8", newline="\n")
     written.append(json_bundle_path)
     api_requests_path = out_dir / GENERATED_API_REQUESTS_JSONL
-    api_requests_path.write_text(render_api_requests_jsonl(data), encoding="utf-8")
+    api_requests_path.write_text(render_api_requests_jsonl(data), encoding="utf-8", newline="\n")
     written.append(api_requests_path)
     api_requests_schema_path = out_dir / GENERATED_API_REQUESTS_SCHEMA
-    api_requests_schema_path.write_text(render_api_requests_schema(), encoding="utf-8")
+    api_requests_schema_path.write_text(render_api_requests_schema(), encoding="utf-8", newline="\n")
     written.append(api_requests_schema_path)
     csv_index_path = out_dir / GENERATED_CSV_INDEX
-    csv_index_path.write_text(render_csv_index(data), encoding="utf-8")
+    csv_index_path.write_text(render_csv_index(data), encoding="utf-8", newline="\n")
     written.append(csv_index_path)
     expected_names = {"README.md", "覆盖矩阵.md", GENERATED_TAG_INDEX, GENERATED_TAG_COVERAGE_MATRIX}
     for pack in data.get("packs", []):
@@ -884,7 +884,7 @@ def export_all(data: dict[str, Any], out_dir: Path = DEFAULT_OUTPUT_DIR) -> list
         filename = generated_filename(pack_id)
         expected_names.add(filename)
         path = out_dir / filename
-        path.write_text(render_pack(data, pack_id, markdown=True), encoding="utf-8")
+        path.write_text(render_pack(data, pack_id, markdown=True), encoding="utf-8", newline="\n")
         written.append(path)
     for stale in out_dir.glob("*.md"):
         if stale.name not in expected_names:
@@ -981,7 +981,7 @@ def main() -> int:
     if args.out:
         out_path = args.out if args.out.is_absolute() else ROOT / args.out
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(output, encoding="utf-8")
+        out_path.write_text(output, encoding="utf-8", newline="\n")
         print(f"已写入：{out_path}")
     else:
         print(output, end="")

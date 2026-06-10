@@ -238,7 +238,7 @@ def main() -> int:
         return 0
 
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(report, encoding="utf-8")
+    args.report.write_text(report, encoding="utf-8", newline="\n")
     if result.errors:
         print("Prompt 文本质量审计失败：")
         for item in result.errors:

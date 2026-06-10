@@ -218,7 +218,7 @@ def main() -> int:
         return 0
 
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(report, encoding="utf-8")
+    report_path.write_text(report, encoding="utf-8", newline="\n")
     print(f"已写入项目仪表盘：{report_path}")
     return 0
 

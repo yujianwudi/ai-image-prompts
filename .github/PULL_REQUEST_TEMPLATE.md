@@ -1,4 +1,4 @@
-﻿# Pull Request 检查清单
+# Pull Request 检查清单
 
 ## 改动类型
 
