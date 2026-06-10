@@ -14,3 +14,9 @@ Please report issues through the GitHub issue templates, especially:
 ```
 
 Do not include private personal data, sensitive images, credentials, or non-public material in issues or pull requests.
+
+The local quality gate runs a lightweight secret scan for common API keys and tokens:
+
+```powershell
+python 工具/run_quality_gate.py
+```

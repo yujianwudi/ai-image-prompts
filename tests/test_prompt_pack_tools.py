@@ -26,6 +26,7 @@ from build_prompt_pack import (  # noqa: E402
     validate_config,
 )
 from audit_character_prompts import audit, render_report  # noqa: E402
+from check_prompt_repo import SECRET_PATTERNS  # noqa: E402
 
 
 class PromptPackToolTests(unittest.TestCase):
@@ -210,6 +211,23 @@ class PromptPackToolTests(unittest.TestCase):
         gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
         for required in ["__pycache__/", "*.py[cod]", ".venv/", ".env", "原图/", "*.psd", ".DS_Store", "Thumbs.db"]:
             self.assertIn(required, gitignore)
+
+    def test_secret_patterns_catch_realistic_tokens_not_placeholders(self) -> None:
+        suspicious_samples = [
+            "sk-" + "a" * 30,
+            "github_pat_" + "A" * 30,
+            "ghp_" + "B" * 30,
+            "AKIA" + "C" * 16,
+            "password=" + "d" * 30,
+        ]
+        for sample in suspicious_samples:
+            with self.subTest(sample=sample[:8]):
+                self.assertTrue(any(pattern.search(sample) for _label, pattern in SECRET_PATTERNS))
+
+        placeholders = ["OPENAI_API_KEY", "api_key: <your-key>", "token: ${TOKEN}"]
+        for sample in placeholders:
+            with self.subTest(sample=sample):
+                self.assertFalse(any(pattern.search(sample) for _label, pattern in SECRET_PATTERNS))
 
 
 if __name__ == "__main__":

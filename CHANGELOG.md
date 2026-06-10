@@ -43,6 +43,7 @@
 
 ### Changed
 
+- 质量门禁新增轻量密钥扫描，检查常见 API key、GitHub token、AWS key 和高风险明文 secret。
 - 扩展 `.gitignore`，并将 Python 缓存、虚拟环境、本地密钥和原始素材忽略规则纳入质量门禁。
 - GitHub Actions 现在调用统一质量门禁入口 `python 工具/run_quality_gate.py`。
 - 统一质量门禁现在会检查角色防串审计报告是否与 Prompt Pack 配置同步。

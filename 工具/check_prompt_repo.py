@@ -89,6 +89,18 @@ REFERENCE_REPOS = [
 LOCAL_LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 HTML_SRC_RE = re.compile(r"src=[\"']([^\"']+)[\"']")
 C1_CONTROL_RE = re.compile(r"[\u0080-\u009f]")
+TEXT_SCAN_SUFFIXES = {".md", ".py", ".json", ".yml", ".yaml", ".txt"}
+TEXT_SCAN_NAMES = {".gitignore", ".gitattributes", ".editorconfig"}
+SECRET_PATTERNS = [
+    ("OpenAI API key", re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b")),
+    ("GitHub token", re.compile(r"\bgh[pousr]_[A-Za-z0-9_]{20,}\b")),
+    ("GitHub fine-grained token", re.compile(r"\bgithub_pat_[A-Za-z0-9_]{20,}\b")),
+    ("AWS access key", re.compile(r"\bAKIA[0-9A-Z]{16}\b")),
+    (
+        "generic assigned secret",
+        re.compile(r"(?i)\b(api[_-]?key|secret|token|password)\s*[:=]\s*[\"']?[A-Za-z0-9_\-]{24,}"),
+    ),
+]
 
 
 def configure_stdout() -> None:
@@ -207,6 +219,26 @@ def check_local_links(errors: list[str]) -> None:
                 continue
             if not candidate.exists():
                 errors.append(f"本地链接不存在：{rel(path)} -> {raw}")
+
+
+def check_secret_leaks(errors: list[str]) -> None:
+    for path in sorted(ROOT.rglob("*")):
+        if not path.is_file():
+            continue
+        parts = set(path.parts)
+        if ".git" in parts or "__pycache__" in parts:
+            continue
+        if path.suffix.lower() not in TEXT_SCAN_SUFFIXES and path.name not in TEXT_SCAN_NAMES:
+            continue
+        try:
+            lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"无法扫描文本文件是否含密钥：{rel(path)} ({exc})")
+            continue
+        for line_number, line in enumerate(lines, start=1):
+            for label, pattern in SECRET_PATTERNS:
+                if pattern.search(line):
+                    errors.append(f"疑似密钥泄露：{rel(path)}:{line_number} ({label})")
 
 
 def check_content_safety_policy(errors: list[str]) -> None:
@@ -507,6 +539,7 @@ def main() -> int:
     check_markdown_health(errors, warnings)
     check_local_links(errors)
     check_readme_badges(errors)
+    check_secret_leaks(errors)
     check_content_safety_policy(errors)
     check_github_workflow(errors)
     check_role_safety(errors)
@@ -532,7 +565,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、协作模板、内容安全政策、角色安全约束、角色防串审计、预览图清单/schema、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、角色安全约束、角色防串审计、预览图清单/schema、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 
