@@ -95,6 +95,7 @@
 
 ```powershell
 python 工具/check_prompt_repo.py
+python -m unittest discover -s tests -v
 ```
 
 必须保证：
@@ -102,4 +103,5 @@ python 工具/check_prompt_repo.py
 - 角色文件保留非低俗、不性感化和不要混入其他角色元素的约束。
 - 本地 Markdown 链接和 README 预览图路径存在。
 - 新模板能在 `模板/README.md` 或 `参考仓库/分类映射表.md` 里找到对应分类。
+- 如果改动工具脚本，需要补充或更新 `tests/` 下的测试。
 - 不直接复制外部仓库长提示词。

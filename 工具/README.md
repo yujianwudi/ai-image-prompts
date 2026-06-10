@@ -75,3 +75,13 @@ python 工具/build_prompt_pack.py --all
 ```
 
 `check_prompt_repo.py` 会检查这些导出文件是否和配置一致，如果过期需要重新运行 `--all`。
+
+## 工具测试
+
+运行：
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+这些测试会覆盖 Prompt Pack 配置、渲染、批量导出和质量门禁 CLI。

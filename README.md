@@ -92,13 +92,19 @@
 python 工具/check_prompt_repo.py
 ```
 
+如果想跑工具单元测试：
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
 如果想重新导出全部 Prompt Pack：
 
 ```powershell
 python 工具/build_prompt_pack.py --all
 ```
 
-这个脚本会检查目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、Prompt Pack 配置和自动导出文件。GitHub Actions 也会在 push / pull request 时自动运行。
+这个脚本会检查目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、Prompt Pack 配置和自动导出文件。GitHub Actions 也会在 push / pull request 时自动运行质量检查和单元测试。
 
 ## 当前重点
 

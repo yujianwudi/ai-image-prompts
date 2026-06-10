@@ -19,6 +19,7 @@ REQUIRED_DIRS = [
     "预览图",
     "配置",
     "生成提示词",
+    "tests",
 ]
 
 REQUIRED_FILES = [
@@ -46,6 +47,7 @@ REQUIRED_FILES = [
     "配置/README.md",
     "配置/prompt_packs.json",
     "生成提示词/README.md",
+    "tests/test_prompt_pack_tools.py",
 ]
 
 REFERENCE_REPOS = [
