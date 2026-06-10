@@ -30,6 +30,21 @@ CATEGORIES = {
 SEVERITIES = {"low", "medium", "high", "critical"}
 NEXT_ACTIONS = {"edit", "regenerate", "reject"}
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9_]*$")
+APPLIES_TO_RE = re.compile(r"^(all|[a-z0-9][a-z0-9_]*)$")
+NON_BLANK_PATTERN = "\\S"
+TOP_LEVEL_FIELDS = {"$schema", "version", "description", "rules"}
+RULE_FIELDS = {
+    "id",
+    "title",
+    "category",
+    "severity",
+    "applies_to",
+    "detect_terms",
+    "problem",
+    "fix_prompt",
+    "must_include",
+    "next_action",
+}
 
 
 @dataclass(frozen=True)
@@ -63,13 +78,36 @@ def validate_schema_file(schema_path: Path = DEFAULT_SCHEMA) -> list[str]:
     for key in ["$schema", "$id", "title", "type", "required", "properties", "$defs"]:
         if key not in schema:
             errors.append(f"失败修正词库 schema 缺少字段：{key}")
+    if schema.get("additionalProperties") is not False:
+        errors.append("失败修正词库 schema 根节点应设置 additionalProperties=false")
     for key in ["$schema", "version", "description", "rules"]:
         if key not in schema.get("properties", {}):
             errors.append(f"失败修正词库 schema.properties 缺少：{key}")
-    rule_props = schema.get("$defs", {}).get("rule", {}).get("properties", {})
+    for key in ["version", "description"]:
+        prop = schema.get("properties", {}).get(key, {})
+        if prop.get("minLength") != 1 or prop.get("pattern") != NON_BLANK_PATTERN:
+            errors.append(f"失败修正词库 schema.properties.{key} 应设置 minLength=1 且 pattern=\\S")
+    rule_schema = schema.get("$defs", {}).get("rule", {})
+    if rule_schema.get("additionalProperties") is not False:
+        errors.append("失败修正词库 schema.rule 应设置 additionalProperties=false")
+    rule_props = rule_schema.get("properties", {})
     for key in ["id", "title", "category", "severity", "fix_prompt", "must_include", "next_action"]:
         if key not in rule_props:
             errors.append(f"失败修正词库 schema.rule.properties 缺少：{key}")
+    if rule_props.get("id", {}).get("pattern") != ID_RE.pattern:
+        errors.append("失败修正词库 schema.rule.properties.id 应限制为小写 slug")
+    for key in ["title", "problem", "fix_prompt"]:
+        prop = rule_props.get(key, {})
+        if prop.get("minLength") != 1 or prop.get("pattern") != NON_BLANK_PATTERN:
+            errors.append(f"失败修正词库 schema.rule.properties.{key} 应设置 minLength=1 且 pattern=\\S")
+    applies_items = rule_props.get("applies_to", {}).get("items", {})
+    if rule_props.get("applies_to", {}).get("uniqueItems") is not True or applies_items.get("pattern") != APPLIES_TO_RE.pattern:
+        errors.append("失败修正词库 schema.rule.properties.applies_to 应设置 uniqueItems=true 且限制为 all 或角色 slug")
+    for key in ["detect_terms", "must_include"]:
+        prop = rule_props.get(key, {})
+        items = prop.get("items", {})
+        if prop.get("uniqueItems") is not True or items.get("minLength") != 1 or items.get("pattern") != NON_BLANK_PATTERN:
+            errors.append(f"失败修正词库 schema.rule.properties.{key} 应设置 uniqueItems=true 且 items 非空白")
     return errors
 
 
@@ -80,6 +118,13 @@ def validate_document(document: dict[str, Any], config: dict[str, Any]) -> Failu
 
     if document.get("$schema") != "failure_fix_lexicon.schema.json":
         errors.append("失败修正词库 $schema 必须是 failure_fix_lexicon.schema.json")
+    top_level_extra = sorted(set(document) - TOP_LEVEL_FIELDS)
+    if top_level_extra:
+        errors.append(f"失败修正词库存在未知顶层字段：{', '.join(top_level_extra)}")
+    for key in ["version", "description"]:
+        value = document.get(key)
+        if not isinstance(value, str) or not value.strip():
+            errors.append(f"失败修正词库缺少 {key}")
 
     rules = document.get("rules")
     if not isinstance(rules, list) or not rules:
@@ -95,6 +140,10 @@ def validate_document(document: dict[str, Any], config: dict[str, Any]) -> Failu
             continue
 
         rule_id = str(rule.get("id", ""))
+        context = rule_id or f"rules[{index}]"
+        extra_fields = sorted(set(rule) - RULE_FIELDS)
+        if extra_fields:
+            errors.append(f"{context} 存在未知字段：{', '.join(extra_fields)}")
         title = str(rule.get("title", ""))
         category = str(rule.get("category", ""))
         severity = str(rule.get("severity", ""))
@@ -107,7 +156,7 @@ def validate_document(document: dict[str, Any], config: dict[str, Any]) -> Failu
         if rule_id in seen_ids:
             errors.append(f"失败修正词库 id 重复：{rule_id}")
         seen_ids.add(rule_id)
-        if not title:
+        if not title.strip():
             errors.append(f"{rule_id} 缺少 title")
         if category not in CATEGORIES:
             errors.append(f"{rule_id} category 必须是已知分类：{category}")
@@ -117,15 +166,27 @@ def validate_document(document: dict[str, Any], config: dict[str, Any]) -> Failu
             errors.append(f"{rule_id} next_action 必须是 {', '.join(sorted(NEXT_ACTIONS))} 之一")
         if not problem.strip():
             errors.append(f"{rule_id} 缺少 problem")
-        if len(fix_prompt) < 20:
+        if len(fix_prompt.strip()) < 20:
             errors.append(f"{rule_id} fix_prompt 过短，无法作为可复制修正词")
 
         applies_to = rule.get("applies_to")
         if not isinstance(applies_to, list) or not applies_to:
             errors.append(f"{rule_id} applies_to 必须是非空 array")
-            applies_to = []
+            applies_values: list[str] = []
         else:
-            applies_set = {str(item) for item in applies_to}
+            applies_values = []
+            for value in applies_to:
+                if not isinstance(value, str) or not value.strip():
+                    errors.append(f"{rule_id} applies_to 不能包含空值")
+                    continue
+                if not APPLIES_TO_RE.match(value):
+                    errors.append(f"{rule_id} applies_to 必须是 all 或角色 slug：{value}")
+                    continue
+                applies_values.append(value)
+            applies_set = set(applies_values)
+            duplicate_applies = sorted({value for value in applies_values if applies_values.count(value) > 1})
+            if duplicate_applies:
+                errors.append(f"{rule_id} applies_to 存在重复值：{', '.join(duplicate_applies)}")
             if "all" in applies_set and len(applies_set) > 1:
                 errors.append(f"{rule_id} applies_to 不能同时包含 all 和具体角色")
             unknown_characters = sorted(applies_set - character_ids - {"all"})
@@ -137,9 +198,15 @@ def validate_document(document: dict[str, Any], config: dict[str, Any]) -> Failu
             if not isinstance(values, list) or not values:
                 errors.append(f"{rule_id} {field} 必须是非空 array")
                 continue
+            cleaned_values: list[str] = []
             for value in values:
                 if not isinstance(value, str) or not value.strip():
                     errors.append(f"{rule_id} {field} 不能包含空值")
+                    continue
+                cleaned_values.append(value)
+            duplicates = sorted({value for value in cleaned_values if cleaned_values.count(value) > 1})
+            if duplicates:
+                errors.append(f"{rule_id} {field} 存在重复值：{', '.join(duplicates)}")
 
         must_include = rule.get("must_include")
         if isinstance(must_include, list):

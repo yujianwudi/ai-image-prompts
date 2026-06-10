@@ -534,6 +534,16 @@ class PromptPackToolTests(unittest.TestCase):
 
     def test_failure_fix_lexicon_is_valid_and_markdown_current(self) -> None:
         document = load_failure_fix_json(ROOT / "评估" / "failure_fix_lexicon.json")
+        schema = load_failure_fix_json(ROOT / "评估" / "failure_fix_lexicon.schema.json")
+        self.assertFalse(schema["additionalProperties"])
+        self.assertFalse(schema["$defs"]["rule"]["additionalProperties"])
+        self.assertEqual(schema["properties"]["version"]["pattern"], "\\S")
+        self.assertEqual(schema["properties"]["description"]["pattern"], "\\S")
+        self.assertEqual(schema["$defs"]["rule"]["properties"]["id"]["pattern"], "^[a-z0-9][a-z0-9_]*$")
+        self.assertTrue(schema["$defs"]["rule"]["properties"]["applies_to"]["uniqueItems"])
+        self.assertTrue(schema["$defs"]["rule"]["properties"]["detect_terms"]["uniqueItems"])
+        self.assertTrue(schema["$defs"]["rule"]["properties"]["must_include"]["uniqueItems"])
+        self.assertEqual(schema["$defs"]["rule"]["properties"]["fix_prompt"]["pattern"], "\\S")
         result = validate_failure_fix_document(document, self.data)
         self.assertEqual(result.errors, [])
         self.assertEqual(len(document["rules"]), 11)
@@ -541,6 +551,30 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("composition_ratio_mismatch", {rule["id"] for rule in document["rules"]})
         report_path = ROOT / "评估" / "失败修正词库.md"
         self.assertEqual(report_path.read_text(encoding="utf-8"), render_failure_fix_markdown(document))
+
+    def test_failure_fix_lexicon_rejects_unknown_blank_and_duplicate_values(self) -> None:
+        document = load_failure_fix_json(ROOT / "评估" / "failure_fix_lexicon.json")
+        mutated = json.loads(json.dumps(document, ensure_ascii=False))
+        mutated["draft_note"] = "临时字段不应进入结构化词库"
+        mutated["version"] = "   "
+        rule = mutated["rules"][0]
+        rule["draft_note"] = "临时字段"
+        rule["title"] = "   "
+        rule["fix_prompt"] = "   "
+        rule["applies_to"].append(rule["applies_to"][0])
+        rule["applies_to"].append("Bad Role")
+        rule["detect_terms"].append(rule["detect_terms"][0])
+        rule["must_include"].append(rule["must_include"][0])
+        result = validate_failure_fix_document(mutated, self.data)
+        self.assertTrue(any("未知顶层字段：draft_note" in error for error in result.errors))
+        self.assertTrue(any("失败修正词库缺少 version" in error for error in result.errors))
+        self.assertTrue(any("furina_contamination 存在未知字段：draft_note" in error for error in result.errors))
+        self.assertTrue(any("furina_contamination 缺少 title" in error for error in result.errors))
+        self.assertTrue(any("furina_contamination fix_prompt 过短" in error for error in result.errors))
+        self.assertTrue(any("furina_contamination applies_to 存在重复值：citlali" in error for error in result.errors))
+        self.assertTrue(any("furina_contamination applies_to 必须是 all 或角色 slug：Bad Role" in error for error in result.errors))
+        self.assertTrue(any("furina_contamination detect_terms 存在重复值" in error for error in result.errors))
+        self.assertTrue(any("furina_contamination must_include 存在重复值" in error for error in result.errors))
 
     def test_failure_fix_lexicon_cli_check_passes(self) -> None:
         result = subprocess.run(
