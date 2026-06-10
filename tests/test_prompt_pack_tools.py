@@ -49,6 +49,7 @@ from sync_preview_manifest import (  # noqa: E402
 from summarize_output_evaluations import (  # noqa: E402
     render_summary as render_output_evaluation_summary,
 )
+from suggest_failure_fixes import render_fix_suggestions  # noqa: E402
 from validate_failure_fix_lexicon import (  # noqa: E402
     load_json as load_failure_fix_json,
     render_markdown as render_failure_fix_markdown,
@@ -338,6 +339,27 @@ class PromptPackToolTests(unittest.TestCase):
             check=True,
         )
         self.assertIn("OK：出图评分汇总已同步", result.stdout)
+
+    def test_failure_fix_suggestions_are_current(self) -> None:
+        document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
+        failure_lexicon = load_failure_fix_json(ROOT / "评估" / "failure_fix_lexicon.json")
+        report_path = ROOT / "评估" / "失败修正建议.md"
+        report = report_path.read_text(encoding="utf-8")
+        self.assertEqual(report, render_fix_suggestions(document, self.data, failure_lexicon))
+        self.assertIn("composition_ratio_mismatch", report)
+        self.assertIn("请生成 9:16 竖图", report)
+
+    def test_failure_fix_suggestions_cli_check_passes(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "suggest_failure_fixes.py"), "--check"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("OK：失败修正建议已同步", result.stdout)
 
     def test_preview_manifest_matches_images(self) -> None:
         preview_dir = ROOT / "预览图"

@@ -122,6 +122,8 @@ README 里的预览图必须登记在 manifest 里。
 
 维护 `评估/output_evaluations.example.json` 或新的评分日志时，除了写 `issues` 自由文本，也要写 `failure_ids`。`failure_ids` 必须引用 `评估/failure_fix_lexicon.json` 里已有的失败类型，方便后续汇总常见问题和修正方向。
 
+修改评分记录或失败修正词库后，要同步检查 `评估/出图评分汇总.md` 和 `评估/失败修正建议.md`，不要手工改这两个生成报告。
+
 ## Git 与公开仓库规则
 
 - 提交前确认 `git status --short --branch`。

@@ -138,6 +138,19 @@ python 工具/summarize_output_evaluations.py --check
 评估/出图评分汇总.md
 ```
 
+自动生成可复制修正建议：
+
+```powershell
+python 工具/suggest_failure_fixes.py
+python 工具/suggest_failure_fixes.py --check
+```
+
+默认输出：
+
+```text
+评估/失败修正建议.md
+```
+
 
 ## 仓库质量门禁
 

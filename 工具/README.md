@@ -70,6 +70,7 @@ python 工具/lint_prompt_quality.py --check
 python 工具/validate_failure_fix_lexicon.py --check
 python 工具/validate_output_evaluations.py --check
 python 工具/summarize_output_evaluations.py --check
+python 工具/suggest_failure_fixes.py --check
 python 工具/sync_preview_manifest.py --check
 python 工具/check_prompt_repo.py
 python -m unittest discover -s tests -v
@@ -181,6 +182,28 @@ python 工具/summarize_output_evaluations.py
 python 工具/summarize_output_evaluations.py --check
 ```
 
+## suggest_failure_fixes.py
+
+用途：读取结构化出图评分记录里的 `failure_ids`，到 `评估/failure_fix_lexicon.json` 查找对应修正词，生成可复制的失败修正建议。
+
+生成建议：
+
+```powershell
+python 工具/suggest_failure_fixes.py
+```
+
+默认输出：
+
+```text
+评估/失败修正建议.md
+```
+
+只检查是否同步：
+
+```powershell
+python 工具/suggest_failure_fixes.py --check
+```
+
 ## build_prompt_pack.py
 
 用途：读取 `配置/prompt_packs.json`，把角色锚点、输出类型、场景、构图、光线、材质、安全约束和防串约束组合成可复制提示词。
@@ -257,4 +280,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、tags 导出、标签索引、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、失败修正建议、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、tags 导出、标签索引、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、失败修正建议和统一质量门禁帮助入口。

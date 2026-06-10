@@ -4,6 +4,7 @@
 
 ### Added
 
+- 新增 `工具/suggest_failure_fixes.py` 和 `评估/失败修正建议.md`，可把出图评分记录里的 `failure_ids` 自动转换为可复制修正提示词。
 - 结构化出图评分记录新增 `failure_ids`，可引用 `评估/failure_fix_lexicon.json` 中的失败类型，并在评分汇总中统计失败类型分布。
 - 失败修正词库新增 `composition_ratio_mismatch`，用于记录 9:16 构图比例不符、横图或方图等问题。
 - 自动导出新增 `生成提示词/标签索引.md`，按 tags 分组 Prompt Pack，方便人工查找。
@@ -58,6 +59,7 @@
 
 ### Changed
 
+- 统一质量门禁和单元测试现在会检查失败修正建议是否与评分记录和失败修正词库同步。
 - `validate_output_evaluations.py` 和 `summarize_output_evaluations.py` 现在会校验并汇总 failure_ids。
 - 质量门禁和单元测试现在会检查标签索引是否与 `配置/prompt_packs.json` 同步。
 - Prompt Pack schema、生成器、JSON bundle schema、CSV 索引和单元测试已同步校验 tags 字段。
