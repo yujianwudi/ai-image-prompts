@@ -1,7 +1,7 @@
 {
   "$schema": "prompt_packs.generated.schema.json",
   "source_config": "配置/prompt_packs.json",
-  "source_config_sha256": "eb3f0323c2915a4d613fda2c624e6669f02356205767dd4876da26409247cd62",
+  "source_config_sha256": "9e22d2b8dc61784729f4f12b54c8d3605b0e4e6379a376de98033c28e8570ab6",
   "generator": "工具/build_prompt_pack.py",
   "version": "2026-06-10-gpt-image-2-web-optimized",
   "description": "Generated copy-ready Prompt Pack bundle. Do not edit by hand.",
@@ -63,6 +63,14 @@
   "templates": {
     "realistic_convention_phone": {
       "task_type": "写实 cos 手机随手拍",
+      "tags": [
+        "写实cos",
+        "手机随手拍",
+        "室内漫展",
+        "9:16",
+        "无文字",
+        "公开安全"
+      ],
       "composition": "9:16 竖图，写实手机照片，普通观众视角，手持手机随手拍，主体半身或三分之二身清晰，背景有真实漫展现场感并轻微虚化。",
       "lighting": "室内展馆自然顶灯或摊位柔光，脸部曝光自然，眼睛有轻微高光，服装颜色不跑偏。",
       "material": "真实可穿戴 cosplay 质感：布料纹理、缝线、刺绣、金属扣、宝石、皮革、发丝和手部道具细节。",
@@ -71,6 +79,14 @@
     },
     "readme_preview": {
       "task_type": "GitHub README 公开预览图",
+      "tags": [
+        "README预览",
+        "公开展示",
+        "写实手机照片",
+        "9:16",
+        "无文字",
+        "公开安全"
+      ],
       "composition": "9:16 竖图，写实手机照片，画面干净明亮，主体半身或三分之二身清晰，角色服装和配件可辨认，背景有展示感但不杂乱。",
       "lighting": "柔和自然光或室内暖光，脸部清楚，整体适合公开 README 展示。",
       "material": "真实服装材质，布料褶皱、缝线、刺绣、宝石、金属饰件和发丝细节可见。",
@@ -79,6 +95,13 @@
     },
     "character_card": {
       "task_type": "角色参考卡",
+      "tags": [
+        "角色参考卡",
+        "多区域",
+        "一致性检查",
+        "短中文标签",
+        "公开安全"
+      ],
       "composition": "清晰分区：主视觉半身图、全身站姿、头饰特写、服装细节、道具特写和气质标签；所有区域保持同一角色。",
       "lighting": "干净均匀的设定图光线，发型、头饰、服装和道具细节可辨认。",
       "material": "所有局部细节与主图一致，服装、头饰、道具材质真实，不要塑料玩具感。",
@@ -87,6 +110,14 @@
     },
     "commercial_poster": {
       "task_type": "商业联名海报 / 电商主图",
+      "tags": [
+        "商业海报",
+        "电商主图",
+        "短标题",
+        "9:16",
+        "公开安全",
+        "无真实品牌"
+      ],
       "composition": "9:16 竖版商业联名海报，主体居中，前景少量主题道具，中景展示角色，背景是主题装饰和柔和氛围光，预留标题区域。",
       "lighting": "柔和商业布光，层次清楚，主体从背景中分离，但保留写实 cosplay 质感。",
       "material": "真实服装质感、道具材质、包装或海报纸面质感，避免塑料玩具感。",
@@ -95,6 +126,13 @@
     },
     "vertical_thumbnail": {
       "task_type": "竖版社媒封面缩略图",
+      "tags": [
+        "封面缩略图",
+        "社媒封面",
+        "短标题",
+        "9:16",
+        "公开安全"
+      ],
       "composition": "9:16 竖版封面缩略图，上方短标题区，中间角色半身或三分之二身，下方 2-3 个短标签卡片；主体清楚，背景有层次但不抢主体。",
       "lighting": "明亮清楚，有对比但不过度商业硬光，角色和文字区都易读。",
       "material": "角色服装真实，背景干净，有轻微现场感或主题装饰。",
@@ -125,8 +163,26 @@
       },
       "template": {
         "id": "realistic_convention_phone",
-        "task_type": "写实 cos 手机随手拍"
+        "task_type": "写实 cos 手机随手拍",
+        "tags": [
+          "写实cos",
+          "手机随手拍",
+          "室内漫展",
+          "9:16",
+          "无文字",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "furina",
+        "realistic_convention_phone",
+        "写实cos",
+        "手机随手拍",
+        "室内漫展",
+        "9:16",
+        "无文字",
+        "公开安全"
+      ],
       "scene": "室内漫展通道，背景有人群、展位灯牌、海报墙和轻微玻璃反光。",
       "action": "她微微侧身看向镜头，表情自信、俏皮，像朋友刚好喊她回头。",
       "extra_constraints": [
@@ -157,8 +213,26 @@
       },
       "template": {
         "id": "readme_preview",
-        "task_type": "GitHub README 公开预览图"
+        "task_type": "GitHub README 公开预览图",
+        "tags": [
+          "README预览",
+          "公开展示",
+          "写实手机照片",
+          "9:16",
+          "无文字",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "furina",
+        "readme_preview",
+        "README预览",
+        "公开展示",
+        "写实手机照片",
+        "9:16",
+        "无文字",
+        "公开安全"
+      ],
       "scene": "明亮甜品店或展馆休息区，背景干净，有浅色桌面和柔和装饰。",
       "action": "她坐在桌边轻轻托着甜点盘，保持优雅又俏皮的表情。",
       "extra_constraints": [
@@ -189,8 +263,24 @@
       },
       "template": {
         "id": "character_card",
-        "task_type": "角色参考卡"
+        "task_type": "角色参考卡",
+        "tags": [
+          "角色参考卡",
+          "多区域",
+          "一致性检查",
+          "短中文标签",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "furina",
+        "character_card",
+        "角色参考卡",
+        "多区域",
+        "一致性检查",
+        "短中文标签",
+        "公开安全"
+      ],
       "scene": "简洁浅蓝白设定页背景，带少量水滴、金色线条和歌剧舞台纹样。",
       "action": "主视觉是自信微笑的半身图，细节区展示蓝黑礼帽、白蓝短发、领结、金色纽扣、水滴宝石和手套。",
       "extra_constraints": [
@@ -221,8 +311,26 @@
       },
       "template": {
         "id": "commercial_poster",
-        "task_type": "商业联名海报 / 电商主图"
+        "task_type": "商业联名海报 / 电商主图",
+        "tags": [
+          "商业海报",
+          "电商主图",
+          "短标题",
+          "9:16",
+          "公开安全",
+          "无真实品牌"
+        ]
       },
+      "tags": [
+        "furina",
+        "commercial_poster",
+        "商业海报",
+        "电商主图",
+        "短标题",
+        "9:16",
+        "公开安全",
+        "无真实品牌"
+      ],
       "scene": "枫丹歌剧院风甜品联名视觉，前景有蓝白甜点、透明杯、金色小托盘和水滴装饰，不出现真实品牌 logo。",
       "action": "她优雅地拿着甜点盘，表情自信俏皮，像活动主视觉里的真实 coser。",
       "extra_constraints": [
@@ -253,8 +361,24 @@
       },
       "template": {
         "id": "vertical_thumbnail",
-        "task_type": "竖版社媒封面缩略图"
+        "task_type": "竖版社媒封面缩略图",
+        "tags": [
+          "封面缩略图",
+          "社媒封面",
+          "短标题",
+          "9:16",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "furina",
+        "vertical_thumbnail",
+        "封面缩略图",
+        "社媒封面",
+        "短标题",
+        "9:16",
+        "公开安全"
+      ],
       "scene": "蓝白渐变背景，点缀少量水滴、金色装饰线和舞台帷幕元素。",
       "action": "她站在画面中间偏右，微微抬头看向镜头，左上方预留短标题区。",
       "extra_constraints": [
@@ -285,8 +409,26 @@
       },
       "template": {
         "id": "realistic_convention_phone",
-        "task_type": "写实 cos 手机随手拍"
+        "task_type": "写实 cos 手机随手拍",
+        "tags": [
+          "写实cos",
+          "手机随手拍",
+          "室内漫展",
+          "9:16",
+          "无文字",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "citlali",
+        "realistic_convention_phone",
+        "写实cos",
+        "手机随手拍",
+        "室内漫展",
+        "9:16",
+        "无文字",
+        "公开安全"
+      ],
       "scene": "室内漫展展馆休息区，背景有黑紫色灯牌、展位边缘、路人和轻微虚化的海报墙。",
       "action": "她被朋友喊住后轻轻回头，表情冷淡安静，有点不情愿但不阴暗。",
       "extra_constraints": [
@@ -317,8 +459,26 @@
       },
       "template": {
         "id": "readme_preview",
-        "task_type": "GitHub README 公开预览图"
+        "task_type": "GitHub README 公开预览图",
+        "tags": [
+          "README预览",
+          "公开展示",
+          "写实手机照片",
+          "9:16",
+          "无文字",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "citlali",
+        "readme_preview",
+        "README预览",
+        "公开展示",
+        "写实手机照片",
+        "9:16",
+        "无文字",
+        "公开安全"
+      ],
       "scene": "干净明亮的展馆角落或咖啡座，背景有柔和黑紫装饰和浅色桌面。",
       "action": "她安静坐在桌边，手边有小吊饰和几何纹样布料，气质神秘但画面清爽。",
       "extra_constraints": [
@@ -349,8 +509,24 @@
       },
       "template": {
         "id": "character_card",
-        "task_type": "角色参考卡"
+        "task_type": "角色参考卡",
+        "tags": [
+          "角色参考卡",
+          "多区域",
+          "一致性检查",
+          "短中文标签",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "citlali",
+        "character_card",
+        "角色参考卡",
+        "多区域",
+        "一致性检查",
+        "短中文标签",
+        "公开安全"
+      ],
       "scene": "简洁浅灰背景，带少量黑紫和蓝紫装饰纹样。",
       "action": "主视觉是安静回头，细节区展示前侧细辫、发饰、披帛、部落纹样和小吊饰。",
       "extra_constraints": [
@@ -381,8 +557,26 @@
       },
       "template": {
         "id": "commercial_poster",
-        "task_type": "商业联名海报 / 电商主图"
+        "task_type": "商业联名海报 / 电商主图",
+        "tags": [
+          "商业海报",
+          "电商主图",
+          "短标题",
+          "9:16",
+          "公开安全",
+          "无真实品牌"
+        ]
       },
+      "tags": [
+        "citlali",
+        "commercial_poster",
+        "商业海报",
+        "电商主图",
+        "短标题",
+        "9:16",
+        "公开安全",
+        "无真实品牌"
+      ],
       "scene": "夜神部落主题饰品或饮品联名视觉，前景有星点、几何纹样小卡片、紫蓝渐变杯和小吊饰，不出现真实品牌 logo。",
       "action": "她安静站在主视觉中央，手指轻轻扶着小吊饰，表情冷淡神秘。",
       "extra_constraints": [
@@ -413,8 +607,24 @@
       },
       "template": {
         "id": "vertical_thumbnail",
-        "task_type": "竖版社媒封面缩略图"
+        "task_type": "竖版社媒封面缩略图",
+        "tags": [
+          "封面缩略图",
+          "社媒封面",
+          "短标题",
+          "9:16",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "citlali",
+        "vertical_thumbnail",
+        "封面缩略图",
+        "社媒封面",
+        "短标题",
+        "9:16",
+        "公开安全"
+      ],
       "scene": "干净的黑紫渐变背景，点缀少量星点和几何纹样。",
       "action": "她站在画面中间偏右，冷淡看向镜头，左上方预留短标题区。",
       "extra_constraints": [
@@ -446,8 +656,26 @@
       },
       "template": {
         "id": "realistic_convention_phone",
-        "task_type": "写实 cos 手机随手拍"
+        "task_type": "写实 cos 手机随手拍",
+        "tags": [
+          "写实cos",
+          "手机随手拍",
+          "室内漫展",
+          "9:16",
+          "无文字",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "dori",
+        "realistic_convention_phone",
+        "写实cos",
+        "手机随手拍",
+        "室内漫展",
+        "9:16",
+        "无文字",
+        "公开安全"
+      ],
       "scene": "室内漫展摊位旁，背景有小商品展示架、暖色灯牌、路人和轻微虚化的展位桌面。",
       "action": "她笑眯眯地看向镜头，一只手扶着小灯壶，一只手像在招呼朋友拍照。",
       "extra_constraints": [
@@ -479,8 +707,26 @@
       },
       "template": {
         "id": "readme_preview",
-        "task_type": "GitHub README 公开预览图"
+        "task_type": "GitHub README 公开预览图",
+        "tags": [
+          "README预览",
+          "公开展示",
+          "写实手机照片",
+          "9:16",
+          "无文字",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "dori",
+        "readme_preview",
+        "README预览",
+        "公开展示",
+        "写实手机照片",
+        "9:16",
+        "无文字",
+        "公开安全"
+      ],
       "scene": "明亮商场或漫展小摊位，背景有整齐的宝石道具、金币装饰和浅色桌面。",
       "action": "她站在摊位旁笑眯眯展示小灯壶，道具数量适中，整体安全可爱。",
       "extra_constraints": [
@@ -512,8 +758,24 @@
       },
       "template": {
         "id": "character_card",
-        "task_type": "角色参考卡"
+        "task_type": "角色参考卡",
+        "tags": [
+          "角色参考卡",
+          "多区域",
+          "一致性检查",
+          "短中文标签",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "dori",
+        "character_card",
+        "角色参考卡",
+        "多区域",
+        "一致性检查",
+        "短中文标签",
+        "公开安全"
+      ],
       "scene": "简洁浅紫和金色设定页背景，带少量商人小包、金币和灯壶图标。",
       "action": "主视觉是笑眯眯半身图，细节区展示粉色卷发、方形眼镜、紫金商人帽、钱袋、小灯壶和宝石饰品。",
       "extra_constraints": [
@@ -545,8 +807,26 @@
       },
       "template": {
         "id": "commercial_poster",
-        "task_type": "商业联名海报 / 电商主图"
+        "task_type": "商业联名海报 / 电商主图",
+        "tags": [
+          "商业海报",
+          "电商主图",
+          "短标题",
+          "9:16",
+          "公开安全",
+          "无真实品牌"
+        ]
       },
+      "tags": [
+        "dori",
+        "commercial_poster",
+        "商业海报",
+        "电商主图",
+        "短标题",
+        "9:16",
+        "公开安全",
+        "无真实品牌"
+      ],
       "scene": "须弥风小摊位，前景有金币、宝石、钱袋和小灯壶，道具数量克制。",
       "action": "她笑眯眯地举起小灯壶，像在招呼朋友看新商品。",
       "extra_constraints": [
@@ -578,8 +858,24 @@
       },
       "template": {
         "id": "vertical_thumbnail",
-        "task_type": "竖版社媒封面缩略图"
+        "task_type": "竖版社媒封面缩略图",
+        "tags": [
+          "封面缩略图",
+          "社媒封面",
+          "短标题",
+          "9:16",
+          "公开安全"
+        ]
       },
+      "tags": [
+        "dori",
+        "vertical_thumbnail",
+        "封面缩略图",
+        "社媒封面",
+        "短标题",
+        "9:16",
+        "公开安全"
+      ],
       "scene": "紫金渐变背景，点缀金币、宝石、小灯壶和简洁卡片元素。",
       "action": "她站在画面中间偏右，笑眯眯地扶着方形眼镜，左上方预留短标题区。",
       "extra_constraints": [

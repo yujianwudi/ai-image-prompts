@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 import re
@@ -609,6 +609,9 @@ def check_prompt_pack_schema(data: dict, errors: list[str]) -> None:
     for key in ["characters", "templates", "packs", "global_quality_constraints"]:
         if key not in schema.get("properties", {}):
             errors.append(f"Prompt Pack schema.properties 缺少：{key}")
+    template_props = schema.get("$defs", {}).get("template", {}).get("properties", {})
+    if "tags" not in template_props:
+        errors.append("Prompt Pack schema.template.properties 缺少：tags")
 
 
 def check_generated_prompt_outputs(errors: list[str]) -> None:
@@ -720,6 +723,15 @@ def check_generated_json_bundle_schema(json_bundle_path: Path, errors: list[str]
     for key in generated_required:
         if key not in schema.get("properties", {}):
             errors.append(f"自动生成 JSON bundle schema.properties 缺少：{key}")
+    pack_props = schema.get("$defs", {}).get("generated_pack", {}).get("properties", {})
+    if "tags" not in pack_props:
+        errors.append("自动生成 JSON bundle schema.generated_pack.properties 缺少：tags")
+    pack_required = set(schema.get("$defs", {}).get("generated_pack", {}).get("required", []))
+    if "tags" not in pack_required:
+        errors.append("自动生成 JSON bundle schema.generated_pack.required 缺少：tags")
+    template_props = schema.get("$defs", {}).get("generated_template_ref", {}).get("properties", {})
+    if "tags" not in template_props:
+        errors.append("自动生成 JSON bundle schema.generated_template_ref.properties 缺少：tags")
 
 
 def main() -> int:

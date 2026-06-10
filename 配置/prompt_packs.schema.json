@@ -95,6 +95,7 @@
       "type": "object",
       "required": [
         "task_type",
+        "tags",
         "composition",
         "lighting",
         "material",
@@ -106,6 +107,9 @@
         "task_type": {
           "type": "string",
           "minLength": 1
+        },
+        "tags": {
+          "$ref": "#/$defs/string_list"
         },
         "composition": {
           "type": "string",

@@ -237,7 +237,7 @@ python 工具/build_prompt_pack.py --all
 生成提示词/prompt_packs.index.csv
 ```
 
-`生成提示词/README.md` 会自动生成「角色 × 用途」快速复制入口，`生成提示词/覆盖矩阵.md` 用于查看每个角色已经覆盖/缺失的输出类型，`生成提示词/prompt_packs.generated.json` 用于脚本、API 或前端读取全部 Prompt Pack，并包含 `source_config_sha256` 方便核对来源配置；`生成提示词/prompt_packs.generated.schema.json` 用于说明 JSON bundle 结构；`生成提示词/prompt_packs.index.csv` 用于表格筛选 Prompt Pack。
+`生成提示词/README.md` 会自动生成「角色 × 用途」快速复制入口，`生成提示词/覆盖矩阵.md` 用于查看每个角色已经覆盖/缺失的输出类型，`生成提示词/prompt_packs.generated.json` 用于脚本、API 或前端读取全部 Prompt Pack，并包含 `source_config_sha256` 和 tags 方便核对来源配置、按用途筛选；`生成提示词/prompt_packs.generated.schema.json` 用于说明 JSON bundle 结构；`生成提示词/prompt_packs.index.csv` 用于表格筛选 Prompt Pack，包含 tags 列。
 
 `check_prompt_repo.py` 会检查这些导出文件是否和配置一致，如果过期需要重新运行 `--all`。
 
@@ -249,4 +249,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、Prompt 文本质量审计、结构化出图评分与汇总、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、结构化出图评分与汇总和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、tags 导出、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总和统一质量门禁帮助入口。

@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 import subprocess
@@ -73,6 +73,7 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("templates", schema["properties"])
         self.assertIn("packs", schema["properties"])
         self.assertIn("global_quality_constraints", schema["properties"])
+        self.assertIn("tags", schema["$defs"]["template"]["properties"])
 
     def test_config_is_valid(self) -> None:
         self.assertEqual(validate_config(self.data), [])
@@ -97,6 +98,9 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertEqual(record["id"], "furina_convention_phone")
         self.assertEqual(record["character"]["id"], "furina")
         self.assertEqual(record["template"]["id"], "realistic_convention_phone")
+        self.assertIn("tags", record)
+        self.assertIn("写实cos", record["tags"])
+        self.assertIn("tags", record["template"])
         self.assertIn("主体锁定", record["prompt"])
         self.assertIn("非低俗", record["prompt"])
         bundle = json.loads(render_json_bundle(self.data))
@@ -140,9 +144,10 @@ class PromptPackToolTests(unittest.TestCase):
 
     def test_csv_index_lists_prompt_pack_files(self) -> None:
         csv_text = render_csv_index(self.data)
-        self.assertIn("id,title,character_id,character,template_id,template_type,file", csv_text)
+        self.assertIn("id,title,character_id,character,template_id,template_type,tags,file", csv_text)
         self.assertIn("furina_convention_phone", csv_text)
         self.assertIn("furina_convention_phone.md", csv_text)
+        self.assertIn("写实cos;手机随手拍", csv_text)
         self.assertIn("茜特菈莉 Citlali", csv_text)
 
     def test_coverage_matrix_lists_characters_and_templates(self) -> None:

@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import argparse
 import csv
@@ -17,7 +17,7 @@ GENERATED_JSON_BUNDLE_SCHEMA = "prompt_packs.generated.schema.json"
 GENERATED_CSV_INDEX = "prompt_packs.index.csv"
 
 REQUIRED_CHARACTER_KEYS = ["display_name", "anchor", "must_keep", "avoid"]
-REQUIRED_TEMPLATE_KEYS = ["task_type", "composition", "lighting", "material", "text_strategy", "safety"]
+REQUIRED_TEMPLATE_KEYS = ["task_type", "tags", "composition", "lighting", "material", "text_strategy", "safety"]
 REQUIRED_PACK_KEYS = ["id", "title", "character", "template", "scene", "action", "extra_constraints"]
 
 
@@ -80,6 +80,13 @@ def validate_config(data: dict[str, Any]) -> list[str]:
         for term in ["非低俗", "不性感化"]:
             if term not in safety:
                 errors.append(f"templates.{template_id}.safety 缺少 {term}")
+        tags = template.get("tags")
+        if not isinstance(tags, list) or not tags:
+            errors.append(f"templates.{template_id}.tags 必须是非空 array")
+        elif any(not isinstance(tag, str) or not tag.strip() for tag in tags):
+            errors.append(f"templates.{template_id}.tags 不能包含空值")
+        elif "公开安全" not in tags:
+            errors.append(f"templates.{template_id}.tags 必须包含 公开安全")
 
     seen_pack_ids: set[str] = set()
     for index, pack in enumerate(packs):
@@ -171,6 +178,21 @@ def render_pack(data: dict[str, Any], pack_id: str, markdown: bool = False) -> s
     return "\n".join(lines).rstrip() + "\n"
 
 
+def render_pack_tags(data: dict[str, Any], pack: dict[str, Any]) -> list[str]:
+    template = data["templates"][pack["template"]]
+    raw_tags = [
+        str(pack.get("character", "")),
+        str(pack.get("template", "")),
+        *[str(tag) for tag in template.get("tags", [])],
+    ]
+    tags: list[str] = []
+    for tag in raw_tags:
+        tag = tag.strip()
+        if tag and tag not in tags:
+            tags.append(tag)
+    return tags
+
+
 def render_pack_record(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
     pack = get_pack(data, pack_id)
     char = data["characters"][pack["character"]]
@@ -187,7 +209,9 @@ def render_pack_record(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
         "template": {
             "id": pack["template"],
             "task_type": template["task_type"],
+            "tags": template.get("tags", []),
         },
+        "tags": render_pack_tags(data, pack),
         "scene": pack["scene"],
         "action": pack["action"],
         "extra_constraints": pack.get("extra_constraints", []),
@@ -219,7 +243,7 @@ def render_json_bundle(data: dict[str, Any]) -> str:
 def render_csv_index(data: dict[str, Any]) -> str:
     buffer = io.StringIO(newline="")
     writer = csv.writer(buffer, lineterminator="\n")
-    writer.writerow(["id", "title", "character_id", "character", "template_id", "template_type", "file"])
+    writer.writerow(["id", "title", "character_id", "character", "template_id", "template_type", "tags", "file"])
     characters = data.get("characters", {})
     templates = data.get("templates", {})
     for pack in data.get("packs", []):
@@ -233,6 +257,7 @@ def render_csv_index(data: dict[str, Any]) -> str:
                 char.get("display_name", ""),
                 pack.get("template", ""),
                 template.get("task_type", ""),
+                ";".join(render_pack_tags(data, pack)),
                 generated_filename(str(pack.get("id", ""))),
             ]
         )
@@ -369,7 +394,7 @@ def render_generated_index(data: dict[str, Any]) -> str:
         "- [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。",
         f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256` 方便核对来源配置。",
         f"- [`{GENERATED_JSON_BUNDLE_SCHEMA}`]({GENERATED_JSON_BUNDLE_SCHEMA})：JSON bundle 的结构说明。",
-        f"- [`{GENERATED_CSV_INDEX}`]({GENERATED_CSV_INDEX})：可用表格软件打开的 Prompt Pack 索引。",
+        f"- [`{GENERATED_CSV_INDEX}`]({GENERATED_CSV_INDEX})：可用表格软件打开的 Prompt Pack 索引，含 tags 列方便筛选。",
         "",
         "## 文件列表",
         "",

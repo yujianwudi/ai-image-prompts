@@ -4,6 +4,7 @@
 
 ### Added
 
+- Prompt Pack 模板新增 `tags` 元数据，生成的 JSON bundle 和 CSV 索引会带上 tags，方便前端、脚本和表格按用途筛选。
 - 新增结构化失败修正词库 `评估/failure_fix_lexicon.json` 和 `评估/failure_fix_lexicon.schema.json`，把常见出图失败类型、识别线索、修正词和下一步动作机器可读化。
 - 新增 `工具/validate_failure_fix_lexicon.py`，用于校验失败修正词库并自动生成 `评估/失败修正词库.md`。
 - 新增 `AGENTS.md`，记录 Codex / 自动化维护者的质量门禁、生成文件、gpt-image-2 参数、内容安全和 GitHub CI 检查规则。
@@ -53,6 +54,7 @@
 
 ### Changed
 
+- Prompt Pack schema、生成器、JSON bundle schema、CSV 索引和单元测试已同步校验 tags 字段。
 - 统一质量门禁和单元测试现在会检查失败修正词库 JSON 结构、核心失败类型、必含修正词和 Markdown 同步状态。
 - 质量门禁现在会检查 `AGENTS.md` 是否存在，并校验关键维护指引没有丢失。
 - 根据 2026-06-10 二次联网复核的 OpenAI `gpt-image-2` 图片生成资料，强化模板的任务模式、不可变主体锚点、必须保留项、短文字策略和编辑保留/修改/禁止结构。

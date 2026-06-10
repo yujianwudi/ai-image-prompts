@@ -1,16 +1,16 @@
-id,title,character_id,character,template_id,template_type,file
-furina_convention_phone,芙宁娜室内漫展手机随手拍,furina,芙宁娜 Furina,realistic_convention_phone,写实 cos 手机随手拍,furina_convention_phone.md
-furina_readme_preview,芙宁娜 README 公开预览图,furina,芙宁娜 Furina,readme_preview,GitHub README 公开预览图,furina_readme_preview.md
-furina_character_card,芙宁娜角色参考卡,furina,芙宁娜 Furina,character_card,角色参考卡,furina_character_card.md
-furina_commercial_poster,芙宁娜枫丹甜品联名海报,furina,芙宁娜 Furina,commercial_poster,商业联名海报 / 电商主图,furina_commercial_poster.md
-furina_vertical_thumbnail,芙宁娜角色防串教程封面,furina,芙宁娜 Furina,vertical_thumbnail,竖版社媒封面缩略图,furina_vertical_thumbnail.md
-citlali_convention_phone,茜特菈莉室内漫展手机随手拍,citlali,茜特菈莉 Citlali,realistic_convention_phone,写实 cos 手机随手拍,citlali_convention_phone.md
-citlali_readme_preview,茜特菈莉 README 公开预览图,citlali,茜特菈莉 Citlali,readme_preview,GitHub README 公开预览图,citlali_readme_preview.md
-citlali_character_card,茜特菈莉角色参考卡,citlali,茜特菈莉 Citlali,character_card,角色参考卡,citlali_character_card.md
-citlali_commercial_poster,茜特菈莉夜神主题联名海报,citlali,茜特菈莉 Citlali,commercial_poster,商业联名海报 / 电商主图,citlali_commercial_poster.md
-citlali_vertical_thumbnail,茜特菈莉角色防串教程封面,citlali,茜特菈莉 Citlali,vertical_thumbnail,竖版社媒封面缩略图,citlali_vertical_thumbnail.md
-dori_convention_phone,多莉室内漫展手机随手拍,dori,多莉 Dori,realistic_convention_phone,写实 cos 手机随手拍,dori_convention_phone.md
-dori_readme_preview,多莉 README 公开预览图,dori,多莉 Dori,readme_preview,GitHub README 公开预览图,dori_readme_preview.md
-dori_character_card,多莉角色参考卡,dori,多莉 Dori,character_card,角色参考卡,dori_character_card.md
-dori_commercial_poster,多莉商业联名海报,dori,多莉 Dori,commercial_poster,商业联名海报 / 电商主图,dori_commercial_poster.md
-dori_vertical_thumbnail,多莉角色防串教程封面,dori,多莉 Dori,vertical_thumbnail,竖版社媒封面缩略图,dori_vertical_thumbnail.md
+id,title,character_id,character,template_id,template_type,tags,file
+furina_convention_phone,芙宁娜室内漫展手机随手拍,furina,芙宁娜 Furina,realistic_convention_phone,写实 cos 手机随手拍,furina;realistic_convention_phone;写实cos;手机随手拍;室内漫展;9:16;无文字;公开安全,furina_convention_phone.md
+furina_readme_preview,芙宁娜 README 公开预览图,furina,芙宁娜 Furina,readme_preview,GitHub README 公开预览图,furina;readme_preview;README预览;公开展示;写实手机照片;9:16;无文字;公开安全,furina_readme_preview.md
+furina_character_card,芙宁娜角色参考卡,furina,芙宁娜 Furina,character_card,角色参考卡,furina;character_card;角色参考卡;多区域;一致性检查;短中文标签;公开安全,furina_character_card.md
+furina_commercial_poster,芙宁娜枫丹甜品联名海报,furina,芙宁娜 Furina,commercial_poster,商业联名海报 / 电商主图,furina;commercial_poster;商业海报;电商主图;短标题;9:16;公开安全;无真实品牌,furina_commercial_poster.md
+furina_vertical_thumbnail,芙宁娜角色防串教程封面,furina,芙宁娜 Furina,vertical_thumbnail,竖版社媒封面缩略图,furina;vertical_thumbnail;封面缩略图;社媒封面;短标题;9:16;公开安全,furina_vertical_thumbnail.md
+citlali_convention_phone,茜特菈莉室内漫展手机随手拍,citlali,茜特菈莉 Citlali,realistic_convention_phone,写实 cos 手机随手拍,citlali;realistic_convention_phone;写实cos;手机随手拍;室内漫展;9:16;无文字;公开安全,citlali_convention_phone.md
+citlali_readme_preview,茜特菈莉 README 公开预览图,citlali,茜特菈莉 Citlali,readme_preview,GitHub README 公开预览图,citlali;readme_preview;README预览;公开展示;写实手机照片;9:16;无文字;公开安全,citlali_readme_preview.md
+citlali_character_card,茜特菈莉角色参考卡,citlali,茜特菈莉 Citlali,character_card,角色参考卡,citlali;character_card;角色参考卡;多区域;一致性检查;短中文标签;公开安全,citlali_character_card.md
+citlali_commercial_poster,茜特菈莉夜神主题联名海报,citlali,茜特菈莉 Citlali,commercial_poster,商业联名海报 / 电商主图,citlali;commercial_poster;商业海报;电商主图;短标题;9:16;公开安全;无真实品牌,citlali_commercial_poster.md
+citlali_vertical_thumbnail,茜特菈莉角色防串教程封面,citlali,茜特菈莉 Citlali,vertical_thumbnail,竖版社媒封面缩略图,citlali;vertical_thumbnail;封面缩略图;社媒封面;短标题;9:16;公开安全,citlali_vertical_thumbnail.md
+dori_convention_phone,多莉室内漫展手机随手拍,dori,多莉 Dori,realistic_convention_phone,写实 cos 手机随手拍,dori;realistic_convention_phone;写实cos;手机随手拍;室内漫展;9:16;无文字;公开安全,dori_convention_phone.md
+dori_readme_preview,多莉 README 公开预览图,dori,多莉 Dori,readme_preview,GitHub README 公开预览图,dori;readme_preview;README预览;公开展示;写实手机照片;9:16;无文字;公开安全,dori_readme_preview.md
+dori_character_card,多莉角色参考卡,dori,多莉 Dori,character_card,角色参考卡,dori;character_card;角色参考卡;多区域;一致性检查;短中文标签;公开安全,dori_character_card.md
+dori_commercial_poster,多莉商业联名海报,dori,多莉 Dori,commercial_poster,商业联名海报 / 电商主图,dori;commercial_poster;商业海报;电商主图;短标题;9:16;公开安全;无真实品牌,dori_commercial_poster.md
+dori_vertical_thumbnail,多莉角色防串教程封面,dori,多莉 Dori,vertical_thumbnail,竖版社媒封面缩略图,dori;vertical_thumbnail;封面缩略图;社媒封面;短标题;9:16;公开安全,dori_vertical_thumbnail.md
