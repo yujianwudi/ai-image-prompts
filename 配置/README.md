@@ -51,7 +51,7 @@ python 工具/build_prompt_pack.py dori_commercial_poster --out 示例/自动生
 "$schema": "prompt_packs.schema.json"
 ```
 
-支持 JSON Schema 的编辑器可以根据 `配置/prompt_packs.schema.json` 提示字段结构。质量门禁也会检查 `$schema` 是否存在、是否指向配置目录内的 schema 文件，角色/模板/Pack ID 是否保持小写 slug，并用生成器复核模板 `api_profile` 是否符合本仓库的 gpt-image-2 竖图约定。
+支持 JSON Schema 的编辑器可以根据 `配置/prompt_packs.schema.json` 提示字段结构。质量门禁也会检查 `$schema` 是否存在、是否指向配置目录内的 schema 文件，角色/模板/Pack ID 是否保持小写 slug，是否混入未知字段、空白文本或重复列表项，并用生成器复核模板 `api_profile` 是否符合本仓库的 gpt-image-2 竖图约定。
 
 `tag_taxonomy.json` 也绑定本地 schema：
 
@@ -66,6 +66,7 @@ python 工具/build_prompt_pack.py dori_commercial_poster --out 示例/自动生
 - `characters` 放角色锚点、必须保留元素和禁止混入元素。
 - `templates` 放输出类型、tags、gpt-image-2 `api_profile`、构图、光线、材质、文字策略和安全约束。
 - `packs` 放具体组合案例，只引用已有角色和模板。
+- 所有列表项都应是非空白文本，并避免重复；临时备注不要直接写进 JSON，可放到文档或 PR 描述里。
 - `tags` 用于 JSON bundle、CSV 索引和前端筛选；每个模板必须包含 `公开安全`，并且必须来自 `tag_taxonomy.json` 的正式标签。
 - `api_profile` 用于记录推荐 `model`、`size`、`quality`、`output_format`、`output_compression` 和 `background`；jpeg/webp 必须写 0-100 压缩率，png 不写压缩率，并会进入 JSON bundle、CSV 索引、API 请求 JSONL 和 JSONL schema 校验流程。
 - 同义词不要直接写进模板 tags，例如 `商业海报图` 应登记为 `商业海报` 的 alias，模板里仍使用正式标签 `商业海报`。

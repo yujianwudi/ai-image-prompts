@@ -16,15 +16,18 @@
   "additionalProperties": false,
   "properties": {
     "$schema": {
-      "type": "string"
+      "type": "string",
+      "const": "prompt_packs.schema.json"
     },
     "version": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "^20[0-9]{2}-[0-9]{2}-[0-9]{2}-[a-z0-9][a-z0-9-]*$"
     },
     "description": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "\\S"
     },
     "characters": {
       "type": "object",
@@ -54,21 +57,18 @@
       }
     },
     "global_quality_constraints": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "string",
-        "minLength": 1
-      }
+      "$ref": "#/$defs/string_list"
     }
   },
   "$defs": {
     "string_list": {
       "type": "array",
       "minItems": 1,
+      "uniqueItems": true,
       "items": {
         "type": "string",
-        "minLength": 1
+        "minLength": 1,
+        "pattern": "\\S"
       }
     },
     "character": {
@@ -83,11 +83,13 @@
       "properties": {
         "display_name": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "anchor": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "must_keep": {
           "$ref": "#/$defs/string_list"
@@ -113,7 +115,8 @@
       "properties": {
         "task_type": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "tags": {
           "$ref": "#/$defs/string_list"
@@ -123,23 +126,28 @@
         },
         "composition": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "lighting": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "material": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "text_strategy": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "safety": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         }
       }
     },
@@ -247,23 +255,26 @@
         },
         "title": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "character": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[a-z0-9_]+$"
         },
         "template": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[a-z0-9_]+$"
         },
         "scene": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "action": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "extra_constraints": {
           "$ref": "#/$defs/string_list"

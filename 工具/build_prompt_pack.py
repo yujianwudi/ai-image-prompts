@@ -40,7 +40,13 @@ API_PROFILE_ORDER = ["model", "size", "quality", "output_format", "output_compre
 VALID_API_QUALITIES = {"low", "medium", "high", "auto"}
 VALID_API_OUTPUT_FORMATS = {"png", "jpeg", "webp"}
 SLUG_ID_RE = re.compile(r"^[a-z0-9_]+$")
+CONFIG_VERSION_RE = re.compile(r"^20[0-9]{2}-[0-9]{2}-[0-9]{2}-[a-z0-9][a-z0-9-]*$")
 TAXONOMY_VERSION_RE = re.compile(r"^20[0-9]{2}-[0-9]{2}-[0-9]{2}$")
+CONFIG_FIELDS = {"$schema", "version", "description", "characters", "templates", "packs", "global_quality_constraints"}
+CHARACTER_FIELDS = set(REQUIRED_CHARACTER_KEYS)
+TEMPLATE_FIELDS = set(REQUIRED_TEMPLATE_KEYS)
+PACK_FIELDS = set(REQUIRED_PACK_KEYS)
+API_PROFILE_FIELDS = set(API_PROFILE_ORDER)
 TAG_TAXONOMY_FIELDS = {"$schema", "version", "description", "categories", "tags"}
 TAG_CATEGORY_FIELDS = {"id", "name", "description"}
 TAG_FIELDS = {"id", "category", "description", "aliases"}
@@ -198,10 +204,36 @@ def is_slug_id(value: str) -> bool:
     return bool(SLUG_ID_RE.fullmatch(value))
 
 
+def duplicate_values(values: list[str]) -> list[str]:
+    return sorted({value for value in values if values.count(value) > 1})
+
+
+def validate_string_list(value: Any, context: str, errors: list[str], *, min_items: int = 1) -> list[str]:
+    if not isinstance(value, list) or len(value) < min_items:
+        errors.append(f"{context} 必须是至少 {min_items} 项的 array")
+        return []
+
+    items: list[str] = []
+    for index, item in enumerate(value):
+        if not isinstance(item, str) or not item.strip():
+            errors.append(f"{context}[{index}] 不能是空白字符串")
+            continue
+        items.append(item.strip())
+
+    duplicates = duplicate_values(items)
+    if duplicates:
+        errors.append(f"{context} 存在重复值：{', '.join(duplicates)}")
+    return items
+
+
 def validate_api_profile(profile: Any, context: str) -> list[str]:
     errors: list[str] = []
     if not isinstance(profile, dict):
         return [f"{context}.api_profile 必须是 object"]
+
+    extra_fields = sorted(set(profile) - API_PROFILE_FIELDS)
+    if extra_fields:
+        errors.append(f"{context}.api_profile 存在未知字段：" + "、".join(extra_fields))
 
     required = ["model", "size", "quality", "output_format", "background"]
     for key in required:
@@ -248,6 +280,19 @@ def validate_api_profile(profile: Any, context: str) -> list[str]:
 
 def validate_config(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = None) -> list[str]:
     errors: list[str] = []
+    if data.get("$schema") != "prompt_packs.schema.json":
+        errors.append("prompt_packs.json 的 $schema 应为 prompt_packs.schema.json")
+    extra_fields = sorted(set(data) - CONFIG_FIELDS)
+    if extra_fields:
+        errors.append("prompt_packs.json 存在未知字段：" + "、".join(extra_fields))
+    version = str(data.get("version", "")).strip()
+    if not version:
+        errors.append("prompt_packs.json 缺少 version")
+    elif not CONFIG_VERSION_RE.match(version):
+        errors.append(f"prompt_packs.json version 必须是日期前缀小写 slug：{version}")
+    if not str(data.get("description", "")).strip():
+        errors.append("prompt_packs.json 缺少 description")
+
     characters = _require_dict(data, "characters", errors)
     templates = _require_dict(data, "templates", errors)
     packs = _require_list(data, "packs", errors)
@@ -274,9 +319,17 @@ def validate_config(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = 
         if not isinstance(char, dict):
             errors.append(f"characters.{char_id} 必须是 object")
             continue
+        extra_fields = sorted(set(char) - CHARACTER_FIELDS)
+        if extra_fields:
+            errors.append(f"characters.{char_id} 存在未知字段：" + "、".join(extra_fields))
         for key in REQUIRED_CHARACTER_KEYS:
             if key not in char:
                 errors.append(f"characters.{char_id} 缺少 {key}")
+        for key in ["display_name", "anchor"]:
+            if not str(char.get(key, "")).strip():
+                errors.append(f"characters.{char_id}.{key} 不能为空")
+        validate_string_list(char.get("must_keep"), f"characters.{char_id}.must_keep", errors, min_items=3)
+        validate_string_list(char.get("avoid"), f"characters.{char_id}.avoid", errors, min_items=2)
         if isinstance(char.get("must_keep"), list) and len(char["must_keep"]) < 3:
             errors.append(f"characters.{char_id}.must_keep 至少需要 3 个识别点")
         if isinstance(char.get("avoid"), list) and len(char["avoid"]) < 2:
@@ -288,20 +341,23 @@ def validate_config(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = 
         if not isinstance(template, dict):
             errors.append(f"templates.{template_id} 必须是 object")
             continue
+        extra_fields = sorted(set(template) - TEMPLATE_FIELDS)
+        if extra_fields:
+            errors.append(f"templates.{template_id} 存在未知字段：" + "、".join(extra_fields))
         for key in REQUIRED_TEMPLATE_KEYS:
             if key not in template:
                 errors.append(f"templates.{template_id} 缺少 {key}")
+        for key in ["task_type", "composition", "lighting", "material", "text_strategy", "safety"]:
+            if not str(template.get(key, "")).strip():
+                errors.append(f"templates.{template_id}.{key} 不能为空")
         errors.extend(validate_api_profile(template.get("api_profile"), f"templates.{template_id}"))
         safety = str(template.get("safety", ""))
         for term in ["非低俗", "不性感化"]:
             if term not in safety:
                 errors.append(f"templates.{template_id}.safety 缺少 {term}")
         tags = template.get("tags")
-        if not isinstance(tags, list) or not tags:
-            errors.append(f"templates.{template_id}.tags 必须是非空 array")
-        elif any(not isinstance(tag, str) or not tag.strip() for tag in tags):
-            errors.append(f"templates.{template_id}.tags 不能包含空值")
-        elif "公开安全" not in tags:
+        tag_values = validate_string_list(tags, f"templates.{template_id}.tags", errors)
+        if tag_values and "公开安全" not in tag_values:
             errors.append(f"templates.{template_id}.tags 必须包含 公开安全")
         if isinstance(tags, list):
             for tag in tags:
@@ -319,11 +375,15 @@ def validate_config(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = 
         if not isinstance(pack, dict):
             errors.append(f"packs[{index}] 必须是 object")
             continue
+        extra_fields = sorted(set(pack) - PACK_FIELDS)
+        if extra_fields:
+            errors.append(f"packs[{index}] 存在未知字段：" + "、".join(extra_fields))
         for key in REQUIRED_PACK_KEYS:
             if key not in pack:
                 errors.append(f"packs[{index}] 缺少 {key}")
         pack_id = str(pack.get("id", ""))
         if not pack_id:
+            errors.append(f"packs[{index}].id 不能为空")
             continue
         if not is_slug_id(pack_id):
             errors.append(f"packs.{pack_id}.id 必须只包含小写字母、数字和下划线")
@@ -334,9 +394,12 @@ def validate_config(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = 
             errors.append(f"packs.{pack_id} 引用了不存在的角色：{pack.get('character')}")
         if pack.get("template") not in templates:
             errors.append(f"packs.{pack_id} 引用了不存在的模板：{pack.get('template')}")
-        if not isinstance(pack.get("extra_constraints"), list):
-            errors.append(f"packs.{pack_id}.extra_constraints 必须是 array")
+        for key in ["title", "scene", "action"]:
+            if not str(pack.get(key, "")).strip():
+                errors.append(f"packs.{pack_id}.{key} 不能为空")
+        validate_string_list(pack.get("extra_constraints"), f"packs.{pack_id}.extra_constraints", errors)
 
+    validate_string_list(global_constraints, "global_quality_constraints", errors)
     joined_global = "\n".join(str(item) for item in global_constraints)
     for term in ["不要混入", "不要水印", "不插画风"]:
         if term not in joined_global:

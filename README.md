@@ -135,7 +135,7 @@ python -m compileall -q 工具 tests
 python -m unittest discover -s tests -v
 ```
 
-统一质量门禁会检查 Prompt Pack 配置、配置 ID slug、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、Prompt 文本质量规则、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 结构与尺寸元数据、目录结构、本地链接、Markdown 代码块闭合、README 预览图引用、alt、caption 和展示顺序、角色安全约束、参考仓库追踪、自动导出文件、文本文件 LF / BOM / 末尾换行、Python 源码编译和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
+统一质量门禁会检查 Prompt Pack 配置、配置 ID slug、未知字段、非空白文本、列表去重、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、Prompt 文本质量规则、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 结构与尺寸元数据、目录结构、本地链接、Markdown 代码块闭合、README 预览图引用、alt、caption 和展示顺序、角色安全约束、参考仓库追踪、自动导出文件、文本文件 LF / BOM / 末尾换行、Python 源码编译和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 
@@ -145,7 +145,7 @@ python -m unittest discover -s tests -v
 - gpt-image-2 参数自检：`模板/06-gpt-image-2官方规格自检清单.md` 和 `工具/validate_gpt_image2_parameters.py` 会校验推荐尺寸档位，避免把 `1024x1536` 误写成严格 9:16，或把 Midjourney 参数混进 OpenAI API。
 - gpt-image-2 一键模板：写实cos、README预览图、角色卡、三视图、九宫格、商业海报、图像编辑。
 - Prompt as Code 字段化：把任务类型、主体锁定、版式、文字策略和防串约束拆开。
-- 机器可读 Prompt Pack：通过 `配置/prompt_packs.json` 和 `工具/build_prompt_pack.py` 自动组合可复制提示词。
+- 机器可读 Prompt Pack：通过 `配置/prompt_packs.json` 和 `工具/build_prompt_pack.py` 自动组合可复制提示词；配置校验会拦截未知字段、空白文本、重复列表项、失效引用和漂移的 `api_profile`。
 - Prompt Pack API 参数：每个输出模板都绑定 `api_profile`，记录 `model`、`size`、`quality`、`output_format`、压缩率和背景模式，避免复制提示词时漏掉 gpt-image-2 推荐参数。
 - 标签 taxonomy：通过 `配置/tag_taxonomy.json` 约束 Prompt Pack 模板 tags，避免标签同义词漂移，`商业海报图` 这类 alias 不能直接进模板；校验会拦截未知字段、版本日期格式错误、分类 ID 非 slug 和重复 alias。
 - JSON 输出：`工具/build_prompt_pack.py --format json` 可输出带 `api_profile` 的提示词记录，方便接 API、脚本或前端。

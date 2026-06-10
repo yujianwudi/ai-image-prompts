@@ -122,12 +122,25 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("templates", schema["properties"])
         self.assertIn("packs", schema["properties"])
         self.assertIn("global_quality_constraints", schema["properties"])
+        self.assertFalse(schema["additionalProperties"])
+        self.assertEqual(schema["properties"]["$schema"]["const"], "prompt_packs.schema.json")
+        self.assertEqual(
+            schema["properties"]["version"]["pattern"],
+            "^20[0-9]{2}-[0-9]{2}-[0-9]{2}-[a-z0-9][a-z0-9-]*$",
+        )
+        self.assertEqual(schema["properties"]["description"]["pattern"], "\\S")
         self.assertEqual(schema["properties"]["characters"]["propertyNames"]["pattern"], "^[a-z0-9_]+$")
         self.assertEqual(schema["properties"]["templates"]["propertyNames"]["pattern"], "^[a-z0-9_]+$")
+        self.assertTrue(schema["$defs"]["string_list"]["uniqueItems"])
+        self.assertEqual(schema["$defs"]["string_list"]["items"]["pattern"], "\\S")
         self.assertIn("tags", schema["$defs"]["template"]["properties"])
+        self.assertEqual(schema["$defs"]["template"]["properties"]["task_type"]["pattern"], "\\S")
         self.assertIn("api_profile", schema["$defs"])
         self.assertIn("api_profile", schema["$defs"]["template"]["required"])
         self.assertIn("api_profile", schema["$defs"]["template"]["properties"])
+        self.assertFalse(schema["$defs"]["api_profile"]["additionalProperties"])
+        self.assertEqual(schema["$defs"]["pack"]["properties"]["character"]["pattern"], "^[a-z0-9_]+$")
+        self.assertEqual(schema["$defs"]["pack"]["properties"]["scene"]["pattern"], "\\S")
 
         taxonomy = load_tag_taxonomy(DEFAULT_TAG_TAXONOMY)
         self.assertEqual(taxonomy.get("$schema"), "tag_taxonomy.schema.json")
@@ -143,6 +156,49 @@ class PromptPackToolTests(unittest.TestCase):
 
     def test_config_is_valid(self) -> None:
         self.assertEqual(validate_config(self.data), [])
+
+    def test_config_rejects_unknown_blank_and_duplicate_values(self) -> None:
+        mutated = json.loads(json.dumps(self.data, ensure_ascii=False))
+        mutated["draft_note"] = "临时字段"
+        mutated["version"] = "2026/06/10"
+        mutated["description"] = "   "
+
+        character = mutated["characters"]["furina"]
+        character["draft_note"] = "临时字段"
+        character["display_name"] = "   "
+        character["must_keep"].append(character["must_keep"][0])
+        character["avoid"].append("   ")
+
+        template = mutated["templates"]["readme_preview"]
+        template["draft_note"] = "临时字段"
+        template["task_type"] = "   "
+        template["tags"].append(template["tags"][0])
+        template["api_profile"]["draft_note"] = "临时字段"
+
+        pack = mutated["packs"][0]
+        pack["draft_note"] = "临时字段"
+        pack["title"] = "   "
+        pack["extra_constraints"].append(pack["extra_constraints"][0])
+        mutated["global_quality_constraints"].append(mutated["global_quality_constraints"][0])
+
+        errors = validate_config(mutated)
+        self.assertTrue(any("prompt_packs.json 存在未知字段：draft_note" in error for error in errors))
+        self.assertTrue(any("prompt_packs.json version 必须是日期前缀小写 slug：2026/06/10" in error for error in errors))
+        self.assertTrue(any("prompt_packs.json 缺少 description" in error for error in errors))
+        self.assertTrue(any("characters.furina 存在未知字段：draft_note" in error for error in errors))
+        self.assertTrue(any("characters.furina.display_name 不能为空" in error for error in errors))
+        self.assertTrue(any("characters.furina.must_keep 存在重复值：白蓝短发" in error for error in errors))
+        self.assertTrue(any("characters.furina.avoid[4] 不能是空白字符串" in error for error in errors))
+        self.assertTrue(any("templates.readme_preview 存在未知字段：draft_note" in error for error in errors))
+        self.assertTrue(any("templates.readme_preview.task_type 不能为空" in error for error in errors))
+        self.assertTrue(any("templates.readme_preview.tags 存在重复值：README预览" in error for error in errors))
+        self.assertTrue(any("templates.readme_preview.api_profile 存在未知字段：draft_note" in error for error in errors))
+        self.assertTrue(any("packs[0] 存在未知字段：draft_note" in error for error in errors))
+        self.assertTrue(any("packs.furina_convention_phone.title 不能为空" in error for error in errors))
+        self.assertTrue(
+            any("packs.furina_convention_phone.extra_constraints 存在重复值：不要把短发变成长发" in error for error in errors)
+        )
+        self.assertTrue(any("global_quality_constraints 存在重复值：" in error for error in errors))
 
     def test_tag_taxonomy_covers_template_tags(self) -> None:
         taxonomy = load_tag_taxonomy(DEFAULT_TAG_TAXONOMY)
