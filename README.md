@@ -1,10 +1,41 @@
-# 生图项目目录
+# AI 生图提示词模板库
 
-这个项目现在只按两类放：
+用于整理 AI 生图提示词、角色专属设定、固定场景模板和防串提示词。  
+当前主要围绕写实 cosplay、室内漫展手机随手拍、9:16 竖图、真实服装材质和非低俗风格来整理。
+
+## 预览图
+
+下面是部分生成效果预览，图片已压缩后放在 `预览图/` 文件夹，方便 GitHub README 直接展示。
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="预览图/furina-dessert-01.jpg" width="220"><br>
+      <sub>甜品店场景 / 写实cos</sub>
+    </td>
+    <td align="center">
+      <img src="预览图/furina-dessert-02.jpg" width="220"><br>
+      <sub>甜品店场景 / 道具互动</sub>
+    </td>
+    <td align="center">
+      <img src="预览图/furina-night-01.jpg" width="220"><br>
+      <sub>城市夜景 / 跟拍感</sub>
+    </td>
+    <td align="center">
+      <img src="预览图/furina-night-02.jpg" width="220"><br>
+      <sub>城市夜景 / 街拍感</sub>
+    </td>
+  </tr>
+</table>
+
+## 目录结构
+
+这个项目按两类放：
 
 ```text
 角色/
 模板/
+预览图/
 ```
 
 ## 角色
@@ -34,3 +65,9 @@
 ```
 
 不要一次性复制所有模板，容易互相污染。
+
+## 当前重点
+
+- 角色设定防串：芙宁娜、茜特菈莉、朵莉亚/多莉。
+- 固定模板拆分：场景、镜头、灯光、材质、动作、负面词、平台参数。
+- README 预览图：展示模板生成效果，避免只看文字不直观。
