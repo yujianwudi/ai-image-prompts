@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,6 +13,27 @@ from build_prompt_pack import DEFAULT_CONFIG, load_config, render_pack
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RULES = ROOT / "评估" / "prompt_quality_rules.json"
 DEFAULT_REPORT = ROOT / "评估" / "Prompt文本质量审计报告.md"
+
+RULE_VERSION_RE = re.compile(r"^20[0-9]{2}-[0-9]{2}-[0-9]{2}-[a-z0-9][a-z0-9-]*$")
+NON_BLANK_PATTERN = "\\S"
+RULE_FIELDS = {
+    "$schema",
+    "version",
+    "description",
+    "length",
+    "required_sections",
+    "required_safety_terms",
+    "required_quality_terms",
+    "forbidden_terms",
+    "template_terms",
+}
+LENGTH_FIELDS = {"min_chars", "max_chars"}
+LIST_FIELDS = [
+    "required_sections",
+    "required_safety_terms",
+    "required_quality_terms",
+    "forbidden_terms",
+]
 
 
 @dataclass(frozen=True)
@@ -34,6 +56,10 @@ def missing_terms(text: str, terms: list[str]) -> list[str]:
     return [term for term in terms if term not in text]
 
 
+def duplicate_values(values: list[str]) -> list[str]:
+    return sorted({value for value in values if values.count(value) > 1})
+
+
 def load_rules(path: Path = DEFAULT_RULES) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as f:
         data = json.load(f)
@@ -42,25 +68,55 @@ def load_rules(path: Path = DEFAULT_RULES) -> dict[str, Any]:
     return data
 
 
+def validate_string_list(value: Any, label: str, errors: list[str]) -> list[str]:
+    if not isinstance(value, list) or not value:
+        errors.append(f"Prompt 质量规则 {label} 必须是非空 array")
+        return []
+
+    items: list[str] = []
+    for index, item in enumerate(value):
+        if not isinstance(item, str) or not item.strip():
+            errors.append(f"Prompt 质量规则 {label}[{index}] 不能是空白字符串")
+            continue
+        items.append(item)
+
+    duplicates = duplicate_values(items)
+    if duplicates:
+        errors.append(f"Prompt 质量规则 {label} 存在重复值：{', '.join(duplicates)}")
+    return items
+
+
 def validate_rules(rules: dict[str, Any], data: dict[str, Any]) -> list[str]:
     errors: list[str] = []
-    for key in [
-        "$schema",
-        "version",
-        "description",
-        "length",
-        "required_sections",
-        "required_safety_terms",
-        "required_quality_terms",
-        "forbidden_terms",
-        "template_terms",
-    ]:
+
+    extra_fields = sorted(set(rules) - RULE_FIELDS)
+    if extra_fields:
+        errors.append("Prompt 质量规则存在未知顶层字段：" + ", ".join(extra_fields))
+
+    for key in RULE_FIELDS:
         if key not in rules:
             errors.append(f"Prompt 质量规则缺少字段：{key}")
+
+    if rules.get("$schema") != "prompt_quality_rules.schema.json":
+        errors.append("Prompt 质量规则 $schema 必须是 prompt_quality_rules.schema.json")
+
+    version = rules.get("version")
+    if not isinstance(version, str) or not version.strip():
+        errors.append("Prompt 质量规则缺少 version")
+    elif not RULE_VERSION_RE.match(version):
+        errors.append(f"Prompt 质量规则 version 必须是日期前缀小写 slug：{version}")
+
+    description = rules.get("description")
+    if not isinstance(description, str) or not description.strip():
+        errors.append("Prompt 质量规则缺少 description")
+
     length = rules.get("length", {})
     if not isinstance(length, dict):
         errors.append("Prompt 质量规则 length 必须是 object")
     else:
+        extra_length_fields = sorted(set(length) - LENGTH_FIELDS)
+        if extra_length_fields:
+            errors.append("Prompt 质量规则 length 存在未知字段：" + ", ".join(extra_length_fields))
         min_chars = length.get("min_chars")
         max_chars = length.get("max_chars")
         if not isinstance(min_chars, int) or min_chars <= 0:
@@ -70,9 +126,8 @@ def validate_rules(rules: dict[str, Any], data: dict[str, Any]) -> list[str]:
         if isinstance(min_chars, int) and isinstance(max_chars, int) and min_chars >= max_chars:
             errors.append("Prompt 质量规则 length.min_chars 必须小于 max_chars")
 
-    for key in ["required_sections", "required_safety_terms", "required_quality_terms", "forbidden_terms"]:
-        if not isinstance(rules.get(key), list) or not rules.get(key):
-            errors.append(f"Prompt 质量规则 {key} 必须是非空 array")
+    for key in LIST_FIELDS:
+        validate_string_list(rules.get(key), key, errors)
 
     template_terms = rules.get("template_terms")
     templates = data.get("templates", {})
@@ -86,8 +141,7 @@ def validate_rules(rules: dict[str, Any], data: dict[str, Any]) -> list[str]:
         if extra_templates:
             errors.append("Prompt 质量规则包含不存在的模板：" + "、".join(extra_templates))
         for template_id, terms in template_terms.items():
-            if not isinstance(terms, list) or not terms:
-                errors.append(f"Prompt 质量规则 template_terms.{template_id} 必须是非空 array")
+            validate_string_list(terms, f"template_terms.{template_id}", errors)
 
     schema_ref = rules.get("$schema")
     if schema_ref:

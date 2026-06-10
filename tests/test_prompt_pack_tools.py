@@ -65,6 +65,7 @@ from lint_prompt_quality import (  # noqa: E402
     lint as lint_prompt_quality,
     load_rules,
     render_report as render_prompt_quality_report,
+    validate_rules as validate_prompt_quality_rules,
 )
 from new_output_evaluation import (  # noqa: E402
     build_document as build_output_evaluation_document,
@@ -556,6 +557,18 @@ class PromptPackToolTests(unittest.TestCase):
 
     def test_prompt_quality_report_is_current(self) -> None:
         rules = load_rules()
+        rules_schema = json.loads((ROOT / "评估" / "prompt_quality_rules.schema.json").read_text(encoding="utf-8"))
+        self.assertFalse(rules_schema["additionalProperties"])
+        self.assertFalse(rules_schema["properties"]["length"]["additionalProperties"])
+        self.assertEqual(rules_schema["properties"]["$schema"]["const"], "prompt_quality_rules.schema.json")
+        self.assertEqual(
+            rules_schema["properties"]["version"]["pattern"],
+            "^20[0-9]{2}-[0-9]{2}-[0-9]{2}-[a-z0-9][a-z0-9-]*$",
+        )
+        self.assertEqual(rules_schema["properties"]["description"]["pattern"], "\\S")
+        self.assertEqual(rules_schema["properties"]["template_terms"]["propertyNames"]["pattern"], "^[a-z0-9_]+$")
+        self.assertTrue(rules_schema["$defs"]["string_list"]["uniqueItems"])
+        self.assertEqual(rules_schema["$defs"]["string_list"]["items"]["pattern"], "\\S")
         self.assertIn("forbidden_terms", rules)
         self.assertIn("--ar", rules["forbidden_terms"])
         result = lint_prompt_quality(self.data, rules)
@@ -563,6 +576,34 @@ class PromptPackToolTests(unittest.TestCase):
         report_path = ROOT / "评估" / "Prompt文本质量审计报告.md"
         self.assertEqual(report_path.read_text(encoding="utf-8"), render_prompt_quality_report(self.data, rules))
         self.assertIn("禁用词", report_path.read_text(encoding="utf-8"))
+
+    def test_prompt_quality_rules_reject_unknown_blank_and_duplicate_values(self) -> None:
+        rules = load_rules()
+        mutated = json.loads(json.dumps(rules, ensure_ascii=False))
+        mutated["draft_note"] = "临时字段"
+        mutated["$schema"] = "other.schema.json"
+        mutated["version"] = "2026/06/10"
+        mutated["description"] = "   "
+        mutated["length"]["draft_note"] = "临时字段"
+        mutated["required_sections"].append("   ")
+        mutated["required_safety_terms"].append(mutated["required_safety_terms"][0])
+        mutated["template_terms"]["unknown_template"] = ["测试"]
+        mutated["template_terms"]["realistic_convention_phone"].append("9:16")
+        errors = validate_prompt_quality_rules(mutated, self.data)
+        self.assertTrue(any("Prompt 质量规则存在未知顶层字段：draft_note" in error for error in errors))
+        self.assertTrue(any("$schema 必须是 prompt_quality_rules.schema.json" in error for error in errors))
+        self.assertTrue(any("version 必须是日期前缀小写 slug：2026/06/10" in error for error in errors))
+        self.assertTrue(any("Prompt 质量规则缺少 description" in error for error in errors))
+        self.assertTrue(any("Prompt 质量规则 length 存在未知字段：draft_note" in error for error in errors))
+        self.assertTrue(any("Prompt 质量规则 required_sections[11] 不能是空白字符串" in error for error in errors))
+        self.assertTrue(any("Prompt 质量规则 required_safety_terms 存在重复值：非低俗" in error for error in errors))
+        self.assertTrue(any("Prompt 质量规则包含不存在的模板：unknown_template" in error for error in errors))
+        self.assertTrue(
+            any(
+                "Prompt 质量规则 template_terms.realistic_convention_phone 存在重复值：9:16" in error
+                for error in errors
+            )
+        )
 
     def test_prompt_quality_rejects_platform_parameter_leakage(self) -> None:
         rules = load_rules()
