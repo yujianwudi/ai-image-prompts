@@ -332,6 +332,36 @@ def check_text_file_hygiene(errors: list[str]) -> None:
             errors.append(f"文本文件末尾必须保留换行：{rel(path)}")
 
 
+def find_unclosed_markdown_fence(text: str) -> tuple[int, str] | None:
+    in_fence = False
+    fence_char = ""
+    fence_len = 0
+    start_line = 0
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        stripped = line.lstrip(" ")
+        indent = len(line) - len(stripped)
+        if indent > 3 or not (stripped.startswith("```") or stripped.startswith("~~~")):
+            continue
+        current_char = stripped[0]
+        current_len = len(stripped) - len(stripped.lstrip(current_char))
+        if current_len < 3:
+            continue
+        rest = stripped[current_len:].strip()
+        if not in_fence:
+            in_fence = True
+            fence_char = current_char
+            fence_len = current_len
+            start_line = line_number
+        elif current_char == fence_char and current_len >= fence_len and not rest:
+            in_fence = False
+            fence_char = ""
+            fence_len = 0
+            start_line = 0
+    if in_fence:
+        return start_line, fence_char * fence_len
+    return None
+
+
 def check_required_dirs(errors: list[str]) -> None:
     for item in REQUIRED_DIRS:
         path = ROOT / item
@@ -353,6 +383,10 @@ def check_markdown_health(errors: list[str], warnings: list[str]) -> None:
             errors.append(f"Markdown 文件为空：{rel(path)}")
         if "\ufffd" in text or C1_CONTROL_RE.search(text):
             errors.append(f"疑似编码损坏：{rel(path)}")
+        unclosed_fence = find_unclosed_markdown_fence(text)
+        if unclosed_fence:
+            start_line, fence = unclosed_fence
+            errors.append(f"Markdown 代码块未闭合：{rel(path)}:{start_line} ({fence})")
         if len(text.splitlines()) > 800:
             warnings.append(f"Markdown 文件较长，建议拆分：{rel(path)}")
 

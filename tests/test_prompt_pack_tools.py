@@ -48,9 +48,11 @@ from audit_character_prompts import audit, render_report  # noqa: E402
 from check_prompt_repo import (  # noqa: E402
     SECRET_PATTERNS,
     check_github_workflow,
+    check_markdown_health,
     check_text_file_hygiene,
     check_unified_quality_gate,
     classify_orientation,
+    find_unclosed_markdown_fence,
     image_dimensions,
     reduced_aspect_ratio,
 )
@@ -735,6 +737,14 @@ class PromptPackToolTests(unittest.TestCase):
         errors: list[str] = []
         check_text_file_hygiene(errors)
         self.assertEqual(errors, [])
+
+    def test_markdown_fence_health(self) -> None:
+        self.assertIsNone(find_unclosed_markdown_fence("```text\nok\n```\n"))
+        self.assertEqual(find_unclosed_markdown_fence("```text\nmissing close\n"), (1, "```"))
+        errors: list[str] = []
+        warnings: list[str] = []
+        check_markdown_health(errors, warnings)
+        self.assertFalse([error for error in errors if "代码块未闭合" in error])
 
     def test_secret_patterns_catch_realistic_tokens_not_placeholders(self) -> None:
         suspicious_samples = [
