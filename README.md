@@ -3,7 +3,7 @@
 [![validate-prompt-repo](https://github.com/yujianwudi/ai-image-prompts/actions/workflows/validate.yml/badge.svg)](https://github.com/yujianwudi/ai-image-prompts/actions/workflows/validate.yml)
 ![Prompt Packs](https://img.shields.io/badge/Prompt%20Packs-15-blue)
 ![Characters](https://img.shields.io/badge/Characters-3-purple)
-![Templates](https://img.shields.io/badge/Templates-24-green)
+![Templates](https://img.shields.io/badge/Templates-25-green)
 ![Schema](https://img.shields.io/badge/JSON%20Schema-enabled-orange)
 ![Preview Images](https://img.shields.io/badge/Preview%20Images-4-lightgrey)
 
@@ -65,6 +65,7 @@ AGENTS.md
 4. 如果要换角色，去 `角色/README.md` 复制对应角色专属词。
 5. 如果要换画面类型，去 `模板/README.md` 选择场景、镜头、灯光、材质和约束。
 6. 使用 OpenAI `gpt-image-2` 时，优先使用自然语言分段写法，不要只堆关键词；角色图先写主体锁定，避免串到芙宁娜。
+   如果不确定尺寸是否合规，可以先跑 `python 工具/validate_gpt_image2_parameters.py --size 1024x1824 --require-9-16`。
 7. 生成后如果串角色，用 `示例/04-通用gpt-image-2编辑修正.md` 做二次修正。
 8. 出图后用 `评估/出图评分表.md` 判断能不能公开交付。
 
@@ -127,18 +128,20 @@ python 工具/validate_failure_fix_lexicon.py --check
 python 工具/validate_output_evaluations.py --check
 python 工具/summarize_output_evaluations.py --check
 python 工具/suggest_failure_fixes.py --check
+python 工具/validate_gpt_image2_parameters.py --check
 python 工具/sync_preview_manifest.py --check
 python 工具/check_prompt_repo.py
 python -m unittest discover -s tests -v
 ```
 
-统一质量门禁会检查 Prompt Pack 配置、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、预览图 manifest 尺寸元数据、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
+统一质量门禁会检查 Prompt Pack 配置、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 
 - 角色设定防串：芙宁娜、茜特菈莉、朵莉亚/多莉。
 - 固定模板拆分：场景、镜头、灯光、材质、动作、负面词、平台参数。
-- gpt-image-2 优化：已二次联网复核 OpenAI 图片生成资料，把关键词模板改成「任务模式 → 不可变主体锚点 → 必须保留 → 可变画面 → 约束」结构，并补充严格 9:16 尺寸建议 `1024x1824`、短文字策略、图像编辑保留项和参数避坑。
+- gpt-image-2 优化：已联网复核 OpenAI 官方图片生成资料，把关键词模板改成「任务模式 → 不可变主体锚点 → 必须保留 → 可变画面 → 约束」结构，并补充严格 9:16 尺寸建议 `1024x1824`、短文字策略、图像编辑保留项和参数避坑。
+- gpt-image-2 参数自检：`模板/06-gpt-image-2官方规格自检清单.md` 和 `工具/validate_gpt_image2_parameters.py` 会校验推荐尺寸档位，避免把 `1024x1536` 误写成严格 9:16，或把 Midjourney 参数混进 OpenAI API。
 - gpt-image-2 一键模板：写实cos、README预览图、角色卡、三视图、九宫格、商业海报、图像编辑。
 - Prompt as Code 字段化：把任务类型、主体锁定、版式、文字策略和防串约束拆开。
 - 机器可读 Prompt Pack：通过 `配置/prompt_packs.json` 和 `工具/build_prompt_pack.py` 自动组合可复制提示词。

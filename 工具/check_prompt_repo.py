@@ -55,6 +55,7 @@ REQUIRED_FILES = [
     "模板/README.md",
     "模板/01-固定模板-室内漫展手机随手拍.md",
     "模板/02-gpt-image-2-提示词优化指南.md",
+    "模板/06-gpt-image-2官方规格自检清单.md",
     "模板/05-Prompt-as-Code字段模板.md",
     "模板/16-封面缩略图模板.md",
     "模板/17-长图教程Slides模板.md",
@@ -84,6 +85,7 @@ REQUIRED_FILES = [
     "工具/validate_output_evaluations.py",
     "工具/summarize_output_evaluations.py",
     "工具/suggest_failure_fixes.py",
+    "工具/validate_gpt_image2_parameters.py",
     "工具/build_prompt_pack.py",
     "工具/sync_preview_manifest.py",
     "工具/run_quality_gate.py",
@@ -393,6 +395,7 @@ def check_agent_guidance(errors: list[str]) -> None:
         "生成提示词/",
         "gpt-image-2",
         "1024x1824",
+        "validate_gpt_image2_parameters.py",
         "非低俗",
         "不性感化",
         "不要添加正式 `LICENSE` 文件",
@@ -783,7 +786,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、失败修正建议、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、失败修正建议、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

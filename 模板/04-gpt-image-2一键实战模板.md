@@ -30,10 +30,11 @@ model: gpt-image-2
 size: 1024x1824
 quality: medium
 output_format: jpeg
+output_compression: 85
 background: opaque
 ```
 
-说明：`1024x1824` 更接近 9:16；`1024x1536` 是 2:3 备选，不要当成严格 9:16。
+说明：`1024x1824` 更接近 9:16；`1024x1536` 是 2:3 备选，不要当成严格 9:16。尺寸不确定时先跑 `python 工具/validate_gpt_image2_parameters.py --size 1024x1824 --require-9-16`。
 
 ### 联网优化口径
 

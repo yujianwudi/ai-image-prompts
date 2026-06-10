@@ -71,6 +71,7 @@ python 工具/validate_failure_fix_lexicon.py --check
 python 工具/validate_output_evaluations.py --check
 python 工具/summarize_output_evaluations.py --check
 python 工具/suggest_failure_fixes.py --check
+python 工具/validate_gpt_image2_parameters.py --check
 python 工具/sync_preview_manifest.py --check
 python 工具/check_prompt_repo.py
 python -m unittest discover -s tests -v
@@ -204,6 +205,29 @@ python 工具/suggest_failure_fixes.py
 python 工具/suggest_failure_fixes.py --check
 ```
 
+## validate_gpt_image2_parameters.py
+
+用途：校验本仓库给 OpenAI `gpt-image-2` 使用的推荐尺寸档位，避免把 2:3 竖图误写成严格 9:16，或把不合规尺寸放进模板。
+
+校验内置推荐档位：
+
+```powershell
+python 工具/validate_gpt_image2_parameters.py --check
+```
+
+检查单个尺寸是否接近 9:16：
+
+```powershell
+python 工具/validate_gpt_image2_parameters.py --size 1024x1824 --require-9-16
+python 工具/validate_gpt_image2_parameters.py --size 1024x1536 --require-9-16
+```
+
+输出 Markdown 档位表：
+
+```powershell
+python 工具/validate_gpt_image2_parameters.py --markdown
+```
+
 ## build_prompt_pack.py
 
 用途：读取 `配置/prompt_packs.json`，把角色锚点、输出类型、场景、构图、光线、材质、安全约束和防串约束组合成可复制提示词。
@@ -280,4 +304,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、失败修正建议、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、tags 导出、标签索引、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、失败修正建议和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、失败修正建议、gpt-image-2 参数档位、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、tags 导出、标签索引、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、失败修正建议、gpt-image-2 参数档位和统一质量门禁帮助入口。

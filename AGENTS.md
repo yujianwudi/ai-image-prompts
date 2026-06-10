@@ -22,6 +22,12 @@
 python 工具/run_quality_gate.py
 ```
 
+如果只改了 OpenAI `gpt-image-2` 参数、尺寸档位或平台说明，也可以先单独跑：
+
+```powershell
+python 工具/validate_gpt_image2_parameters.py --check
+```
+
 如果改了下面任何内容，优先运行刷新版：
 
 ```powershell
@@ -67,6 +73,7 @@ OpenAI `gpt-image-2` 相关模板优先使用自然语言分段，不要只堆�
 新增或修改 Prompt Pack 模板时，`templates.*.tags` 必须保留用途标签，并包含 `公开安全`。这些 tags 会进入 JSON bundle 和 CSV 索引，用于后续筛选。
 
 严格 9:16 的 OpenAI 竖图参数优先写 `1024x1824`。`1024x1536` 是 2:3 备选，不要标成严格 9:16。
+推荐尺寸档位和 API 约束先看 `模板/06-gpt-image-2官方规格自检清单.md`，机器校验入口是 `python 工具/validate_gpt_image2_parameters.py --check`。
 
 不要把 Midjourney 参数写进 OpenAI API 参数，例如：
 

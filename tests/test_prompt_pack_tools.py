@@ -59,6 +59,13 @@ from validate_output_evaluations import (  # noqa: E402
     load_json as load_evaluation_json,
     validate_document as validate_evaluation_document,
 )
+from validate_gpt_image2_parameters import (  # noqa: E402
+    RECOMMENDED_PROFILES,
+    is_near_9_16,
+    parse_size_spec,
+    render_markdown as render_gpt_image2_size_markdown,
+    validate_size_spec,
+)
 
 
 class PromptPackToolTests(unittest.TestCase):
@@ -243,6 +250,40 @@ class PromptPackToolTests(unittest.TestCase):
             check=True,
         )
         self.assertIn("--refresh-generated", result.stdout)
+
+    def test_gpt_image2_size_profiles_are_valid(self) -> None:
+        self.assertEqual(parse_size_spec("1024x1824"), (1024, 1824))
+        self.assertTrue(is_near_9_16(1024, 1824))
+
+        for profile in RECOMMENDED_PROFILES:
+            with self.subTest(profile=profile.name):
+                result = validate_size_spec(profile.size, require_9_16=True)
+                self.assertEqual(result.errors, ())
+                self.assertEqual(result.warnings, ())
+                self.assertTrue(result.is_near_9_16)
+
+        fallback = validate_size_spec("1024x1536", require_9_16=True)
+        self.assertEqual(fallback.errors, ())
+        self.assertIn("2:3", fallback.warnings[0])
+
+        invalid = validate_size_spec("1080x1920", require_9_16=True)
+        self.assertIn("width 不是 16 的倍数", invalid.errors)
+
+    def test_gpt_image2_parameter_cli_check_passes(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "validate_gpt_image2_parameters.py"), "--check"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("1024x1824", result.stdout)
+
+        markdown = render_gpt_image2_size_markdown()
+        self.assertIn("gpt-image-2 推荐尺寸档位自检", markdown)
+        self.assertIn("1024x1536", markdown)
 
     def test_character_audit_report_is_current(self) -> None:
         audit_result = audit(self.data)
