@@ -1,0 +1,20 @@
+﻿name: validate-prompt-repo
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run prompt repository checks
+        run: python 工具/check_prompt_repo.py

@@ -21,3 +21,16 @@ python 工具/refresh_reference_summary.py
 
 
 - 已兼容 Windows 控制台 UTF-8 输出，避免仓库描述里有 emoji 时中断。
+
+## check_prompt_repo.py
+
+用途：检查仓库结构、Markdown 本地链接、README 预览图、角色安全约束和参考仓库追踪。  
+不依赖网络，适合本地和 GitHub Actions 使用。
+
+运行：
+
+```powershell
+python 工具/check_prompt_repo.py
+```
+
+如果输出 `OK`，说明当前仓库基础质量门禁通过。
