@@ -9,6 +9,10 @@
 python 工具/build_prompt_pack.py --all
 ```
 
+## 覆盖矩阵
+
+- [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。
+
 ## 文件列表
 
 | Prompt Pack | 文件 | 说明 |

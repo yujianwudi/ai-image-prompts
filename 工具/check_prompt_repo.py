@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote
 
-from build_prompt_pack import generated_filename, load_config, render_generated_index, render_pack, validate_config
+from build_prompt_pack import generated_filename, load_config, render_coverage_matrix, render_generated_index, render_pack, validate_config
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -209,7 +209,14 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
     elif index_path.read_text(encoding="utf-8") != expected_index:
         errors.append("自动生成提示词索引已过期，请运行：python 工具/build_prompt_pack.py --all")
 
-    expected_files = {"README.md"}
+    matrix_path = out_dir / "覆盖矩阵.md"
+    expected_matrix = render_coverage_matrix(data)
+    if not matrix_path.exists():
+        errors.append("缺少自动生成覆盖矩阵：生成提示词/覆盖矩阵.md")
+    elif matrix_path.read_text(encoding="utf-8") != expected_matrix:
+        errors.append("自动生成覆盖矩阵已过期，请运行：python 工具/build_prompt_pack.py --all")
+
+    expected_files = {"README.md", "覆盖矩阵.md"}
     for pack in data.get("packs", []):
         pack_id = pack.get("id")
         if not pack_id:

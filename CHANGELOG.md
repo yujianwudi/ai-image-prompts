@@ -4,6 +4,7 @@
 
 ### Added
 
+- 新增 `生成提示词/覆盖矩阵.md`，展示角色与输出类型覆盖情况。
 - 新增 `tests/test_prompt_pack_tools.py`，覆盖 Prompt Pack 配置、渲染、批量导出和 CLI。
 - `工具/build_prompt_pack.py` 新增 `--all` 批量导出能力。
 - 新增 `生成提示词/`，保存由 Prompt Pack 自动导出的可复制 Markdown 提示词。
@@ -29,6 +30,8 @@
 
 ### Changed
 
+- 质量门禁和单元测试现在会检查覆盖矩阵是否与配置同步。
+- `工具/build_prompt_pack.py --all` 现在会同时导出覆盖矩阵。
 - 质量门禁现在要求 `tests/` 测试目录存在。
 - GitHub Actions 现在同时运行仓库质量门禁和 Python 单元测试。
 - 质量门禁现在会检查 `生成提示词/` 是否与 `配置/prompt_packs.json` 保持同步。

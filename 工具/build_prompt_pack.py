@@ -169,6 +169,54 @@ def generated_filename(pack_id: str) -> str:
     return f"{pack_id}.md"
 
 
+def render_coverage_matrix(data: dict[str, Any]) -> str:
+    templates = list(data.get("templates", {}).items())
+    characters = list(data.get("characters", {}).items())
+    pack_lookup: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for pack in data.get("packs", []):
+        pack_lookup.setdefault((pack["character"], pack["template"]), []).append(pack)
+
+    lines = [
+        "# Prompt Pack 覆盖矩阵",
+        "",
+        "这个矩阵由 `工具/build_prompt_pack.py --all` 自动生成，用来观察每个角色已经覆盖了哪些输出类型。",
+        "如果要补齐缺口，请优先修改 `配置/prompt_packs.json`，再重新导出。",
+        "",
+        "## 角色 × 输出类型",
+        "",
+    ]
+    header = ["角色"] + [template["task_type"] for _, template in templates] + ["覆盖数量"]
+    lines.append("| " + " | ".join(header) + " |")
+    lines.append("| " + " | ".join(["---"] * len(header)) + " |")
+
+    missing_lines: list[str] = []
+    for char_id, char in characters:
+        row = [char["display_name"]]
+        count = 0
+        missing: list[str] = []
+        for template_id, template in templates:
+            packs = pack_lookup.get((char_id, template_id), [])
+            if packs:
+                count += len(packs)
+                links = [f"[`{pack['id']}`]({generated_filename(pack['id'])})" for pack in packs]
+                row.append("<br>".join(links))
+            else:
+                row.append("—")
+                missing.append(template["task_type"])
+        row.append(str(count))
+        lines.append("| " + " | ".join(row) + " |")
+        if missing:
+            missing_lines.append(f"- {char['display_name']}：" + "、".join(missing))
+
+    lines.extend(["", "## 当前缺口", ""])
+    if missing_lines:
+        lines.extend(missing_lines)
+    else:
+        lines.append("所有角色已覆盖全部输出类型。")
+    lines.append("")
+    return "\n".join(lines)
+
+
 def render_generated_index(data: dict[str, Any]) -> str:
     lines = [
         "# 自动生成提示词",
@@ -181,6 +229,10 @@ def render_generated_index(data: dict[str, Any]) -> str:
         "```powershell",
         "python 工具/build_prompt_pack.py --all",
         "```",
+        "",
+        "## 覆盖矩阵",
+        "",
+        "- [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。",
         "",
         "## 文件列表",
         "",
@@ -201,7 +253,10 @@ def export_all(data: dict[str, Any], out_dir: Path = DEFAULT_OUTPUT_DIR) -> list
     index_path = out_dir / "README.md"
     index_path.write_text(render_generated_index(data), encoding="utf-8")
     written.append(index_path)
-    expected_names = {"README.md"}
+    matrix_path = out_dir / "覆盖矩阵.md"
+    matrix_path.write_text(render_coverage_matrix(data), encoding="utf-8")
+    written.append(matrix_path)
+    expected_names = {"README.md", "覆盖矩阵.md"}
     for pack in data.get("packs", []):
         pack_id = pack["id"]
         filename = generated_filename(pack_id)

@@ -88,6 +88,7 @@
 - 新输出类型放进 `templates`，必须写 `safety`，并包含“非低俗、不性感化”。
 - 新组合放进 `packs`，只能引用已存在的角色和模板。
 - 修改后运行 `python 工具/build_prompt_pack.py --validate`、`python 工具/build_prompt_pack.py --all` 和 `python 工具/check_prompt_repo.py`。
+- 新增 pack 后检查 `生成提示词/覆盖矩阵.md`，确认覆盖缺口符合预期。
 
 ## 提交前检查
 

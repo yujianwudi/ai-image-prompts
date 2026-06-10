@@ -15,6 +15,7 @@ from build_prompt_pack import (  # noqa: E402
     export_all,
     generated_filename,
     load_config,
+    render_coverage_matrix,
     render_generated_index,
     render_pack,
     validate_config,
@@ -48,12 +49,22 @@ class PromptPackToolTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             out_dir = Path(tmp)
             written = export_all(self.data, out_dir)
-            expected_names = {"README.md"} | {generated_filename(pack["id"]) for pack in self.data["packs"]}
+            expected_names = {"README.md", "覆盖矩阵.md"} | {generated_filename(pack["id"]) for pack in self.data["packs"]}
             self.assertEqual({path.name for path in written}, expected_names)
             self.assertEqual((out_dir / "README.md").read_text(encoding="utf-8"), render_generated_index(self.data))
+            self.assertEqual((out_dir / "覆盖矩阵.md").read_text(encoding="utf-8"), render_coverage_matrix(self.data))
             for pack in self.data["packs"]:
                 path = out_dir / generated_filename(pack["id"])
                 self.assertEqual(path.read_text(encoding="utf-8"), render_pack(self.data, pack["id"], markdown=True))
+
+    def test_coverage_matrix_lists_characters_and_templates(self) -> None:
+        matrix = render_coverage_matrix(self.data)
+        self.assertIn("Prompt Pack 覆盖矩阵", matrix)
+        for character in self.data["characters"].values():
+            self.assertIn(character["display_name"], matrix)
+        for template in self.data["templates"].values():
+            self.assertIn(template["task_type"], matrix)
+        self.assertIn("当前缺口", matrix)
 
     def test_cli_list_and_validate(self) -> None:
         validate = subprocess.run(

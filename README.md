@@ -114,6 +114,7 @@ python 工具/build_prompt_pack.py --all
 - gpt-image-2 一键模板：写实cos、README预览图、角色卡、三视图、九宫格、商业海报、图像编辑。
 - Prompt as Code 字段化：把任务类型、主体锁定、版式、文字策略和防串约束拆开。
 - 机器可读 Prompt Pack：通过 `配置/prompt_packs.json` 和 `工具/build_prompt_pack.py` 自动组合可复制提示词。
+- Prompt Pack 覆盖矩阵：通过 `生成提示词/覆盖矩阵.md` 查看每个角色缺哪些输出类型。
 - 参考优秀仓库补充：商业海报、电商主图、信息图、UI截图、角色卡、分镜板、九宫格、封面缩略图、长图教程、地图导览模板。
 - README 预览图：展示模板生成效果，避免只看文字不直观。
 - 评估迭代：出图评分、失败修正词库、迭代记录模板。
