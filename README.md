@@ -1,5 +1,12 @@
 # AI 生图提示词模板库
 
+[![validate-prompt-repo](https://github.com/yujianwudi/ai-image-prompts/actions/workflows/validate.yml/badge.svg)](https://github.com/yujianwudi/ai-image-prompts/actions/workflows/validate.yml)
+![Prompt Packs](https://img.shields.io/badge/Prompt%20Packs-15-blue)
+![Characters](https://img.shields.io/badge/Characters-3-purple)
+![Templates](https://img.shields.io/badge/Templates-25%2B-green)
+![Schema](https://img.shields.io/badge/JSON%20Schema-enabled-orange)
+
+
 用于整理 AI 生图提示词、角色专属设定、固定场景模板和防串提示词。  
 当前主要围绕写实 cosplay、室内漫展手机随手拍、9:16 竖图、真实服装材质和非低俗风格来整理。
 

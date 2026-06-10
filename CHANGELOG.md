@@ -4,6 +4,7 @@
 
 ### Added
 
+- README 新增 CI、Prompt Pack、角色、模板和 JSON Schema 状态徽章。
 - 新增 `.gitattributes` 和 `.editorconfig`，统一文本换行、编码和缩进规则。
 - 新增 Pull Request 模板，提醒安全约束、Prompt Pack 导出和本地验证。
 - 新增 GitHub Issue 模板：角色提示词、模板优化、出图问题反馈。
