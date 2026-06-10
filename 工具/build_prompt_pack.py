@@ -5,6 +5,7 @@ import csv
 import hashlib
 import io
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -38,6 +39,7 @@ REQUIRED_PACK_KEYS = ["id", "title", "character", "template", "scene", "action",
 API_PROFILE_ORDER = ["model", "size", "quality", "output_format", "output_compression", "background"]
 VALID_API_QUALITIES = {"low", "medium", "high", "auto"}
 VALID_API_OUTPUT_FORMATS = {"png", "jpeg", "webp"}
+SLUG_ID_RE = re.compile(r"^[a-z0-9_]+$")
 
 
 def configure_stdout() -> None:
@@ -168,6 +170,10 @@ def _require_list(data: dict[str, Any], key: str, errors: list[str]) -> list[Any
     return value
 
 
+def is_slug_id(value: str) -> bool:
+    return bool(SLUG_ID_RE.fullmatch(value))
+
+
 def validate_api_profile(profile: Any, context: str) -> list[str]:
     errors: list[str] = []
     if not isinstance(profile, dict):
@@ -239,6 +245,8 @@ def validate_config(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = 
         tag_aliases = taxonomy_aliases(tag_taxonomy)
 
     for char_id, char in characters.items():
+        if not is_slug_id(str(char_id)):
+            errors.append(f"characters id 必须只包含小写字母、数字和下划线：{char_id}")
         if not isinstance(char, dict):
             errors.append(f"characters.{char_id} 必须是 object")
             continue
@@ -251,6 +259,8 @@ def validate_config(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = 
             errors.append(f"characters.{char_id}.avoid 至少需要 2 个防串项")
 
     for template_id, template in templates.items():
+        if not is_slug_id(str(template_id)):
+            errors.append(f"templates id 必须只包含小写字母、数字和下划线：{template_id}")
         if not isinstance(template, dict):
             errors.append(f"templates.{template_id} 必须是 object")
             continue
@@ -291,6 +301,8 @@ def validate_config(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = 
         pack_id = str(pack.get("id", ""))
         if not pack_id:
             continue
+        if not is_slug_id(pack_id):
+            errors.append(f"packs.{pack_id}.id 必须只包含小写字母、数字和下划线")
         if pack_id in seen_pack_ids:
             errors.append(f"packs id 重复：{pack_id}")
         seen_pack_ids.add(pack_id)

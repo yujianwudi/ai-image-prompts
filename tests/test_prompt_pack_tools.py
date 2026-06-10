@@ -118,6 +118,8 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("templates", schema["properties"])
         self.assertIn("packs", schema["properties"])
         self.assertIn("global_quality_constraints", schema["properties"])
+        self.assertEqual(schema["properties"]["characters"]["propertyNames"]["pattern"], "^[a-z0-9_]+$")
+        self.assertEqual(schema["properties"]["templates"]["propertyNames"]["pattern"], "^[a-z0-9_]+$")
         self.assertIn("tags", schema["$defs"]["template"]["properties"])
         self.assertIn("api_profile", schema["$defs"])
         self.assertIn("api_profile", schema["$defs"]["template"]["required"])
@@ -151,6 +153,16 @@ class PromptPackToolTests(unittest.TestCase):
         mutated["templates"]["commercial_poster"]["tags"].append("未登记标签")
         errors = validate_config(mutated)
         self.assertTrue(any("未登记到 配置/tag_taxonomy.json：未登记标签" in error for error in errors))
+
+    def test_config_rejects_non_slug_ids(self) -> None:
+        mutated = json.loads(json.dumps(self.data, ensure_ascii=False))
+        mutated["characters"]["bad-id"] = dict(mutated["characters"]["furina"])
+        mutated["templates"]["bad-template"] = dict(mutated["templates"]["readme_preview"])
+        mutated["packs"][0]["id"] = "Bad-Pack"
+        errors = validate_config(mutated)
+        self.assertTrue(any("characters id 必须只包含小写字母、数字和下划线：bad-id" in error for error in errors))
+        self.assertTrue(any("templates id 必须只包含小写字母、数字和下划线：bad-template" in error for error in errors))
+        self.assertTrue(any("packs.Bad-Pack.id 必须只包含小写字母、数字和下划线" in error for error in errors))
 
     def test_every_pack_renders_required_sections(self) -> None:
         required_terms = ["主体锁定", "必须保留", "安全约束", "防串约束", "质量约束", "非低俗", "不性感化", "不要混入"]

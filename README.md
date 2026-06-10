@@ -135,7 +135,7 @@ python -m compileall -q 工具 tests
 python -m unittest discover -s tests -v
 ```
 
-统一质量门禁会检查 Prompt Pack 配置、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、Markdown 代码块闭合、README 预览图引用、alt、caption 和展示顺序、角色安全约束、参考仓库追踪、自动导出文件、文本文件 LF / BOM / 末尾换行、Python 源码编译和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
+统一质量门禁会检查 Prompt Pack 配置、配置 ID slug、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、Markdown 代码块闭合、README 预览图引用、alt、caption 和展示顺序、角色安全约束、参考仓库追踪、自动导出文件、文本文件 LF / BOM / 末尾换行、Python 源码编译和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 
@@ -154,7 +154,7 @@ python -m unittest discover -s tests -v
 - CSV 索引：`生成提示词/prompt_packs.index.csv` 自动列出 Prompt Pack、角色、模板、gpt-image-2 推荐参数、tags 和文件名，方便表格筛选。
 - 标签索引：`生成提示词/标签索引.md` 自动按 tags 分组 Prompt Pack，也可以用 `python 工具/build_prompt_pack.py --tag 商业海报` 查询。
 - 标签覆盖矩阵：`生成提示词/标签覆盖矩阵.md` 自动显示每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack，方便发现标签空转或覆盖不足。
-- JSON Schema：`配置/prompt_packs.schema.json` 为 Prompt Pack 配置提供字段结构约束，包括 `api_profile` 的 model、size、quality、output_format、output_compression 和 background。
+- JSON Schema：`配置/prompt_packs.schema.json` 为 Prompt Pack 配置提供字段结构约束，包括角色/模板/Pack ID 的小写 slug 规则，以及 `api_profile` 的 model、size、quality、output_format、output_compression 和 background。
 - Prompt Pack 覆盖矩阵：通过 `生成提示词/覆盖矩阵.md` 查看每个角色缺哪些输出类型。
 - Prompt Pack 快速复制入口：通过 `生成提示词/README.md` 按「角色 × 用途」直接选提示词。
 - 三角色 × 五输出类型已完整覆盖：写实随手拍、README预览、角色卡、商业海报、竖版封面。

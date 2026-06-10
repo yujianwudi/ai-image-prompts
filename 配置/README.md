@@ -51,7 +51,7 @@ python 工具/build_prompt_pack.py dori_commercial_poster --out 示例/自动生
 "$schema": "prompt_packs.schema.json"
 ```
 
-支持 JSON Schema 的编辑器可以根据 `配置/prompt_packs.schema.json` 提示字段结构。质量门禁也会检查 `$schema` 是否存在、是否指向配置目录内的 schema 文件，并用生成器复核模板 `api_profile` 是否符合本仓库的 gpt-image-2 竖图约定。
+支持 JSON Schema 的编辑器可以根据 `配置/prompt_packs.schema.json` 提示字段结构。质量门禁也会检查 `$schema` 是否存在、是否指向配置目录内的 schema 文件，角色/模板/Pack ID 是否保持小写 slug，并用生成器复核模板 `api_profile` 是否符合本仓库的 gpt-image-2 竖图约定。
 
 `tag_taxonomy.json` 也绑定本地 schema：
 

@@ -29,6 +29,9 @@
     "characters": {
       "type": "object",
       "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z0-9_]+$"
+      },
       "additionalProperties": {
         "$ref": "#/$defs/character"
       }
@@ -36,6 +39,9 @@
     "templates": {
       "type": "object",
       "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z0-9_]+$"
+      },
       "additionalProperties": {
         "$ref": "#/$defs/template"
       }

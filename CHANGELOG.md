@@ -4,6 +4,7 @@
 
 ### Added
 
+- Prompt Pack 配置和 schema 新增角色/模板/Pack ID 小写 slug 校验，防止生成文件名、JSONL 记录和配置引用漂移。
 - 质量门禁新增预览图 manifest 与 README 展示顺序/重复检查，避免公开预览区加图时出现重复或排序漂移。
 - README 预览图新增与 manifest caption 对齐的 `alt` 文本，质量门禁和单元测试会阻止预览图展示文案漂移。
 - Prompt Pack 模板新增 `api_profile`，把 `gpt-image-2` 推荐 `model`、`size`、`quality`、`output_format`、`output_compression` 和 `background` 与每类输出绑定；Markdown、JSON bundle、CSV 索引和单元测试同步导出/校验。
