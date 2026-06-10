@@ -5,6 +5,29 @@ temp/
 *.bak
 *.log
 
+# Python 缓存 / 测试缓存
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# 本地虚拟环境
+.venv/
+venv/
+env/
+
+# 本地密钥和环境变量
+.env
+.env.*
+!.env.example
+
+# 编辑器 / IDE
+.vscode/
+.idea/
+
 # 本地生成的大图/未压缩素材
 原图/
 raw/
@@ -16,7 +39,3 @@ raw/
 .DS_Store
 Thumbs.db
 desktop.ini
-
-
-__pycache__/
-*.py[cod]

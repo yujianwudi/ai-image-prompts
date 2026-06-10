@@ -170,6 +170,11 @@ class PromptPackToolTests(unittest.TestCase):
             self.assertTrue(item["public_safe"])
             self.assertIn(item["prompt_pack"], {pack["id"] for pack in self.data["packs"]})
 
+    def test_gitignore_keeps_local_noise_out(self) -> None:
+        gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
+        for required in ["__pycache__/", "*.py[cod]", ".venv/", ".env", "原图/", "*.psd", ".DS_Store", "Thumbs.db"]:
+            self.assertIn(required, gitignore)
+
 
 if __name__ == "__main__":
     unittest.main()

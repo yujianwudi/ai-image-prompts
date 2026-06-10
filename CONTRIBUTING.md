@@ -111,9 +111,12 @@
 ```text
 .gitattributes
 .editorconfig
+.gitignore
 ```
 
-统一 UTF-8、LF 换行和基础缩进规则。Markdown 保留行尾空格，方便写两空格换行。
+统一 UTF-8、LF 换行、基础缩进和本地噪音忽略规则。Markdown 保留行尾空格，方便写两空格换行。
+
+不要提交本地虚拟环境、缓存、`.env`、原始大图或未压缩素材。
 
 ## 提交前检查
 

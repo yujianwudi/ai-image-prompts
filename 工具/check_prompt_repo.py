@@ -32,6 +32,7 @@ REQUIRED_FILES = [
     "SECURITY.md",
     ".editorconfig",
     ".gitattributes",
+    ".gitignore",
     "角色/README.md",
     "模板/README.md",
     "模板/01-固定模板-室内漫展手机随手拍.md",
@@ -133,6 +134,7 @@ def check_readme_badges(errors: list[str]) -> None:
 def check_repo_style_config(errors: list[str]) -> None:
     gitattributes = ROOT / ".gitattributes"
     editorconfig = ROOT / ".editorconfig"
+    gitignore = ROOT / ".gitignore"
     if gitattributes.exists():
         text = gitattributes.read_text(encoding="utf-8")
         for required in ["* text=auto eol=lf", "*.md text eol=lf", "*.py text eol=lf", "*.json text eol=lf", "*.jpg binary"]:
@@ -143,6 +145,11 @@ def check_repo_style_config(errors: list[str]) -> None:
         for required in ["charset = utf-8", "end_of_line = lf", "insert_final_newline = true"]:
             if required not in text:
                 errors.append(f".editorconfig 缺少规则：{required}")
+    if gitignore.exists():
+        text = gitignore.read_text(encoding="utf-8")
+        for required in ["__pycache__/", "*.py[cod]", ".venv/", ".env", "原图/", "*.psd", ".DS_Store", "Thumbs.db"]:
+            if required not in text:
+                errors.append(f".gitignore 缺少规则：{required}")
 
 
 def check_required_dirs(errors: list[str]) -> None:
@@ -473,7 +480,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、内容安全政策、角色安全约束、角色防串审计、预览图清单/schema、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、协作模板、内容安全政策、角色安全约束、角色防串审计、预览图清单/schema、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

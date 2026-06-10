@@ -136,6 +136,7 @@ python -m unittest discover -s tests -v
 - 评估迭代：出图评分、失败修正词库、迭代记录模板。
 - Issue / PR 模板：规范角色新增、模板优化、出图问题反馈和提交检查。
 - 仓库格式规范：通过 `.gitattributes` 和 `.editorconfig` 固定 UTF-8、LF 和缩进规则。
+- 忽略规则：通过 `.gitignore` 避免提交缓存、虚拟环境、本地密钥和未压缩原图。
 - 内容安全政策：明确非低俗、不性感化、不儿童化、隐私和真实品牌 logo 规则。
 - 统一质量门禁：`工具/run_quality_gate.py` 统一串起 Prompt Pack 校验、仓库检查和单元测试。
 - 角色防串审计：`评估/角色防串审计报告.md` 自动汇总三角色锚点、防串、安全和成人化约束覆盖。

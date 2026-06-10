@@ -40,6 +40,7 @@
 
 ### Changed
 
+- 扩展 `.gitignore`，并将 Python 缓存、虚拟环境、本地密钥和原始素材忽略规则纳入质量门禁。
 - GitHub Actions 现在调用统一质量门禁入口 `python 工具/run_quality_gate.py`。
 - 统一质量门禁现在会检查角色防串审计报告是否与 Prompt Pack 配置同步。
 - 自动生成提示词索引现在包含「角色 × 用途」快速复制入口和命令行复制示例。
