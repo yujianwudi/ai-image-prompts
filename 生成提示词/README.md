@@ -51,6 +51,7 @@ python 工具/build_prompt_pack.py furina_convention_phone --format json
 
 - [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。
 - [`prompt_packs.generated.json`](prompt_packs.generated.json)：全部 Prompt Pack 的机器可读 JSON bundle。
+- [`prompt_packs.generated.schema.json`](prompt_packs.generated.schema.json)：JSON bundle 的结构说明。
 
 ## 文件列表
 

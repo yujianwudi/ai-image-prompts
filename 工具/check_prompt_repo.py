@@ -8,6 +8,7 @@ from urllib.parse import unquote
 
 from build_prompt_pack import (
     GENERATED_JSON_BUNDLE,
+    GENERATED_JSON_BUNDLE_SCHEMA,
     generated_filename,
     load_config,
     render_coverage_matrix,
@@ -69,6 +70,7 @@ REQUIRED_FILES = [
     "预览图/manifest.json",
     "预览图/manifest.schema.json",
     "生成提示词/README.md",
+    "生成提示词/prompt_packs.generated.schema.json",
     "tests/test_prompt_pack_tools.py",
     ".github/workflows/validate.yml",
     ".github/ISSUE_TEMPLATE/output_issue.yml",
@@ -440,6 +442,8 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
         errors.append(f"缺少自动生成 JSON bundle：生成提示词/{GENERATED_JSON_BUNDLE}")
     elif json_bundle_path.read_text(encoding="utf-8") != expected_json_bundle:
         errors.append(f"自动生成 JSON bundle 已过期：生成提示词/{GENERATED_JSON_BUNDLE}")
+    else:
+        check_generated_json_bundle_schema(json_bundle_path, errors)
 
     expected_files = {"README.md", "覆盖矩阵.md"}
     for pack in data.get("packs", []):
@@ -459,10 +463,37 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
         if path.name not in expected_files:
             errors.append(f"自动生成提示词目录存在多余 Markdown：生成提示词/{path.name}")
 
-    expected_json_files = {GENERATED_JSON_BUNDLE}
+    expected_json_files = {GENERATED_JSON_BUNDLE, GENERATED_JSON_BUNDLE_SCHEMA}
     for path in out_dir.glob("*.json"):
         if path.name not in expected_json_files:
             errors.append(f"自动生成提示词目录存在多余 JSON：生成提示词/{path.name}")
+
+
+def check_generated_json_bundle_schema(json_bundle_path: Path, errors: list[str]) -> None:
+    try:
+        bundle = json.loads(json_bundle_path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"自动生成 JSON bundle 无法读取：{exc}")
+        return
+    schema_ref = bundle.get("$schema")
+    if schema_ref != GENERATED_JSON_BUNDLE_SCHEMA:
+        errors.append(f"自动生成 JSON bundle $schema 应为 {GENERATED_JSON_BUNDLE_SCHEMA}")
+        return
+    schema_path = json_bundle_path.parent / GENERATED_JSON_BUNDLE_SCHEMA
+    if not schema_path.exists():
+        errors.append(f"缺少自动生成 JSON bundle schema：生成提示词/{GENERATED_JSON_BUNDLE_SCHEMA}")
+        return
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"自动生成 JSON bundle schema 无法读取：{exc}")
+        return
+    for key in ["$schema", "title", "type", "required", "properties", "$defs"]:
+        if key not in schema:
+            errors.append(f"自动生成 JSON bundle schema 缺少字段：{key}")
+    for key in ["source_config", "version", "pack_count", "characters", "templates", "packs"]:
+        if key not in schema.get("properties", {}):
+            errors.append(f"自动生成 JSON bundle schema.properties 缺少：{key}")
 
 
 def main() -> int:

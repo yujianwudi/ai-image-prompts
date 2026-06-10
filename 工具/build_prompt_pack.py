@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "配置" / "prompt_packs.json"
 DEFAULT_OUTPUT_DIR = ROOT / "生成提示词"
 GENERATED_JSON_BUNDLE = "prompt_packs.generated.json"
+GENERATED_JSON_BUNDLE_SCHEMA = "prompt_packs.generated.schema.json"
 
 REQUIRED_CHARACTER_KEYS = ["display_name", "anchor", "must_keep", "avoid"]
 REQUIRED_TEMPLATE_KEYS = ["task_type", "composition", "lighting", "material", "text_strategy", "safety"]
@@ -192,6 +193,7 @@ def render_pack_record(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
 
 def render_json_bundle(data: dict[str, Any]) -> str:
     bundle = {
+        "$schema": GENERATED_JSON_BUNDLE_SCHEMA,
         "source_config": "配置/prompt_packs.json",
         "version": data.get("version", ""),
         "description": "Generated copy-ready Prompt Pack bundle. Do not edit by hand.",
@@ -332,6 +334,7 @@ def render_generated_index(data: dict[str, Any]) -> str:
         "",
         "- [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。",
         f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle。",
+        f"- [`{GENERATED_JSON_BUNDLE_SCHEMA}`]({GENERATED_JSON_BUNDLE_SCHEMA})：JSON bundle 的结构说明。",
         "",
         "## 文件列表",
         "",

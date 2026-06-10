@@ -14,6 +14,7 @@ sys.path.insert(0, str(TOOLS_DIR))
 from build_prompt_pack import (  # noqa: E402
     DEFAULT_CONFIG,
     GENERATED_JSON_BUNDLE,
+    GENERATED_JSON_BUNDLE_SCHEMA,
     export_all,
     generated_filename,
     load_config,
@@ -69,9 +70,12 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("主体锁定", record["prompt"])
         self.assertIn("非低俗", record["prompt"])
         bundle = json.loads(render_json_bundle(self.data))
+        self.assertEqual(bundle["$schema"], GENERATED_JSON_BUNDLE_SCHEMA)
         self.assertEqual(bundle["pack_count"], len(self.data["packs"]))
         self.assertEqual(len(bundle["packs"]), len(self.data["packs"]))
         self.assertIn("characters", bundle)
+        schema = json.loads((ROOT / "生成提示词" / GENERATED_JSON_BUNDLE_SCHEMA).read_text(encoding="utf-8"))
+        self.assertIn("generated_pack", schema["$defs"])
 
     def test_export_all_writes_expected_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -92,6 +96,7 @@ class PromptPackToolTests(unittest.TestCase):
         index = render_generated_index(self.data)
         self.assertIn("快速复制入口", index)
         self.assertIn("按角色 × 用途", index)
+        self.assertIn(GENERATED_JSON_BUNDLE_SCHEMA, index)
         self.assertIn("furina_convention_phone.md", index)
         self.assertIn("citlali_readme_preview.md", index)
         self.assertIn("dori_character_card.md", index)

@@ -1,4 +1,5 @@
 {
+  "$schema": "prompt_packs.generated.schema.json",
   "source_config": "配置/prompt_packs.json",
   "version": "2026-06-10-gpt-image-2-web-optimized",
   "description": "Generated copy-ready Prompt Pack bundle. Do not edit by hand.",

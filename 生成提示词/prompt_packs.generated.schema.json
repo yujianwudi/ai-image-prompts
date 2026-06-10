@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yujianwudi/ai-image-prompts/blob/main/生成提示词/prompt_packs.generated.schema.json",
+  "title": "Generated AI Image Prompt Pack Bundle",
+  "description": "Schema for generated copy-ready Prompt Pack bundle.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "source_config",
+    "version",
+    "description",
+    "pack_count",
+    "characters",
+    "templates",
+    "packs"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "source_config": {
+      "type": "string",
+      "const": "配置/prompt_packs.json"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pack_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "characters": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "templates": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "packs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/generated_pack"
+      }
+    }
+  },
+  "$defs": {
+    "string_list": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "generated_pack": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "character",
+        "template",
+        "scene",
+        "action",
+        "extra_constraints",
+        "prompt"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "character": {
+          "$ref": "#/$defs/generated_character_ref"
+        },
+        "template": {
+          "$ref": "#/$defs/generated_template_ref"
+        },
+        "scene": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "extra_constraints": {
+          "$ref": "#/$defs/string_list"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "generated_character_ref": {
+      "type": "object",
+      "required": [
+        "id",
+        "display_name",
+        "must_keep",
+        "avoid"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "must_keep": {
+          "$ref": "#/$defs/string_list"
+        },
+        "avoid": {
+          "$ref": "#/$defs/string_list"
+        }
+      }
+    },
+    "generated_template_ref": {
+      "type": "object",
+      "required": [
+        "id",
+        "task_type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "task_type": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
