@@ -80,3 +80,15 @@ python 工具/build_prompt_pack.py dori_commercial_poster --out 示例/自动生
 ```text
 生成提示词/覆盖矩阵.md
 ```
+
+按标签筛选看：
+
+```text
+生成提示词/标签索引.md
+```
+
+也可以直接运行：
+
+```powershell
+python 工具/build_prompt_pack.py --tag 公开安全
+```

@@ -15,6 +15,7 @@ DEFAULT_OUTPUT_DIR = ROOT / "生成提示词"
 GENERATED_JSON_BUNDLE = "prompt_packs.generated.json"
 GENERATED_JSON_BUNDLE_SCHEMA = "prompt_packs.generated.schema.json"
 GENERATED_CSV_INDEX = "prompt_packs.index.csv"
+GENERATED_TAG_INDEX = "标签索引.md"
 
 REQUIRED_CHARACTER_KEYS = ["display_name", "anchor", "must_keep", "avoid"]
 REQUIRED_TEMPLATE_KEYS = ["task_type", "tags", "composition", "lighting", "material", "text_strategy", "safety"]
@@ -316,6 +317,38 @@ def render_coverage_matrix(data: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def render_tag_index(data: dict[str, Any]) -> str:
+    tag_map: dict[str, list[dict[str, Any]]] = {}
+    for pack in data.get("packs", []):
+        for tag in render_pack_tags(data, pack):
+            tag_map.setdefault(tag, []).append(pack)
+
+    lines = [
+        "# Prompt Pack 标签索引",
+        "",
+        "这个索引由 `工具/build_prompt_pack.py --all` 自动生成，用来按 tag 快速查找 Prompt Pack。",
+        "如果要修改标签，请优先修改 `配置/prompt_packs.json` 中的 `templates.*.tags`，再重新导出。",
+        "",
+        "## 使用命令",
+        "",
+        "```powershell",
+        "python 工具/build_prompt_pack.py --tag 公开安全",
+        "python 工具/build_prompt_pack.py --tag 商业海报",
+        "```",
+        "",
+        "## 标签 × Prompt Pack",
+        "",
+        "| Tag | 数量 | Prompt Packs |",
+        "| --- | ---: | --- |",
+    ]
+    for tag in sorted(tag_map):
+        packs = tag_map[tag]
+        links = [f"[`{pack['id']}`]({generated_filename(pack['id'])})" for pack in packs]
+        lines.append(f"| `{tag}` | {len(packs)} | " + "<br>".join(links) + " |")
+    lines.append("")
+    return "\n".join(lines)
+
+
 def render_generated_index(data: dict[str, Any]) -> str:
     templates = list(data.get("templates", {}).items())
     characters = list(data.get("characters", {}).items())
@@ -392,6 +425,7 @@ def render_generated_index(data: dict[str, Any]) -> str:
         "## 覆盖矩阵",
         "",
         "- [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。",
+        f"- [`{GENERATED_TAG_INDEX}`]({GENERATED_TAG_INDEX})：按 tags 查找 Prompt Pack。",
         f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256` 方便核对来源配置。",
         f"- [`{GENERATED_JSON_BUNDLE_SCHEMA}`]({GENERATED_JSON_BUNDLE_SCHEMA})：JSON bundle 的结构说明。",
         f"- [`{GENERATED_CSV_INDEX}`]({GENERATED_CSV_INDEX})：可用表格软件打开的 Prompt Pack 索引，含 tags 列方便筛选。",
@@ -419,13 +453,16 @@ def export_all(data: dict[str, Any], out_dir: Path = DEFAULT_OUTPUT_DIR) -> list
     matrix_path = out_dir / "覆盖矩阵.md"
     matrix_path.write_text(render_coverage_matrix(data), encoding="utf-8")
     written.append(matrix_path)
+    tag_index_path = out_dir / GENERATED_TAG_INDEX
+    tag_index_path.write_text(render_tag_index(data), encoding="utf-8")
+    written.append(tag_index_path)
     json_bundle_path = out_dir / GENERATED_JSON_BUNDLE
     json_bundle_path.write_text(render_json_bundle(data), encoding="utf-8")
     written.append(json_bundle_path)
     csv_index_path = out_dir / GENERATED_CSV_INDEX
     csv_index_path.write_text(render_csv_index(data), encoding="utf-8")
     written.append(csv_index_path)
-    expected_names = {"README.md", "覆盖矩阵.md"}
+    expected_names = {"README.md", "覆盖矩阵.md", GENERATED_TAG_INDEX}
     for pack in data.get("packs", []):
         pack_id = pack["id"]
         filename = generated_filename(pack_id)
@@ -450,11 +487,32 @@ def list_packs(data: dict[str, Any]) -> str:
     return "\n".join(rows) + "\n"
 
 
+def list_packs_by_tag(data: dict[str, Any], tag: str) -> str:
+    tag = tag.strip()
+    rows = [f"匹配标签 `{tag}` 的 Prompt Pack："]
+    matches = []
+    for pack in data.get("packs", []):
+        if tag in render_pack_tags(data, pack):
+            matches.append(pack)
+    if not matches:
+        rows.append("- 未找到。可运行 `python 工具/build_prompt_pack.py --all` 后查看 `生成提示词/标签索引.md`。")
+        return "\n".join(rows) + "\n"
+    for pack in matches:
+        char = data["characters"].get(pack.get("character"), {})
+        template = data["templates"].get(pack.get("template"), {})
+        filename = generated_filename(str(pack.get("id", "")))
+        rows.append(
+            f"- {pack.get('id')}：{pack.get('title')} / {char.get('display_name', pack.get('character'))} / {template.get('task_type', pack.get('template'))} / {filename}"
+        )
+    return "\n".join(rows) + "\n"
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build a copy-ready prompt from 配置/prompt_packs.json")
     parser.add_argument("pack_id", nargs="?", help="Prompt Pack id, for example: furina_convention_phone")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG, help="Path to prompt_packs.json")
     parser.add_argument("--list", action="store_true", help="List available Prompt Packs")
+    parser.add_argument("--tag", help="List Prompt Packs that contain an exact tag")
     parser.add_argument("--validate", action="store_true", help="Validate config and exit")
     parser.add_argument("--all", action="store_true", help="Export every Prompt Pack as Markdown")
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUTPUT_DIR, help="Directory for --all exports")
@@ -480,6 +538,10 @@ def main() -> int:
 
     if args.list:
         print(list_packs(data), end="")
+        return 0
+
+    if args.tag:
+        print(list_packs_by_tag(data, args.tag), end="")
         return 0
 
     if args.all:

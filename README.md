@@ -144,6 +144,7 @@ python -m unittest discover -s tests -v
 - JSON 输出：`工具/build_prompt_pack.py --format json` 可输出带元数据的提示词记录，方便接 API、脚本或前端。
 - 全量 JSON Bundle：`生成提示词/prompt_packs.generated.json` 自动导出全部 Prompt Pack，并由 `生成提示词/prompt_packs.generated.schema.json` 描述结构；bundle 内含 `source_config_sha256` 和 tags，方便前端或自动化工具核对来源配置并筛选用途。
 - CSV 索引：`生成提示词/prompt_packs.index.csv` 自动列出 Prompt Pack、角色、模板、tags 和文件名，方便表格筛选。
+- 标签索引：`生成提示词/标签索引.md` 自动按 tags 分组 Prompt Pack，也可以用 `python 工具/build_prompt_pack.py --tag 商业海报` 查询。
 - JSON Schema：`配置/prompt_packs.schema.json` 为 Prompt Pack 配置提供字段结构约束。
 - Prompt Pack 覆盖矩阵：通过 `生成提示词/覆盖矩阵.md` 查看每个角色缺哪些输出类型。
 - Prompt Pack 快速复制入口：通过 `生成提示词/README.md` 按「角色 × 用途」直接选提示词。
@@ -181,6 +182,7 @@ python -m unittest discover -s tests -v
 - `工具/README.md`：维护脚本说明。
 - `配置/README.md`：机器可读 Prompt Pack 配置说明。
 - `生成提示词/README.md`：由 Prompt Pack 自动导出的可复制提示词。
+- `生成提示词/标签索引.md`：由 Prompt Pack tags 自动导出的筛选入口。
 - `预览图/README.md`：公开预览图入库规则和 manifest 维护说明。
 - `CONTRIBUTING.md`：新增角色和模板的规则。
 - `AGENTS.md`：后续 Codex / 自动化维护者的仓库操作指引。

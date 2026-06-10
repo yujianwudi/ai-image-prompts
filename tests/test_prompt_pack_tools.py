@@ -16,6 +16,7 @@ from build_prompt_pack import (  # noqa: E402
     GENERATED_CSV_INDEX,
     GENERATED_JSON_BUNDLE,
     GENERATED_JSON_BUNDLE_SCHEMA,
+    GENERATED_TAG_INDEX,
     config_digest,
     export_all,
     generated_filename,
@@ -26,6 +27,7 @@ from build_prompt_pack import (  # noqa: E402
     render_json_bundle,
     render_pack,
     render_pack_record,
+    render_tag_index,
     validate_config,
 )
 from audit_character_prompts import audit, render_report  # noqa: E402
@@ -120,12 +122,13 @@ class PromptPackToolTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             out_dir = Path(tmp)
             written = export_all(self.data, out_dir)
-            expected_names = {"README.md", "覆盖矩阵.md", GENERATED_JSON_BUNDLE, GENERATED_CSV_INDEX} | {
+            expected_names = {"README.md", "覆盖矩阵.md", GENERATED_TAG_INDEX, GENERATED_JSON_BUNDLE, GENERATED_CSV_INDEX} | {
                 generated_filename(pack["id"]) for pack in self.data["packs"]
             }
             self.assertEqual({path.name for path in written}, expected_names)
             self.assertEqual((out_dir / "README.md").read_text(encoding="utf-8"), render_generated_index(self.data))
             self.assertEqual((out_dir / "覆盖矩阵.md").read_text(encoding="utf-8"), render_coverage_matrix(self.data))
+            self.assertEqual((out_dir / GENERATED_TAG_INDEX).read_text(encoding="utf-8"), render_tag_index(self.data))
             self.assertEqual((out_dir / GENERATED_JSON_BUNDLE).read_text(encoding="utf-8"), render_json_bundle(self.data))
             self.assertEqual((out_dir / GENERATED_CSV_INDEX).read_text(encoding="utf-8"), render_csv_index(self.data))
             for pack in self.data["packs"]:
@@ -140,7 +143,15 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("furina_convention_phone.md", index)
         self.assertIn("citlali_readme_preview.md", index)
         self.assertIn("dori_character_card.md", index)
+        self.assertIn(GENERATED_TAG_INDEX, index)
         self.assertIn(GENERATED_CSV_INDEX, index)
+
+    def test_tag_index_groups_prompt_packs(self) -> None:
+        tag_index = render_tag_index(self.data)
+        self.assertIn("Prompt Pack 标签索引", tag_index)
+        self.assertIn("`公开安全`", tag_index)
+        self.assertIn("`商业海报`", tag_index)
+        self.assertIn("furina_commercial_poster.md", tag_index)
 
     def test_csv_index_lists_prompt_pack_files(self) -> None:
         csv_text = render_csv_index(self.data)
@@ -195,6 +206,18 @@ class PromptPackToolTests(unittest.TestCase):
         payload = json.loads(json_output.stdout)
         self.assertEqual(payload["id"], "furina_convention_phone")
         self.assertIn("prompt", payload)
+
+        tag_output = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "build_prompt_pack.py"), "--tag", "商业海报"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("furina_commercial_poster", tag_output.stdout)
+        self.assertIn("dori_commercial_poster", tag_output.stdout)
 
     def test_quality_gate_cli_passes(self) -> None:
         result = subprocess.run(
