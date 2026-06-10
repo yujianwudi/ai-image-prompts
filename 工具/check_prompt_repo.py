@@ -6,7 +6,16 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote
 
-from build_prompt_pack import generated_filename, load_config, render_coverage_matrix, render_generated_index, render_pack, validate_config
+from build_prompt_pack import (
+    GENERATED_JSON_BUNDLE,
+    generated_filename,
+    load_config,
+    render_coverage_matrix,
+    render_generated_index,
+    render_json_bundle,
+    render_pack,
+    validate_config,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -425,6 +434,13 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
     elif matrix_path.read_text(encoding="utf-8") != expected_matrix:
         errors.append("自动生成覆盖矩阵已过期，请运行：python 工具/build_prompt_pack.py --all")
 
+    json_bundle_path = out_dir / GENERATED_JSON_BUNDLE
+    expected_json_bundle = render_json_bundle(data)
+    if not json_bundle_path.exists():
+        errors.append(f"缺少自动生成 JSON bundle：生成提示词/{GENERATED_JSON_BUNDLE}")
+    elif json_bundle_path.read_text(encoding="utf-8") != expected_json_bundle:
+        errors.append(f"自动生成 JSON bundle 已过期：生成提示词/{GENERATED_JSON_BUNDLE}")
+
     expected_files = {"README.md", "覆盖矩阵.md"}
     for pack in data.get("packs", []):
         pack_id = pack.get("id")
@@ -442,6 +458,11 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
     for path in out_dir.glob("*.md"):
         if path.name not in expected_files:
             errors.append(f"自动生成提示词目录存在多余 Markdown：生成提示词/{path.name}")
+
+    expected_json_files = {GENERATED_JSON_BUNDLE}
+    for path in out_dir.glob("*.json"):
+        if path.name not in expected_json_files:
+            errors.append(f"自动生成提示词目录存在多余 JSON：生成提示词/{path.name}")
 
 
 def main() -> int:

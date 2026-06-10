@@ -9,6 +9,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "配置" / "prompt_packs.json"
 DEFAULT_OUTPUT_DIR = ROOT / "生成提示词"
+GENERATED_JSON_BUNDLE = "prompt_packs.generated.json"
 
 REQUIRED_CHARACTER_KEYS = ["display_name", "anchor", "must_keep", "avoid"]
 REQUIRED_TEMPLATE_KEYS = ["task_type", "composition", "lighting", "material", "text_strategy", "safety"]
@@ -189,6 +190,19 @@ def render_pack_record(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
     }
 
 
+def render_json_bundle(data: dict[str, Any]) -> str:
+    bundle = {
+        "source_config": "配置/prompt_packs.json",
+        "version": data.get("version", ""),
+        "description": "Generated copy-ready Prompt Pack bundle. Do not edit by hand.",
+        "pack_count": len(data.get("packs", [])),
+        "characters": data.get("characters", {}),
+        "templates": data.get("templates", {}),
+        "packs": [render_pack_record(data, pack["id"]) for pack in data.get("packs", [])],
+    }
+    return json.dumps(bundle, ensure_ascii=False, indent=2) + "\n"
+
+
 def generated_filename(pack_id: str) -> str:
     return f"{pack_id}.md"
 
@@ -317,6 +331,7 @@ def render_generated_index(data: dict[str, Any]) -> str:
         "## 覆盖矩阵",
         "",
         "- [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。",
+        f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle。",
         "",
         "## 文件列表",
         "",
@@ -341,6 +356,9 @@ def export_all(data: dict[str, Any], out_dir: Path = DEFAULT_OUTPUT_DIR) -> list
     matrix_path = out_dir / "覆盖矩阵.md"
     matrix_path.write_text(render_coverage_matrix(data), encoding="utf-8")
     written.append(matrix_path)
+    json_bundle_path = out_dir / GENERATED_JSON_BUNDLE
+    json_bundle_path.write_text(render_json_bundle(data), encoding="utf-8")
+    written.append(json_bundle_path)
     expected_names = {"README.md", "覆盖矩阵.md"}
     for pack in data.get("packs", []):
         pack_id = pack["id"]

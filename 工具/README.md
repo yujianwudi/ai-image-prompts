@@ -134,9 +134,10 @@ python 工具/build_prompt_pack.py --all
 
 ```text
 生成提示词/覆盖矩阵.md
+生成提示词/prompt_packs.generated.json
 ```
 
-`生成提示词/README.md` 会自动生成「角色 × 用途」快速复制入口，`生成提示词/覆盖矩阵.md` 用于查看每个角色已经覆盖/缺失的输出类型。
+`生成提示词/README.md` 会自动生成「角色 × 用途」快速复制入口，`生成提示词/覆盖矩阵.md` 用于查看每个角色已经覆盖/缺失的输出类型，`生成提示词/prompt_packs.generated.json` 用于脚本、API 或前端读取全部 Prompt Pack。
 
 `check_prompt_repo.py` 会检查这些导出文件是否和配置一致，如果过期需要重新运行 `--all`。
 

@@ -13,11 +13,13 @@ sys.path.insert(0, str(TOOLS_DIR))
 
 from build_prompt_pack import (  # noqa: E402
     DEFAULT_CONFIG,
+    GENERATED_JSON_BUNDLE,
     export_all,
     generated_filename,
     load_config,
     render_coverage_matrix,
     render_generated_index,
+    render_json_bundle,
     render_pack,
     render_pack_record,
     validate_config,
@@ -66,15 +68,22 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertEqual(record["template"]["id"], "realistic_convention_phone")
         self.assertIn("主体锁定", record["prompt"])
         self.assertIn("非低俗", record["prompt"])
+        bundle = json.loads(render_json_bundle(self.data))
+        self.assertEqual(bundle["pack_count"], len(self.data["packs"]))
+        self.assertEqual(len(bundle["packs"]), len(self.data["packs"]))
+        self.assertIn("characters", bundle)
 
     def test_export_all_writes_expected_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             out_dir = Path(tmp)
             written = export_all(self.data, out_dir)
-            expected_names = {"README.md", "覆盖矩阵.md"} | {generated_filename(pack["id"]) for pack in self.data["packs"]}
+            expected_names = {"README.md", "覆盖矩阵.md", GENERATED_JSON_BUNDLE} | {
+                generated_filename(pack["id"]) for pack in self.data["packs"]
+            }
             self.assertEqual({path.name for path in written}, expected_names)
             self.assertEqual((out_dir / "README.md").read_text(encoding="utf-8"), render_generated_index(self.data))
             self.assertEqual((out_dir / "覆盖矩阵.md").read_text(encoding="utf-8"), render_coverage_matrix(self.data))
+            self.assertEqual((out_dir / GENERATED_JSON_BUNDLE).read_text(encoding="utf-8"), render_json_bundle(self.data))
             for pack in self.data["packs"]:
                 path = out_dir / generated_filename(pack["id"])
                 self.assertEqual(path.read_text(encoding="utf-8"), render_pack(self.data, pack["id"], markdown=True))
