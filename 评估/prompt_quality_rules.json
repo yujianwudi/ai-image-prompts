@@ -1,7 +1,7 @@
 {
   "$schema": "prompt_quality_rules.schema.json",
-  "version": "2026-06-10-prompt-quality-rules",
-  "description": "Prompt Pack 生成前文本质量预检规则。用于检查自动生成 prompt 是否保留结构、安全、防串、模板意图和角色锚点。",
+  "version": "2026-06-10-prompt-quality-rules-forbidden-platforms",
+  "description": "Prompt Pack 生成前文本质量预检规则。用于检查自动生成 prompt 是否保留结构、安全、防串、模板意图和角色锚点，并拦截外部平台参数或关键词风格污染。",
   "length": {
     "min_chars": 500,
     "max_chars": 2600
@@ -31,6 +31,19 @@
     "真实",
     "材质",
     "服装"
+  ],
+  "forbidden_terms": [
+    "--ar",
+    "--v ",
+    "--style",
+    "--stylize",
+    "--chaos",
+    "niji",
+    "Midjourney",
+    "Stable Diffusion",
+    "LoRA",
+    "masterpiece",
+    "best quality"
   ],
   "template_terms": {
     "realistic_convention_phone": [

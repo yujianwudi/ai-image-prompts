@@ -52,6 +52,7 @@ def validate_rules(rules: dict[str, Any], data: dict[str, Any]) -> list[str]:
         "required_sections",
         "required_safety_terms",
         "required_quality_terms",
+        "forbidden_terms",
         "template_terms",
     ]:
         if key not in rules:
@@ -69,7 +70,7 @@ def validate_rules(rules: dict[str, Any], data: dict[str, Any]) -> list[str]:
         if isinstance(min_chars, int) and isinstance(max_chars, int) and min_chars >= max_chars:
             errors.append("Prompt 质量规则 length.min_chars 必须小于 max_chars")
 
-    for key in ["required_sections", "required_safety_terms", "required_quality_terms"]:
+    for key in ["required_sections", "required_safety_terms", "required_quality_terms", "forbidden_terms"]:
         if not isinstance(rules.get(key), list) or not rules.get(key):
             errors.append(f"Prompt 质量规则 {key} 必须是非空 array")
 
@@ -122,6 +123,12 @@ def lint(data: dict[str, Any], rules: dict[str, Any]) -> PromptQualityResult:
         missing_section_terms = missing_terms(prompt, [str(item) for item in rules["required_sections"]])
         missing_safety_terms = missing_terms(prompt, [str(item) for item in rules["required_safety_terms"]])
         missing_quality_terms = missing_terms(prompt, [str(item) for item in rules["required_quality_terms"]])
+        prompt_folded = prompt.casefold()
+        found_forbidden_terms = [
+            str(item)
+            for item in rules["forbidden_terms"]
+            if str(item) and str(item).casefold() in prompt_folded
+        ]
         missing_template_terms = missing_terms(prompt, [str(item) for item in rules["template_terms"].get(template_id, [])])
         missing_role_terms = missing_terms(prompt, [str(item) for item in characters[char_id].get("must_keep", [])])
         length_ok = min_chars <= prompt_len <= max_chars
@@ -132,6 +139,8 @@ def lint(data: dict[str, Any], rules: dict[str, Any]) -> PromptQualityResult:
             errors.append(f"{pack_id} 缺少安全/防串词：{', '.join(missing_safety_terms)}")
         if missing_quality_terms:
             errors.append(f"{pack_id} 缺少质量词：{', '.join(missing_quality_terms)}")
+        if found_forbidden_terms:
+            errors.append(f"{pack_id} 含禁用词/平台参数：{', '.join(found_forbidden_terms)}")
         if missing_template_terms:
             errors.append(f"{pack_id} 缺少模板意图词：{', '.join(missing_template_terms)}")
         if missing_role_terms:
@@ -148,6 +157,7 @@ def lint(data: dict[str, Any], rules: dict[str, Any]) -> PromptQualityResult:
                 mark(not missing_section_terms),
                 mark(not missing_safety_terms),
                 mark(not missing_quality_terms),
+                mark(not found_forbidden_terms),
                 mark(not missing_template_terms),
                 mark(not missing_role_terms),
                 mark(length_ok),
@@ -168,7 +178,7 @@ def render_report(data: dict[str, Any], rules: dict[str, Any]) -> str:
     lines = [
         "# Prompt 文本质量审计报告",
         "",
-        "这个报告由 `工具/lint_prompt_quality.py` 自动生成，用于在出图前检查 Prompt Pack 文本是否保留结构、安全、防串、模板意图和角色识别点。",
+        "这个报告由 `工具/lint_prompt_quality.py` 自动生成，用于在出图前检查 Prompt Pack 文本是否保留结构、安全、防串、模板意图和角色识别点，并避免混入 Midjourney / Stable Diffusion 等平台参数。",
         "",
         f"- 规则版本：`{rules.get('version', '')}`",
         f"- Prompt Pack 数量：{len(data.get('packs', []))}",
@@ -180,7 +190,7 @@ def render_report(data: dict[str, Any], rules: dict[str, Any]) -> str:
     ]
     lines.extend(
         table(
-            ["Prompt Pack", "角色", "模板", "长度", "结构", "安全", "质量", "模板词", "角色词", "长度范围"],
+            ["Prompt Pack", "角色", "模板", "长度", "结构", "安全", "质量", "禁用词", "模板词", "角色词", "长度范围"],
             result.rows,
         )
     )

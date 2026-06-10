@@ -29,6 +29,7 @@
 - 自动导出新增 `生成提示词/prompt_packs.index.csv`，方便用表格筛选 Prompt Pack、角色和模板。
 - 新增 `工具/run_quality_gate.py`，统一运行 Prompt Pack 校验、仓库质量检查和单元测试。
 - 新增 `工具/lint_prompt_quality.py`、`评估/prompt_quality_rules.json` 和 `评估/Prompt文本质量审计报告.md`，用于生成前检查 Prompt 文本结构、安全、质量、模板意图、角色词和长度范围。
+- Prompt 文本质量规则新增 `forbidden_terms`，防止 Midjourney / Stable Diffusion / LoRA 等平台参数或关键词风格混入 `gpt-image-2` Prompt Pack。
 - 新增 `工具/validate_output_evaluations.py`、`评估/output_evaluations.example.json` 和 `评估/output_evaluations.schema.json`，用于结构化记录并校验出图评分。
 - 新增 `工具/summarize_output_evaluations.py` 和 `评估/出图评分汇总.md`，用于汇总结构化出图评分记录。
 - 新增 `工具/sync_preview_manifest.py`，可自动同步 README 预览图的宽高、比例和方向元数据。

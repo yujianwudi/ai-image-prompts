@@ -126,7 +126,7 @@ python 工具/audit_character_prompts.py --check
 
 ## lint_prompt_quality.py
 
-用途：根据 `配置/prompt_packs.json` 和 `评估/prompt_quality_rules.json` 自动检查渲染后的 Prompt Pack 文本质量，覆盖结构段落、安全词、质量词、模板意图词、角色识别点和长度范围。
+用途：根据 `配置/prompt_packs.json` 和 `评估/prompt_quality_rules.json` 自动检查渲染后的 Prompt Pack 文本质量，覆盖结构段落、安全词、质量词、模板意图词、角色识别点、长度范围和禁用平台参数泄漏。
 
 生成报告：
 

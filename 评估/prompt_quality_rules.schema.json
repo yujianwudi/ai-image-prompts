@@ -12,6 +12,7 @@
     "required_sections",
     "required_safety_terms",
     "required_quality_terms",
+    "forbidden_terms",
     "template_terms"
   ],
   "additionalProperties": false,
@@ -52,6 +53,9 @@
       "$ref": "#/$defs/string_list"
     },
     "required_quality_terms": {
+      "$ref": "#/$defs/string_list"
+    },
+    "forbidden_terms": {
       "$ref": "#/$defs/string_list"
     },
     "template_terms": {

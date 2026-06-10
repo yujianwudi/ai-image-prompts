@@ -85,6 +85,8 @@ OpenAI `gpt-image-2` 相关模板优先使用自然语言分段，不要只堆�
 --stylize 50
 ```
 
+Prompt Pack 的渲染文本同样不能泄漏外部平台写法；`评估/prompt_quality_rules.json` 的 `forbidden_terms` 和 `python 工具/lint_prompt_quality.py --check` 会拦截 `--ar`、`--style`、Midjourney、Stable Diffusion、LoRA、`masterpiece`、`best quality` 等词。
+
 ## 角色防串规则
 
 三位角色的专属锚点不能互相污染：

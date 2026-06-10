@@ -466,10 +466,27 @@ class PromptPackToolTests(unittest.TestCase):
 
     def test_prompt_quality_report_is_current(self) -> None:
         rules = load_rules()
+        self.assertIn("forbidden_terms", rules)
+        self.assertIn("--ar", rules["forbidden_terms"])
         result = lint_prompt_quality(self.data, rules)
         self.assertEqual(result.errors, [])
         report_path = ROOT / "评估" / "Prompt文本质量审计报告.md"
         self.assertEqual(report_path.read_text(encoding="utf-8"), render_prompt_quality_report(self.data, rules))
+        self.assertIn("禁用词", report_path.read_text(encoding="utf-8"))
+
+    def test_prompt_quality_rejects_platform_parameter_leakage(self) -> None:
+        rules = load_rules()
+        mutated = json.loads(json.dumps(self.data, ensure_ascii=False))
+        mutated["packs"][0]["extra_constraints"].append("不要使用 --ar 9:16 这类外部平台参数")
+        result = lint_prompt_quality(mutated, rules)
+        self.assertTrue(any("含禁用词/平台参数" in error for error in result.errors))
+
+    def test_prompt_quality_rejects_case_insensitive_platform_terms(self) -> None:
+        rules = load_rules()
+        mutated = json.loads(json.dumps(self.data, ensure_ascii=False))
+        mutated["packs"][0]["extra_constraints"].append("不要使用 midjourney 或 lora 这类外部平台写法")
+        result = lint_prompt_quality(mutated, rules)
+        self.assertTrue(any("Midjourney" in error and "LoRA" in error for error in result.errors))
 
     def test_prompt_quality_cli_check_passes(self) -> None:
         result = subprocess.run(
