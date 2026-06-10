@@ -127,6 +127,8 @@ REFERENCE_REPOS = [
 ]
 
 LOCAL_LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
+HTML_IMG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
+HTML_ATTR_RE = re.compile(r"([A-Za-z_:][\w:.-]*)\s*=\s*([\"'])(.*?)\2")
 HTML_SRC_RE = re.compile(r"src=[\"']([^\"']+)[\"']")
 C1_CONTROL_RE = re.compile(r"[\u0080-\u009f]")
 TEXT_SCAN_SUFFIXES = {".md", ".py", ".json", ".jsonl", ".yml", ".yaml", ".txt", ".csv", ".ps1"}
@@ -181,6 +183,10 @@ def clean_target(target: str) -> str:
     target = target.split("#", 1)[0]
     target = target.split("?", 1)[0]
     return unquote(target)
+
+
+def html_tag_attrs(tag: str) -> dict[str, str]:
+    return {match.group(1).lower(): match.group(3) for match in HTML_ATTR_RE.finditer(tag)}
 
 
 def image_dimensions(path: Path) -> tuple[int, int]:
@@ -559,6 +565,7 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
 
     actual_files = {image.name for image in images}
     manifest_files: set[str] = set()
+    manifest_captions: dict[str, str] = {}
     pack_ids: set[str] = set()
     config_path = ROOT / "配置" / "prompt_packs.json"
     if config_path.exists():
@@ -599,6 +606,9 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
         for field in ["character", "scene", "prompt_pack", "caption", "notes"]:
             if not str(entry.get(field, "")).strip():
                 errors.append(f"预览图清单 {file_name} 缺少字段：{field}")
+        caption = str(entry.get("caption", "")).strip()
+        if caption:
+            manifest_captions[file_name] = caption
         if entry.get("public_safe") is not True:
             errors.append(f"预览图必须标记 public_safe=true：{file_name}")
         prompt_pack = str(entry.get("prompt_pack", ""))
@@ -611,6 +621,24 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
     readme_path = ROOT / "README.md"
     if readme_path.exists():
         readme = readme_path.read_text(encoding="utf-8")
+        readme_preview_imgs: set[str] = set()
+        for match in HTML_IMG_RE.finditer(readme):
+            attrs = html_tag_attrs(match.group(0))
+            target = clean_target(attrs.get("src", ""))
+            if not target.startswith("预览图/"):
+                continue
+            file_name = Path(target).name
+            readme_preview_imgs.add(file_name)
+            if file_name not in manifest_files:
+                errors.append(f"README 引用的预览图未登记到 manifest：{target}")
+                continue
+            alt = attrs.get("alt", "").strip()
+            expected_caption = manifest_captions.get(file_name, "")
+            if not alt:
+                errors.append(f"README 预览图缺少 alt：{target}")
+            elif expected_caption and alt != expected_caption:
+                errors.append(f"README 预览图 alt 与 manifest caption 不一致：{target} -> 应为 {expected_caption}")
+
         targets = [m.group(1) for m in HTML_SRC_RE.finditer(readme)]
         targets.extend(m.group(1) for m in LOCAL_LINK_RE.finditer(readme))
         for raw in targets:
@@ -620,6 +648,11 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
             file_name = Path(target).name
             if file_name not in manifest_files:
                 errors.append(f"README 引用的预览图未登记到 manifest：{target}")
+        for file_name, caption in manifest_captions.items():
+            if file_name not in readme_preview_imgs:
+                errors.append(f"README 缺少预览图展示：预览图/{file_name}")
+            if f"<sub>{caption}</sub>" not in readme:
+                errors.append(f"README 预览图缺少 manifest caption 展示：预览图/{file_name} -> {caption}")
 
 
 def check_preview_manifest_schema(manifest: dict, errors: list[str]) -> None:
@@ -933,7 +966,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、文本文件卫生、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、标签覆盖矩阵、API 请求 JSONL、Python 源码编译、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、文本文件卫生、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、README 预览图 alt/caption、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、标签覆盖矩阵、API 请求 JSONL、Python 源码编译、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

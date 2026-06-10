@@ -46,13 +46,16 @@ from build_project_dashboard import (  # noqa: E402
 )
 from audit_character_prompts import audit, render_report  # noqa: E402
 from check_prompt_repo import (  # noqa: E402
+    HTML_IMG_RE,
     SECRET_PATTERNS,
     check_github_workflow,
     check_markdown_health,
+    check_preview_images,
     check_text_file_hygiene,
     check_unified_quality_gate,
     classify_orientation,
     find_unclosed_markdown_fence,
+    html_tag_attrs,
     image_dimensions,
     reduced_aspect_ratio,
 )
@@ -709,6 +712,27 @@ class PromptPackToolTests(unittest.TestCase):
             self.assertEqual(item["height"], height)
             self.assertEqual(item["aspect_ratio"], reduced_aspect_ratio(width, height))
             self.assertEqual(item["orientation"], classify_orientation(width, height))
+
+    def test_readme_preview_images_match_manifest_captions(self) -> None:
+        manifest = json.loads((ROOT / "预览图" / "manifest.json").read_text(encoding="utf-8"))
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        readme_images: dict[str, dict[str, str]] = {}
+        for match in HTML_IMG_RE.finditer(readme):
+            attrs = html_tag_attrs(match.group(0))
+            src = attrs.get("src", "")
+            if src.startswith("预览图/"):
+                readme_images[Path(src).name] = attrs
+
+        for item in manifest["images"]:
+            with self.subTest(file=item["file"]):
+                self.assertIn(item["file"], readme_images)
+                self.assertEqual(readme_images[item["file"]].get("alt"), item["caption"])
+                self.assertIn(f"<sub>{item['caption']}</sub>", readme)
+
+        errors: list[str] = []
+        warnings: list[str] = []
+        check_preview_images(errors, warnings)
+        self.assertFalse([error for error in errors if "README 预览图" in error or "README 缺少预览图" in error])
 
     def test_preview_manifest_sync_tool_is_current(self) -> None:
         preview_dir = ROOT / "预览图"

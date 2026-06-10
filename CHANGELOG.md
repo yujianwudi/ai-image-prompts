@@ -4,6 +4,7 @@
 
 ### Added
 
+- README 预览图新增与 manifest caption 对齐的 `alt` 文本，质量门禁和单元测试会阻止预览图展示文案漂移。
 - Prompt Pack 模板新增 `api_profile`，把 `gpt-image-2` 推荐 `model`、`size`、`quality`、`output_format`、`output_compression` 和 `background` 与每类输出绑定；Markdown、JSON bundle、CSV 索引和单元测试同步导出/校验。
 - 新增 `工具/build_prompt_pack.py --format api-json` 和 `生成提示词/prompt_packs.api_requests.jsonl`，可导出单条或批量 `gpt-image-2` 请求 payload 草稿。
 - 新增 `生成提示词/prompt_packs.api_requests.schema.json` 和 `工具/validate_api_requests.py`，把 API 请求 JSONL 的行结构与同步校验独立出来。
