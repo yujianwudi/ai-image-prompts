@@ -165,6 +165,30 @@ def render_pack(data: dict[str, Any], pack_id: str, markdown: bool = False) -> s
     return "\n".join(lines).rstrip() + "\n"
 
 
+def render_pack_record(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
+    pack = get_pack(data, pack_id)
+    char = data["characters"][pack["character"]]
+    template = data["templates"][pack["template"]]
+    return {
+        "id": pack["id"],
+        "title": pack["title"],
+        "character": {
+            "id": pack["character"],
+            "display_name": char["display_name"],
+            "must_keep": char["must_keep"],
+            "avoid": char["avoid"],
+        },
+        "template": {
+            "id": pack["template"],
+            "task_type": template["task_type"],
+        },
+        "scene": pack["scene"],
+        "action": pack["action"],
+        "extra_constraints": pack.get("extra_constraints", []),
+        "prompt": render_pack(data, pack_id),
+    }
+
+
 def generated_filename(pack_id: str) -> str:
     return f"{pack_id}.md"
 
@@ -278,6 +302,12 @@ def render_generated_index(data: dict[str, Any]) -> str:
             "```powershell",
             "python 工具/build_prompt_pack.py dori_commercial_poster --format markdown --out 示例/自动生成-多莉商业海报.md",
             "```",
+            "",
+            "输出 JSON 给脚本或前端使用：",
+            "",
+            "```powershell",
+            "python 工具/build_prompt_pack.py furina_convention_phone --format json",
+            "```",
         ]
     )
 
@@ -344,7 +374,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--validate", action="store_true", help="Validate config and exit")
     parser.add_argument("--all", action="store_true", help="Export every Prompt Pack as Markdown")
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUTPUT_DIR, help="Directory for --all exports")
-    parser.add_argument("--format", choices=["text", "markdown"], default="text", help="Output format")
+    parser.add_argument("--format", choices=["text", "markdown", "json"], default="text", help="Output format")
     parser.add_argument("--out", type=Path, help="Write output to a file")
     return parser.parse_args()
 
@@ -380,7 +410,10 @@ def main() -> int:
         print("请提供 pack_id，或使用 --list 查看可用组合。")
         return 2
 
-    output = render_pack(data, args.pack_id, markdown=args.format == "markdown")
+    if args.format == "json":
+        output = json.dumps(render_pack_record(data, args.pack_id), ensure_ascii=False, indent=2) + "\n"
+    else:
+        output = render_pack(data, args.pack_id, markdown=args.format == "markdown")
     if args.out:
         out_path = args.out if args.out.is_absolute() else ROOT / args.out
         out_path.parent.mkdir(parents=True, exist_ok=True)

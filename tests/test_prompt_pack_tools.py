@@ -19,6 +19,7 @@ from build_prompt_pack import (  # noqa: E402
     render_coverage_matrix,
     render_generated_index,
     render_pack,
+    render_pack_record,
     validate_config,
 )
 from audit_character_prompts import audit, render_report  # noqa: E402
@@ -57,6 +58,14 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertTrue(rendered.startswith(f"# {pack['title']}\n"))
         self.assertIn("```text", rendered)
         self.assertTrue(rendered.rstrip().endswith("```"))
+
+    def test_json_render_has_prompt_metadata(self) -> None:
+        record = render_pack_record(self.data, "furina_convention_phone")
+        self.assertEqual(record["id"], "furina_convention_phone")
+        self.assertEqual(record["character"]["id"], "furina")
+        self.assertEqual(record["template"]["id"], "realistic_convention_phone")
+        self.assertIn("主体锁定", record["prompt"])
+        self.assertIn("非低俗", record["prompt"])
 
     def test_export_all_writes_expected_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -110,6 +119,19 @@ class PromptPackToolTests(unittest.TestCase):
         )
         self.assertIn("furina_convention_phone", listing.stdout)
         self.assertIn("dori_commercial_poster", listing.stdout)
+
+        json_output = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "build_prompt_pack.py"), "furina_convention_phone", "--format", "json"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        payload = json.loads(json_output.stdout)
+        self.assertEqual(payload["id"], "furina_convention_phone")
+        self.assertIn("prompt", payload)
 
     def test_quality_gate_cli_passes(self) -> None:
         result = subprocess.run(

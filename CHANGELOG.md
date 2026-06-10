@@ -4,6 +4,7 @@
 
 ### Added
 
+- `工具/build_prompt_pack.py` 新增 `--format json`，可输出带角色、模板和 prompt 的机器可读记录。
 - 新增 `工具/run_quality_gate.py`，统一运行 Prompt Pack 校验、仓库质量检查和单元测试。
 - 新增 `工具/audit_character_prompts.py` 和 `评估/角色防串审计报告.md`，自动检查角色锚点、防串、安全约束和芙宁娜污染源防护。
 - 新增 `预览图/README.md`、`预览图/manifest.json` 和 `预览图/manifest.schema.json`，记录公开预览图的角色、场景、Prompt Pack 和安全状态。

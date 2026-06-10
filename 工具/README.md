@@ -112,6 +112,12 @@ python 工具/build_prompt_pack.py furina_convention_phone
 python 工具/build_prompt_pack.py citlali_character_card --format markdown --out 示例/自动生成-茜特菈莉角色卡.md
 ```
 
+输出 JSON，方便接脚本、API 或前端：
+
+```powershell
+python 工具/build_prompt_pack.py furina_convention_phone --format json
+```
+
 批量导出全部 Prompt Pack：
 
 ```powershell

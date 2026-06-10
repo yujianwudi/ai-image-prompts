@@ -41,6 +41,12 @@ python 工具/build_prompt_pack.py dori_character_card
 python 工具/build_prompt_pack.py dori_commercial_poster --format markdown --out 示例/自动生成-多莉商业海报.md
 ```
 
+输出 JSON 给脚本或前端使用：
+
+```powershell
+python 工具/build_prompt_pack.py furina_convention_phone --format json
+```
+
 ## 覆盖矩阵
 
 - [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。
