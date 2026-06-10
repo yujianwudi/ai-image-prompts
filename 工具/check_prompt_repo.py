@@ -1,5 +1,6 @@
 ﻿from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -54,6 +55,8 @@ REQUIRED_FILES = [
     "配置/README.md",
     "配置/prompt_packs.json",
     "配置/prompt_packs.schema.json",
+    "预览图/README.md",
+    "预览图/manifest.json",
     "生成提示词/README.md",
     "tests/test_prompt_pack_tools.py",
     ".github/workflows/validate.yml",
@@ -246,6 +249,69 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
         if image.stat().st_size > 2 * 1024 * 1024:
             warnings.append(f"预览图超过 2MB，建议压缩：{rel(image)}")
 
+    manifest_path = preview_dir / "manifest.json"
+    if not manifest_path.exists():
+        errors.append("缺少预览图清单：预览图/manifest.json")
+        return
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"预览图清单无法读取：{exc}")
+        return
+
+    entries = manifest.get("images")
+    if not isinstance(entries, list) or not entries:
+        errors.append("预览图清单 images 必须是非空 array")
+        return
+
+    actual_files = {image.name for image in images}
+    manifest_files: set[str] = set()
+    pack_ids: set[str] = set()
+    config_path = ROOT / "配置" / "prompt_packs.json"
+    if config_path.exists():
+        try:
+            pack_ids = {pack.get("id", "") for pack in load_config(config_path).get("packs", [])}
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"无法读取 Prompt Pack 配置以校验预览图：{exc}")
+
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            errors.append(f"预览图清单 images[{index}] 必须是 object")
+            continue
+        file_name = str(entry.get("file", ""))
+        if not file_name:
+            errors.append(f"预览图清单 images[{index}] 缺少 file")
+            continue
+        manifest_files.add(file_name)
+        if "/" in file_name or "\\" in file_name:
+            errors.append(f"预览图清单 file 只能是文件名：{file_name}")
+        if file_name not in actual_files:
+            errors.append(f"预览图清单引用不存在的图片：{file_name}")
+        for field in ["character", "scene", "prompt_pack", "caption", "notes"]:
+            if not str(entry.get(field, "")).strip():
+                errors.append(f"预览图清单 {file_name} 缺少字段：{field}")
+        if entry.get("public_safe") is not True:
+            errors.append(f"预览图必须标记 public_safe=true：{file_name}")
+        prompt_pack = str(entry.get("prompt_pack", ""))
+        if pack_ids and prompt_pack not in pack_ids:
+            errors.append(f"预览图引用不存在的 Prompt Pack：{file_name} -> {prompt_pack}")
+
+    for file_name in sorted(actual_files - manifest_files):
+        errors.append(f"预览图未登记到 manifest：{file_name}")
+
+    readme_path = ROOT / "README.md"
+    if readme_path.exists():
+        readme = readme_path.read_text(encoding="utf-8")
+        targets = [m.group(1) for m in HTML_SRC_RE.finditer(readme)]
+        targets.extend(m.group(1) for m in LOCAL_LINK_RE.finditer(readme))
+        for raw in targets:
+            target = clean_target(raw)
+            if not target.startswith("预览图/"):
+                continue
+            file_name = Path(target).name
+            if file_name not in manifest_files:
+                errors.append(f"README 引用的预览图未登记到 manifest：{target}")
+
 
 def check_prompt_pack_config(errors: list[str]) -> None:
     path = ROOT / "配置" / "prompt_packs.json"
@@ -378,7 +444,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、内容安全政策、角色安全约束、角色防串审计、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、内容安全政策、角色安全约束、角色防串审计、预览图清单、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

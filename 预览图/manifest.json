@@ -1,0 +1,42 @@
+{
+  "version": "2026-06-10-preview-manifest",
+  "description": "公开 README 预览图清单。所有图片都应压缩、非低俗、不性感化、无水印、无真实品牌 logo。",
+  "images": [
+    {
+      "file": "furina-dessert-01.jpg",
+      "character": "芙宁娜 Furina",
+      "scene": "甜品店场景",
+      "prompt_pack": "furina_readme_preview",
+      "caption": "甜品店场景 / 写实cos",
+      "public_safe": true,
+      "notes": "用于 README 展示写实 cosplay 公开预览效果。"
+    },
+    {
+      "file": "furina-dessert-02.jpg",
+      "character": "芙宁娜 Furina",
+      "scene": "甜品店场景",
+      "prompt_pack": "furina_readme_preview",
+      "caption": "甜品店场景 / 道具互动",
+      "public_safe": true,
+      "notes": "用于 README 展示道具互动和真实服装材质。"
+    },
+    {
+      "file": "furina-night-01.jpg",
+      "character": "芙宁娜 Furina",
+      "scene": "城市夜景",
+      "prompt_pack": "furina_readme_preview",
+      "caption": "城市夜景 / 跟拍感",
+      "public_safe": true,
+      "notes": "用于 README 展示夜景跟拍和生活感构图。"
+    },
+    {
+      "file": "furina-night-02.jpg",
+      "character": "芙宁娜 Furina",
+      "scene": "城市夜景",
+      "prompt_pack": "furina_readme_preview",
+      "caption": "城市夜景 / 街拍感",
+      "public_safe": true,
+      "notes": "用于 README 展示夜景街拍和非棚拍效果。"
+    }
+  ]
+}

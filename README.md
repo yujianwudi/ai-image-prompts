@@ -14,7 +14,8 @@
 
 ## 预览图
 
-下面是部分生成效果预览，图片已压缩后放在 `预览图/` 文件夹，方便 GitHub README 直接展示。
+下面是部分生成效果预览，图片已压缩后放在 `预览图/` 文件夹，方便 GitHub README 直接展示。  
+预览图元数据记录在 `预览图/manifest.json`，入库规则见 `预览图/README.md`。
 
 <table>
   <tr>
@@ -131,6 +132,7 @@ python -m unittest discover -s tests -v
 - 三角色 × 五输出类型已完整覆盖：写实随手拍、README预览、角色卡、商业海报、竖版封面。
 - 参考优秀仓库补充：商业海报、电商主图、信息图、UI截图、角色卡、分镜板、九宫格、封面缩略图、长图教程、地图导览模板。
 - README 预览图：展示模板生成效果，避免只看文字不直观。
+- 预览图清单：通过 `预览图/manifest.json` 记录文件、角色、场景、Prompt Pack 和公开安全状态。
 - 评估迭代：出图评分、失败修正词库、迭代记录模板。
 - Issue / PR 模板：规范角色新增、模板优化、出图问题反馈和提交检查。
 - 仓库格式规范：通过 `.gitattributes` 和 `.editorconfig` 固定 UTF-8、LF 和缩进规则。
@@ -148,6 +150,7 @@ python -m unittest discover -s tests -v
 - `工具/README.md`：维护脚本说明。
 - `配置/README.md`：机器可读 Prompt Pack 配置说明。
 - `生成提示词/README.md`：由 Prompt Pack 自动导出的可复制提示词。
+- `预览图/README.md`：公开预览图入库规则和 manifest 维护说明。
 - `CONTRIBUTING.md`：新增角色和模板的规则。
 - `免责声明.md`：公开使用、版权和安全提醒。
 - `内容安全政策.md`：公开预览图、Issue/PR 和 Prompt Pack 的安全规则。

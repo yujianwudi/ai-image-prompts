@@ -6,6 +6,7 @@
 
 - 新增 `工具/run_quality_gate.py`，统一运行 Prompt Pack 校验、仓库质量检查和单元测试。
 - 新增 `工具/audit_character_prompts.py` 和 `评估/角色防串审计报告.md`，自动检查角色锚点、防串、安全约束和芙宁娜污染源防护。
+- 新增 `预览图/README.md` 和 `预览图/manifest.json`，记录公开预览图的角色、场景、Prompt Pack 和安全状态。
 - 新增 `内容安全政策.md` 和 `SECURITY.md`，明确公开预览、Issue/PR 和 Prompt Pack 的安全规则。
 - README 新增 CI、Prompt Pack、角色、模板和 JSON Schema 状态徽章。
 - 新增 `.gitattributes` 和 `.editorconfig`，统一文本换行、编码和缩进规则。
@@ -42,6 +43,7 @@
 - GitHub Actions 现在调用统一质量门禁入口 `python 工具/run_quality_gate.py`。
 - 统一质量门禁现在会检查角色防串审计报告是否与 Prompt Pack 配置同步。
 - 自动生成提示词索引现在包含「角色 × 用途」快速复制入口和命令行复制示例。
+- 质量门禁现在会检查预览图 manifest、README 引用、Prompt Pack 关联和 `public_safe=true`。
 - README、贡献说明、工具说明和仓库质量门禁文档改为优先推荐统一质量门禁。
 - 质量门禁现在会检查 GitHub Actions 工作流是否接入统一质量门禁。
 - 根据 2026-06-10 联网复核的 OpenAI 图片生成资料，优化 `gpt-image-2` 模板结构，补充输出用途、主体锁定、文字策略、图像编辑保留项和参数建议。

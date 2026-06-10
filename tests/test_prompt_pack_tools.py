@@ -153,6 +153,17 @@ class PromptPackToolTests(unittest.TestCase):
         )
         self.assertIn("OK：角色防串审计通过", result.stdout)
 
+    def test_preview_manifest_matches_images(self) -> None:
+        preview_dir = ROOT / "预览图"
+        manifest_path = preview_dir / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest_files = {item["file"] for item in manifest["images"]}
+        actual_files = {path.name for path in preview_dir.iterdir() if path.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}}
+        self.assertEqual(manifest_files, actual_files)
+        for item in manifest["images"]:
+            self.assertTrue(item["public_safe"])
+            self.assertIn(item["prompt_pack"], {pack["id"] for pack in self.data["packs"]})
+
 
 if __name__ == "__main__":
     unittest.main()

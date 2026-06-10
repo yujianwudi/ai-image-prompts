@@ -85,6 +85,7 @@
 - 没有明显乱码、水印或错误logo。
 - 文件已压缩，不要直接提交超大原图。
 - 能说明对应模板的用途。
+- 已登记到 `预览图/manifest.json`，并填写角色、场景、Prompt Pack、caption 和 `public_safe=true`。
 
 ## 新增 Prompt Pack
 
