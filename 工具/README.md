@@ -280,6 +280,16 @@ python 工具/validate_gpt_image2_parameters.py --size 1024x1536 --require-9-16
 python 工具/validate_gpt_image2_parameters.py --markdown
 ```
 
+## validate_api_requests.py
+
+用途：校验 `生成提示词/prompt_packs.api_requests.jsonl` 和 `生成提示词/prompt_packs.api_requests.schema.json` 是否与 `配置/prompt_packs.json` 同步，确保批量请求草稿里的 `model`、`prompt`、`size`、`quality`、`output_format` 和压缩参数没有漂移。
+
+只检查是否同步：
+
+```powershell
+python 工具/validate_api_requests.py --check
+```
+
 ## build_prompt_pack.py
 
 用途：读取 `配置/prompt_packs.json`，把角色锚点、输出类型、场景、构图、光线、材质、安全约束、防串约束和 gpt-image-2 推荐 `api_profile` 组合成可复制提示词。
@@ -350,10 +360,11 @@ python 工具/build_prompt_pack.py --all
 生成提示词/prompt_packs.generated.json
 生成提示词/prompt_packs.generated.schema.json
 生成提示词/prompt_packs.api_requests.jsonl
+生成提示词/prompt_packs.api_requests.schema.json
 生成提示词/prompt_packs.index.csv
 ```
 
-`生成提示词/README.md` 会自动生成「角色 × 用途」快速复制入口，单个 Markdown 文件顶部会显示推荐 API 参数；`生成提示词/覆盖矩阵.md` 用于查看每个角色已经覆盖/缺失的输出类型，`生成提示词/标签索引.md` 用于按 tags 查找 Prompt Pack，`生成提示词/标签覆盖矩阵.md` 用于查看每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack；`生成提示词/prompt_packs.generated.json` 用于脚本、API 或前端读取全部 Prompt Pack，并包含 `source_config_sha256`、tags 和 `api_profile` 方便核对来源配置、按用途筛选和直接接 API；`生成提示词/prompt_packs.generated.schema.json` 用于说明 JSON bundle 结构；`生成提示词/prompt_packs.api_requests.jsonl` 是逐行请求草稿，适合批量脚本一行一条读取；`生成提示词/prompt_packs.index.csv` 用于表格筛选 Prompt Pack，包含 gpt-image-2 参数列和 tags 列。
+`生成提示词/README.md` 会自动生成「角色 × 用途」快速复制入口，单个 Markdown 文件顶部会显示推荐 API 参数；`生成提示词/覆盖矩阵.md` 用于查看每个角色已经覆盖/缺失的输出类型，`生成提示词/标签索引.md` 用于按 tags 查找 Prompt Pack，`生成提示词/标签覆盖矩阵.md` 用于查看每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack；`生成提示词/prompt_packs.generated.json` 用于脚本、API 或前端读取全部 Prompt Pack，并包含 `source_config_sha256`、tags 和 `api_profile` 方便核对来源配置、按用途筛选和直接接 API；`生成提示词/prompt_packs.generated.schema.json` 用于说明 JSON bundle 结构；`生成提示词/prompt_packs.api_requests.jsonl` 是逐行请求草稿，适合批量脚本一行一条读取；`生成提示词/prompt_packs.api_requests.schema.json` 用于说明 JSONL 每一行的结构；`生成提示词/prompt_packs.index.csv` 用于表格筛选 Prompt Pack，包含 gpt-image-2 参数列和 tags 列。
 
 `check_prompt_repo.py` 会检查这些导出文件是否和配置一致，也会间接检查 tags 是否已登记到 `配置/tag_taxonomy.json`；如果过期需要重新运行 `--all`。
 

@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yujianwudi/ai-image-prompts/blob/main/生成提示词/prompt_packs.api_requests.schema.json",
+  "title": "Generated Prompt Pack API Request JSONL Record",
+  "description": "Schema for each JSON Lines record in prompt_packs.api_requests.jsonl.",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "character",
+    "template",
+    "tags",
+    "source_config_sha256",
+    "request"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "character": {
+      "type": "string",
+      "minLength": 1
+    },
+    "template": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tags": {
+      "$ref": "#/$defs/string_list"
+    },
+    "source_config_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "request": {
+      "$ref": "#/$defs/api_request"
+    }
+  },
+  "$defs": {
+    "string_list": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "api_request": {
+      "type": "object",
+      "required": [
+        "model",
+        "prompt",
+        "size",
+        "quality",
+        "output_format",
+        "background"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string",
+          "const": "gpt-image-2"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "size": {
+          "type": "string",
+          "pattern": "^[0-9]+x[0-9]+$"
+        },
+        "quality": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "auto"
+          ]
+        },
+        "output_format": {
+          "enum": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        "output_compression": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "background": {
+          "const": "opaque"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "output_format": {
+                "const": "png"
+              }
+            },
+            "required": [
+              "output_format"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "output_compression"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "output_format": {
+                "enum": [
+                  "jpeg",
+                  "webp"
+                ]
+              }
+            },
+            "required": [
+              "output_format"
+            ]
+          },
+          "then": {
+            "required": [
+              "output_compression"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

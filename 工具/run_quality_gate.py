@@ -73,6 +73,7 @@ def main() -> int:
             ("校验失败修正建议", [python, "工具/suggest_failure_fixes.py", "--check"]),
             ("校验项目仪表盘", [python, "工具/build_project_dashboard.py", "--check"]),
             ("校验 gpt-image-2 参数档位", [python, "工具/validate_gpt_image2_parameters.py", "--check"]),
+            ("校验 API 请求 JSONL", [python, "工具/validate_api_requests.py", "--check"]),
             ("校验预览图 manifest 尺寸元数据", [python, "工具/sync_preview_manifest.py", "--check"]),
             ("检查仓库结构与安全约束", [python, "工具/check_prompt_repo.py"]),
             ("运行单元测试", [python, "-m", "unittest", "discover", "-s", "tests", "-v"]),

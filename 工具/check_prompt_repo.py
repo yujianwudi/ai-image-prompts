@@ -10,6 +10,7 @@ from urllib.parse import unquote
 
 from build_prompt_pack import (
     GENERATED_API_REQUESTS_JSONL,
+    GENERATED_API_REQUESTS_SCHEMA,
     GENERATED_CSV_INDEX,
     GENERATED_JSON_BUNDLE,
     GENERATED_JSON_BUNDLE_SCHEMA,
@@ -20,6 +21,7 @@ from build_prompt_pack import (
     render_coverage_matrix,
     render_csv_index,
     render_api_requests_jsonl,
+    render_api_requests_schema,
     render_generated_index,
     render_json_bundle,
     render_tag_coverage_matrix,
@@ -93,6 +95,7 @@ REQUIRED_FILES = [
     "工具/suggest_failure_fixes.py",
     "工具/build_project_dashboard.py",
     "工具/validate_gpt_image2_parameters.py",
+    "工具/validate_api_requests.py",
     "工具/build_prompt_pack.py",
     "工具/sync_preview_manifest.py",
     "工具/run_quality_gate.py",
@@ -106,6 +109,8 @@ REQUIRED_FILES = [
     "预览图/manifest.schema.json",
     "生成提示词/README.md",
     "生成提示词/prompt_packs.generated.schema.json",
+    "生成提示词/prompt_packs.api_requests.jsonl",
+    "生成提示词/prompt_packs.api_requests.schema.json",
     "tests/test_prompt_pack_tools.py",
     ".github/workflows/validate.yml",
     ".github/ISSUE_TEMPLATE/output_issue.yml",
@@ -689,6 +694,13 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
     else:
         check_generated_api_requests_jsonl(api_requests_path, data, errors)
 
+    api_requests_schema_path = out_dir / GENERATED_API_REQUESTS_SCHEMA
+    expected_api_requests_schema = render_api_requests_schema()
+    if not api_requests_schema_path.exists():
+        errors.append(f"缺少自动生成 API 请求 JSONL schema：生成提示词/{GENERATED_API_REQUESTS_SCHEMA}")
+    elif api_requests_schema_path.read_text(encoding="utf-8") != expected_api_requests_schema:
+        errors.append(f"自动生成 API 请求 JSONL schema 已过期：生成提示词/{GENERATED_API_REQUESTS_SCHEMA}")
+
     csv_index_path = out_dir / GENERATED_CSV_INDEX
     expected_csv_index = render_csv_index(data)
     if not csv_index_path.exists():
@@ -714,7 +726,7 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
         if path.name not in expected_files:
             errors.append(f"自动生成提示词目录存在多余 Markdown：生成提示词/{path.name}")
 
-    expected_json_files = {GENERATED_JSON_BUNDLE, GENERATED_JSON_BUNDLE_SCHEMA}
+    expected_json_files = {GENERATED_JSON_BUNDLE, GENERATED_JSON_BUNDLE_SCHEMA, GENERATED_API_REQUESTS_SCHEMA}
     for path in out_dir.glob("*.json"):
         if path.name not in expected_json_files:
             errors.append(f"自动生成提示词目录存在多余 JSON：生成提示词/{path.name}")

@@ -18,6 +18,7 @@ DEFAULT_OUTPUT_DIR = ROOT / "生成提示词"
 GENERATED_JSON_BUNDLE = "prompt_packs.generated.json"
 GENERATED_JSON_BUNDLE_SCHEMA = "prompt_packs.generated.schema.json"
 GENERATED_API_REQUESTS_JSONL = "prompt_packs.api_requests.jsonl"
+GENERATED_API_REQUESTS_SCHEMA = "prompt_packs.api_requests.schema.json"
 GENERATED_CSV_INDEX = "prompt_packs.index.csv"
 GENERATED_TAG_INDEX = "标签索引.md"
 GENERATED_TAG_COVERAGE_MATRIX = "标签覆盖矩阵.md"
@@ -485,6 +486,59 @@ def render_api_requests_jsonl(data: dict[str, Any]) -> str:
     return "\n".join(lines) + ("\n" if lines else "")
 
 
+def render_api_requests_schema() -> str:
+    schema = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://github.com/yujianwudi/ai-image-prompts/blob/main/生成提示词/prompt_packs.api_requests.schema.json",
+        "title": "Generated Prompt Pack API Request JSONL Record",
+        "description": "Schema for each JSON Lines record in prompt_packs.api_requests.jsonl.",
+        "type": "object",
+        "required": ["id", "title", "character", "template", "tags", "source_config_sha256", "request"],
+        "additionalProperties": False,
+        "properties": {
+            "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+            "title": {"type": "string", "minLength": 1},
+            "character": {"type": "string", "minLength": 1},
+            "template": {"type": "string", "minLength": 1},
+            "tags": {"$ref": "#/$defs/string_list"},
+            "source_config_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "request": {"$ref": "#/$defs/api_request"},
+        },
+        "$defs": {
+            "string_list": {
+                "type": "array",
+                "minItems": 1,
+                "items": {"type": "string", "minLength": 1},
+            },
+            "api_request": {
+                "type": "object",
+                "required": ["model", "prompt", "size", "quality", "output_format", "background"],
+                "additionalProperties": False,
+                "properties": {
+                    "model": {"type": "string", "const": "gpt-image-2"},
+                    "prompt": {"type": "string", "minLength": 1},
+                    "size": {"type": "string", "pattern": "^[0-9]+x[0-9]+$"},
+                    "quality": {"enum": ["low", "medium", "high", "auto"]},
+                    "output_format": {"enum": ["png", "jpeg", "webp"]},
+                    "output_compression": {"type": "integer", "minimum": 0, "maximum": 100},
+                    "background": {"const": "opaque"},
+                },
+                "allOf": [
+                    {
+                        "if": {"properties": {"output_format": {"const": "png"}}, "required": ["output_format"]},
+                        "then": {"not": {"required": ["output_compression"]}},
+                    },
+                    {
+                        "if": {"properties": {"output_format": {"enum": ["jpeg", "webp"]}}, "required": ["output_format"]},
+                        "then": {"required": ["output_compression"]},
+                    },
+                ],
+            },
+        },
+    }
+    return json.dumps(schema, ensure_ascii=False, indent=2) + "\n"
+
+
 def render_csv_index(data: dict[str, Any]) -> str:
     buffer = io.StringIO(newline="")
     writer = csv.writer(buffer, lineterminator="\n")
@@ -780,6 +834,7 @@ def render_generated_index(data: dict[str, Any]) -> str:
             f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256`、tags 和 `api_profile` 方便核对来源配置并直接接 API。",
             f"- [`{GENERATED_JSON_BUNDLE_SCHEMA}`]({GENERATED_JSON_BUNDLE_SCHEMA})：JSON bundle 的结构说明。",
             f"- [`{GENERATED_API_REQUESTS_JSONL}`]({GENERATED_API_REQUESTS_JSONL})：全部 Prompt Pack 的逐行 API 请求草稿，适合批量脚本逐行读取。",
+            f"- [`{GENERATED_API_REQUESTS_SCHEMA}`]({GENERATED_API_REQUESTS_SCHEMA})：API 请求 JSONL 每一行的结构说明。",
             f"- [`{GENERATED_CSV_INDEX}`]({GENERATED_CSV_INDEX})：可用表格软件打开的 Prompt Pack 索引，含 tags 列方便筛选。",
             "",
             "## 文件列表",
@@ -817,6 +872,9 @@ def export_all(data: dict[str, Any], out_dir: Path = DEFAULT_OUTPUT_DIR) -> list
     api_requests_path = out_dir / GENERATED_API_REQUESTS_JSONL
     api_requests_path.write_text(render_api_requests_jsonl(data), encoding="utf-8")
     written.append(api_requests_path)
+    api_requests_schema_path = out_dir / GENERATED_API_REQUESTS_SCHEMA
+    api_requests_schema_path.write_text(render_api_requests_schema(), encoding="utf-8")
+    written.append(api_requests_schema_path)
     csv_index_path = out_dir / GENERATED_CSV_INDEX
     csv_index_path.write_text(render_csv_index(data), encoding="utf-8")
     written.append(csv_index_path)

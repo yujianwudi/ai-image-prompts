@@ -15,6 +15,7 @@ from build_prompt_pack import (  # noqa: E402
     DEFAULT_CONFIG,
     DEFAULT_TAG_TAXONOMY,
     GENERATED_API_REQUESTS_JSONL,
+    GENERATED_API_REQUESTS_SCHEMA,
     GENERATED_CSV_INDEX,
     GENERATED_JSON_BUNDLE,
     GENERATED_JSON_BUNDLE_SCHEMA,
@@ -28,6 +29,7 @@ from build_prompt_pack import (  # noqa: E402
     render_api_request_payload,
     render_api_request_record,
     render_api_requests_jsonl,
+    render_api_requests_schema,
     render_coverage_matrix,
     render_csv_index,
     render_generated_index,
@@ -82,6 +84,13 @@ from validate_gpt_image2_parameters import (  # noqa: E402
     parse_size_spec,
     render_markdown as render_gpt_image2_size_markdown,
     validate_size_spec,
+)
+from validate_api_requests import (  # noqa: E402
+    DEFAULT_API_REQUESTS,
+    DEFAULT_API_REQUESTS_SCHEMA,
+    load_jsonl_records as load_api_request_jsonl_records,
+    validate_api_request_records,
+    validate_files as validate_api_request_files,
 )
 
 
@@ -192,6 +201,9 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("generated_pack", schema["$defs"])
         self.assertIn("api_profile", schema["$defs"]["generated_pack"]["required"])
         self.assertIn("api_profile", schema["$defs"]["generated_template_ref"]["required"])
+        api_schema = json.loads(render_api_requests_schema())
+        self.assertEqual(api_schema["title"], "Generated Prompt Pack API Request JSONL Record")
+        self.assertIn("api_request", api_schema["$defs"])
 
     def test_export_all_writes_expected_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -204,6 +216,7 @@ class PromptPackToolTests(unittest.TestCase):
                 GENERATED_TAG_COVERAGE_MATRIX,
                 GENERATED_JSON_BUNDLE,
                 GENERATED_API_REQUESTS_JSONL,
+                GENERATED_API_REQUESTS_SCHEMA,
                 GENERATED_CSV_INDEX,
             } | {
                 generated_filename(pack["id"]) for pack in self.data["packs"]
@@ -215,6 +228,7 @@ class PromptPackToolTests(unittest.TestCase):
             self.assertEqual((out_dir / GENERATED_TAG_COVERAGE_MATRIX).read_text(encoding="utf-8"), render_tag_coverage_matrix(self.data))
             self.assertEqual((out_dir / GENERATED_JSON_BUNDLE).read_text(encoding="utf-8"), render_json_bundle(self.data))
             self.assertEqual((out_dir / GENERATED_API_REQUESTS_JSONL).read_text(encoding="utf-8"), render_api_requests_jsonl(self.data))
+            self.assertEqual((out_dir / GENERATED_API_REQUESTS_SCHEMA).read_text(encoding="utf-8"), render_api_requests_schema())
             self.assertEqual((out_dir / GENERATED_CSV_INDEX).read_text(encoding="utf-8"), render_csv_index(self.data))
             for pack in self.data["packs"]:
                 path = out_dir / generated_filename(pack["id"])
@@ -226,6 +240,7 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("按角色 × 用途", index)
         self.assertIn(GENERATED_JSON_BUNDLE_SCHEMA, index)
         self.assertIn(GENERATED_API_REQUESTS_JSONL, index)
+        self.assertIn(GENERATED_API_REQUESTS_SCHEMA, index)
         self.assertIn("furina_convention_phone.md", index)
         self.assertIn("citlali_readme_preview.md", index)
         self.assertIn("dori_character_card.md", index)
@@ -262,6 +277,14 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("gpt-image-2,1024x1824,medium,jpeg,85,opaque", csv_text)
         self.assertIn("写实cos;手机随手拍", csv_text)
         self.assertIn("茜特菈莉 Citlali", csv_text)
+
+    def test_api_request_jsonl_exports_are_valid(self) -> None:
+        records = [json.loads(line) for line in render_api_requests_jsonl(self.data).splitlines()]
+        self.assertEqual(validate_api_request_records(self.data, records), [])
+        self.assertEqual(validate_api_request_files(DEFAULT_CONFIG, DEFAULT_API_REQUESTS, DEFAULT_API_REQUESTS_SCHEMA), [])
+        disk_records = load_api_request_jsonl_records(DEFAULT_API_REQUESTS)
+        self.assertEqual(len(disk_records), len(self.data["packs"]))
+        self.assertEqual(disk_records[0]["request"], render_api_request_payload(self.data, "furina_convention_phone"))
 
     def test_coverage_matrix_lists_characters_and_templates(self) -> None:
         matrix = render_coverage_matrix(self.data)
@@ -410,6 +433,18 @@ class PromptPackToolTests(unittest.TestCase):
         markdown = render_gpt_image2_size_markdown()
         self.assertIn("gpt-image-2 推荐尺寸档位自检", markdown)
         self.assertIn("1024x1536", markdown)
+
+    def test_api_request_validator_cli_check_passes(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "validate_api_requests.py"), "--check"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("OK：API 请求 JSONL 已同步", result.stdout)
 
     def test_character_audit_report_is_current(self) -> None:
         audit_result = audit(self.data)
