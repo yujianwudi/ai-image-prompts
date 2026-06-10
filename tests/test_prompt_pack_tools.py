@@ -13,6 +13,7 @@ sys.path.insert(0, str(TOOLS_DIR))
 
 from build_prompt_pack import (  # noqa: E402
     DEFAULT_CONFIG,
+    DEFAULT_TAG_TAXONOMY,
     GENERATED_CSV_INDEX,
     GENERATED_JSON_BUNDLE,
     GENERATED_JSON_BUNDLE_SCHEMA,
@@ -21,6 +22,7 @@ from build_prompt_pack import (  # noqa: E402
     export_all,
     generated_filename,
     load_config,
+    load_tag_taxonomy,
     render_coverage_matrix,
     render_csv_index,
     render_generated_index,
@@ -29,6 +31,7 @@ from build_prompt_pack import (  # noqa: E402
     render_pack_record,
     render_tag_index,
     validate_config,
+    validate_tag_taxonomy,
 )
 from audit_character_prompts import audit, render_report  # noqa: E402
 from check_prompt_repo import (  # noqa: E402
@@ -85,8 +88,34 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("global_quality_constraints", schema["properties"])
         self.assertIn("tags", schema["$defs"]["template"]["properties"])
 
+        taxonomy = load_tag_taxonomy(DEFAULT_TAG_TAXONOMY)
+        self.assertEqual(taxonomy.get("$schema"), "tag_taxonomy.schema.json")
+        taxonomy_schema_path = ROOT / "配置" / taxonomy["$schema"]
+        self.assertTrue(taxonomy_schema_path.exists())
+        taxonomy_schema = json.loads(taxonomy_schema_path.read_text(encoding="utf-8"))
+        self.assertIn("tags", taxonomy_schema["properties"])
+
     def test_config_is_valid(self) -> None:
         self.assertEqual(validate_config(self.data), [])
+
+    def test_tag_taxonomy_covers_template_tags(self) -> None:
+        taxonomy = load_tag_taxonomy(DEFAULT_TAG_TAXONOMY)
+        self.assertEqual(validate_tag_taxonomy(taxonomy), [])
+        known_tags = {tag["id"] for tag in taxonomy["tags"]}
+        used_tags = {tag for template in self.data["templates"].values() for tag in template["tags"]}
+        self.assertTrue(used_tags <= known_tags)
+        self.assertIn("公开安全", known_tags)
+
+    def test_config_rejects_unknown_or_alias_tags(self) -> None:
+        mutated = json.loads(json.dumps(self.data, ensure_ascii=False))
+        mutated["templates"]["commercial_poster"]["tags"].append("商业海报图")
+        errors = validate_config(mutated)
+        self.assertTrue(any("请改为正式标签 商业海报" in error for error in errors))
+
+        mutated = json.loads(json.dumps(self.data, ensure_ascii=False))
+        mutated["templates"]["commercial_poster"]["tags"].append("未登记标签")
+        errors = validate_config(mutated)
+        self.assertTrue(any("未登记到 配置/tag_taxonomy.json：未登记标签" in error for error in errors))
 
     def test_every_pack_renders_required_sections(self) -> None:
         required_terms = ["主体锁定", "必须保留", "安全约束", "防串约束", "质量约束", "非低俗", "不性感化", "不要混入"]

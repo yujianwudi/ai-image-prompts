@@ -11,6 +11,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "配置" / "prompt_packs.json"
+DEFAULT_TAG_TAXONOMY = ROOT / "配置" / "tag_taxonomy.json"
 DEFAULT_OUTPUT_DIR = ROOT / "生成提示词"
 GENERATED_JSON_BUNDLE = "prompt_packs.generated.json"
 GENERATED_JSON_BUNDLE_SCHEMA = "prompt_packs.generated.schema.json"
@@ -35,6 +36,105 @@ def load_config(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     return data
 
 
+def load_tag_taxonomy(path: Path = DEFAULT_TAG_TAXONOMY) -> dict[str, Any]:
+    with path.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+    if not isinstance(data, dict):
+        raise ValueError("标签词表根节点必须是 JSON object")
+    return data
+
+
+def validate_tag_taxonomy(data: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    if data.get("$schema") != "tag_taxonomy.schema.json":
+        errors.append("tag_taxonomy.json 的 $schema 应为 tag_taxonomy.schema.json")
+    if not str(data.get("version", "")).strip():
+        errors.append("tag_taxonomy.json 缺少 version")
+
+    categories = data.get("categories")
+    if not isinstance(categories, list) or not categories:
+        errors.append("tag_taxonomy.json categories 必须是非空 array")
+        categories = []
+    category_ids: set[str] = set()
+    for index, category in enumerate(categories):
+        if not isinstance(category, dict):
+            errors.append(f"tag_taxonomy.categories[{index}] 必须是 object")
+            continue
+        category_id = str(category.get("id", "")).strip()
+        if not category_id:
+            errors.append(f"tag_taxonomy.categories[{index}].id 不能为空")
+            continue
+        if category_id in category_ids:
+            errors.append(f"tag_taxonomy category id 重复：{category_id}")
+        category_ids.add(category_id)
+        for key in ["name", "description"]:
+            if not str(category.get(key, "")).strip():
+                errors.append(f"tag_taxonomy.categories.{category_id}.{key} 不能为空")
+
+    tags = data.get("tags")
+    if not isinstance(tags, list) or not tags:
+        errors.append("tag_taxonomy.json tags 必须是非空 array")
+        tags = []
+    tag_ids: set[str] = set()
+    alias_to_tag: dict[str, str] = {}
+    for index, tag in enumerate(tags):
+        if not isinstance(tag, dict):
+            errors.append(f"tag_taxonomy.tags[{index}] 必须是 object")
+            continue
+        tag_id = str(tag.get("id", "")).strip()
+        if not tag_id:
+            errors.append(f"tag_taxonomy.tags[{index}].id 不能为空")
+            continue
+        if tag_id in tag_ids:
+            errors.append(f"tag_taxonomy tag id 重复：{tag_id}")
+        tag_ids.add(tag_id)
+        category = str(tag.get("category", "")).strip()
+        if category not in category_ids:
+            errors.append(f"tag_taxonomy.tags.{tag_id}.category 未登记：{category}")
+        if not str(tag.get("description", "")).strip():
+            errors.append(f"tag_taxonomy.tags.{tag_id}.description 不能为空")
+        aliases = tag.get("aliases", [])
+        if aliases is None:
+            aliases = []
+        if not isinstance(aliases, list):
+            errors.append(f"tag_taxonomy.tags.{tag_id}.aliases 必须是 array")
+            continue
+        for alias in aliases:
+            alias = str(alias).strip()
+            if not alias:
+                errors.append(f"tag_taxonomy.tags.{tag_id}.aliases 不能包含空值")
+                continue
+            if alias == tag_id:
+                errors.append(f"tag_taxonomy.tags.{tag_id}.aliases 不应重复主标签")
+            if alias in tag_ids:
+                errors.append(f"tag_taxonomy alias 已经是正式标签：{alias}")
+            previous = alias_to_tag.get(alias)
+            if previous and previous != tag_id:
+                errors.append(f"tag_taxonomy alias 重复：{alias} 同时指向 {previous} 和 {tag_id}")
+            alias_to_tag[alias] = tag_id
+
+    if "公开安全" not in tag_ids:
+        errors.append("tag_taxonomy.json 必须登记 公开安全")
+    return errors
+
+
+def taxonomy_tag_ids(data: dict[str, Any]) -> set[str]:
+    return {str(tag.get("id", "")).strip() for tag in data.get("tags", []) if isinstance(tag, dict)}
+
+
+def taxonomy_aliases(data: dict[str, Any]) -> dict[str, str]:
+    aliases: dict[str, str] = {}
+    for tag in data.get("tags", []):
+        if not isinstance(tag, dict):
+            continue
+        tag_id = str(tag.get("id", "")).strip()
+        for alias in tag.get("aliases", []) or []:
+            alias = str(alias).strip()
+            if alias and tag_id:
+                aliases[alias] = tag_id
+    return aliases
+
+
 def _require_dict(data: dict[str, Any], key: str, errors: list[str]) -> dict[str, Any]:
     value = data.get(key)
     if not isinstance(value, dict) or not value:
@@ -51,12 +151,27 @@ def _require_list(data: dict[str, Any], key: str, errors: list[str]) -> list[Any
     return value
 
 
-def validate_config(data: dict[str, Any]) -> list[str]:
+def validate_config(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = None) -> list[str]:
     errors: list[str] = []
     characters = _require_dict(data, "characters", errors)
     templates = _require_dict(data, "templates", errors)
     packs = _require_list(data, "packs", errors)
     global_constraints = _require_list(data, "global_quality_constraints", errors)
+    known_tags: set[str] = set()
+    tag_aliases: dict[str, str] = {}
+
+    if tag_taxonomy is None:
+        if DEFAULT_TAG_TAXONOMY.exists():
+            try:
+                tag_taxonomy = load_tag_taxonomy(DEFAULT_TAG_TAXONOMY)
+            except Exception as exc:  # noqa: BLE001
+                errors.append(f"无法读取标签词表：{exc}")
+        else:
+            errors.append("缺少标签词表：配置/tag_taxonomy.json")
+    if tag_taxonomy is not None:
+        errors.extend(validate_tag_taxonomy(tag_taxonomy))
+        known_tags = taxonomy_tag_ids(tag_taxonomy)
+        tag_aliases = taxonomy_aliases(tag_taxonomy)
 
     for char_id, char in characters.items():
         if not isinstance(char, dict):
@@ -88,6 +203,16 @@ def validate_config(data: dict[str, Any]) -> list[str]:
             errors.append(f"templates.{template_id}.tags 不能包含空值")
         elif "公开安全" not in tags:
             errors.append(f"templates.{template_id}.tags 必须包含 公开安全")
+        if isinstance(tags, list):
+            for tag in tags:
+                tag_text = str(tag).strip()
+                if not tag_text:
+                    continue
+                if known_tags and tag_text not in known_tags:
+                    if tag_text in tag_aliases:
+                        errors.append(f"templates.{template_id}.tags 使用了别名 {tag_text}，请改为正式标签 {tag_aliases[tag_text]}")
+                    else:
+                        errors.append(f"templates.{template_id}.tags 未登记到 配置/tag_taxonomy.json：{tag_text}")
 
     seen_pack_ids: set[str] = set()
     for index, pack in enumerate(packs):

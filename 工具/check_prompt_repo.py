@@ -92,6 +92,8 @@ REQUIRED_FILES = [
     "配置/README.md",
     "配置/prompt_packs.json",
     "配置/prompt_packs.schema.json",
+    "配置/tag_taxonomy.json",
+    "配置/tag_taxonomy.schema.json",
     "预览图/README.md",
     "预览图/manifest.json",
     "预览图/manifest.schema.json",
@@ -396,6 +398,7 @@ def check_agent_guidance(errors: list[str]) -> None:
         "gpt-image-2",
         "1024x1824",
         "validate_gpt_image2_parameters.py",
+        "tag_taxonomy.json",
         "非低俗",
         "不性感化",
         "不要添加正式 `LICENSE` 文件",
@@ -786,7 +789,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、失败修正建议、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、失败修正建议、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

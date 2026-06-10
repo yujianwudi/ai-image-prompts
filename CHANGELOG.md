@@ -6,6 +6,7 @@
 
 - 新增 `工具/suggest_failure_fixes.py` 和 `评估/失败修正建议.md`，可把出图评分记录里的 `failure_ids` 自动转换为可复制修正提示词。
 - 新增 `模板/06-gpt-image-2官方规格自检清单.md` 和 `工具/validate_gpt_image2_parameters.py`，把 OpenAI `gpt-image-2` 推荐尺寸档位、9:16 接近度和 API 参数避坑做成可复制清单与本地校验入口。
+- 新增 `配置/tag_taxonomy.json` 和 `配置/tag_taxonomy.schema.json`，把 Prompt Pack 模板 tags 变成受控词表，防止 `商业海报` / `商业海报图` 这类同义词漂移。
 - 结构化出图评分记录新增 `failure_ids`，可引用 `评估/failure_fix_lexicon.json` 中的失败类型，并在评分汇总中统计失败类型分布。
 - 失败修正词库新增 `composition_ratio_mismatch`，用于记录 9:16 构图比例不符、横图或方图等问题。
 - 自动导出新增 `生成提示词/标签索引.md`，按 tags 分组 Prompt Pack，方便人工查找。
@@ -62,6 +63,7 @@
 
 - 统一质量门禁和单元测试现在会检查失败修正建议是否与评分记录和失败修正词库同步。
 - 统一质量门禁和单元测试现在会检查 gpt-image-2 推荐尺寸档位是否合规，并提醒 `1024x1536` 是 2:3 备选而不是严格 9:16。
+- `工具/build_prompt_pack.py --validate` 现在会同时校验 `配置/tag_taxonomy.json`，模板 tags 必须来自正式标签；alias 只能提示替换，不能直接进入模板。
 - `validate_output_evaluations.py` 和 `summarize_output_evaluations.py` 现在会校验并汇总 failure_ids。
 - 质量门禁和单元测试现在会检查标签索引是否与 `配置/prompt_packs.json` 同步。
 - Prompt Pack schema、生成器、JSON bundle schema、CSV 索引和单元测试已同步校验 tags 字段。

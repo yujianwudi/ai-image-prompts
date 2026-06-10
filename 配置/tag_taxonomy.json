@@ -1,0 +1,137 @@
+{
+  "$schema": "tag_taxonomy.schema.json",
+  "version": "2026-06-10",
+  "description": "Prompt Pack 模板 tags 的受控词表。新增 tags 前先登记，避免同义词漂移。",
+  "categories": [
+    {
+      "id": "output_type",
+      "name": "输出类型",
+      "description": "用于说明图像最终交付类型或模板大类。"
+    },
+    {
+      "id": "scene",
+      "name": "场景",
+      "description": "用于说明主要拍摄/画面场景。"
+    },
+    {
+      "id": "composition",
+      "name": "构图规格",
+      "description": "用于说明画幅、比例、多区域或一致性检查。"
+    },
+    {
+      "id": "text_policy",
+      "name": "文字策略",
+      "description": "用于说明无文字、短标题、短中文标签等画面文字约束。"
+    },
+    {
+      "id": "public_safety",
+      "name": "公开安全",
+      "description": "用于说明公开展示、无真实品牌、非低俗等安全边界。"
+    }
+  ],
+  "tags": [
+    {
+      "id": "写实cos",
+      "category": "output_type",
+      "description": "写实真人 cosplay 质感，区别于插画、CG 或二次元渲染。"
+    },
+    {
+      "id": "手机随手拍",
+      "category": "output_type",
+      "description": "普通观众或朋友用手机拍下的自然照片感。"
+    },
+    {
+      "id": "室内漫展",
+      "category": "scene",
+      "description": "室内漫展、展馆、展位或通道环境。"
+    },
+    {
+      "id": "9:16",
+      "category": "composition",
+      "description": "手机竖屏方向；严格尺寸仍以平台参数模板和校验工具为准。",
+      "aliases": [
+        "竖图",
+        "手机竖图"
+      ]
+    },
+    {
+      "id": "无文字",
+      "category": "text_policy",
+      "description": "画面不需要生成文字、水印、logo、乱码或随机英文。"
+    },
+    {
+      "id": "公开安全",
+      "category": "public_safety",
+      "description": "适合公开 README、Issue、PR 或社媒展示；非低俗、不性感化、不儿童化。"
+    },
+    {
+      "id": "README预览",
+      "category": "output_type",
+      "description": "用于 GitHub README 展示的公开预览图。"
+    },
+    {
+      "id": "公开展示",
+      "category": "public_safety",
+      "description": "强调画面可公开展示，避免水印、真实品牌和低俗风险。"
+    },
+    {
+      "id": "写实手机照片",
+      "category": "output_type",
+      "description": "写实照片而非插画、CG 或棚拍大片。"
+    },
+    {
+      "id": "角色参考卡",
+      "category": "output_type",
+      "description": "用于检查角色发型、头饰、服装、道具和气质的一致性。"
+    },
+    {
+      "id": "多区域",
+      "category": "composition",
+      "description": "角色卡、卖点拆解、信息图等多区域版式。"
+    },
+    {
+      "id": "一致性检查",
+      "category": "composition",
+      "description": "重点检查同一角色在多区域或多格图中不漂移。"
+    },
+    {
+      "id": "短中文标签",
+      "category": "text_policy",
+      "description": "只允许少量短中文标签，不写长段文字。"
+    },
+    {
+      "id": "商业海报",
+      "category": "output_type",
+      "description": "商业联名海报、活动 KV 或宣传海报。",
+      "aliases": [
+        "商业海报图",
+        "活动海报"
+      ]
+    },
+    {
+      "id": "电商主图",
+      "category": "output_type",
+      "description": "电商展示图、商品主图或卖点展示图。"
+    },
+    {
+      "id": "短标题",
+      "category": "text_policy",
+      "description": "只允许一个短标题或极少量短文案，避免长段落和乱码。"
+    },
+    {
+      "id": "无真实品牌",
+      "category": "public_safety",
+      "description": "不要真实品牌 logo、真实平台水印或暗示官方授权。"
+    },
+    {
+      "id": "封面缩略图",
+      "category": "output_type",
+      "description": "社媒、视频或教程封面缩略图。"
+    },
+    {
+      "id": "社媒封面",
+      "category": "output_type",
+      "description": "适合社媒发布、展示或教程封面的竖版视觉。"
+    }
+  ]
+}

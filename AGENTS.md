@@ -71,6 +71,7 @@ OpenAI `gpt-image-2` 相关模板优先使用自然语言分段，不要只堆�
 角色图里，发型、头饰、服装体系、关键道具和气质要比「高清、精致、氛围感」更靠前。
 
 新增或修改 Prompt Pack 模板时，`templates.*.tags` 必须保留用途标签，并包含 `公开安全`。这些 tags 会进入 JSON bundle 和 CSV 索引，用于后续筛选。
+新增 tag 前必须先登记到 `配置/tag_taxonomy.json`，不要直接在 `prompt_packs.json` 里发明同义词。比如模板里应使用正式标签 `商业海报`，不要写成 `商业海报图`。
 
 严格 9:16 的 OpenAI 竖图参数优先写 `1024x1824`。`1024x1536` 是 2:3 备选，不要标成严格 9:16。
 推荐尺寸档位和 API 约束先看 `模板/06-gpt-image-2官方规格自检清单.md`，机器校验入口是 `python 工具/validate_gpt_image2_parameters.py --check`。
