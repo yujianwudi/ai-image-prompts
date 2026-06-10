@@ -4,6 +4,7 @@
 
 ### Added
 
+- 新增 `.gitattributes` 和 `.editorconfig`，统一文本换行、编码和缩进规则。
 - 新增 Pull Request 模板，提醒安全约束、Prompt Pack 导出和本地验证。
 - 新增 GitHub Issue 模板：角色提示词、模板优化、出图问题反馈。
 - 新增 `配置/prompt_packs.schema.json`，为 Prompt Pack 配置提供 JSON Schema。
@@ -34,6 +35,7 @@
 
 ### Changed
 
+- 质量门禁现在会检查仓库格式配置是否保留关键规则。
 - 质量门禁现在会检查 GitHub Issue / PR 协作模板是否存在。
 - 质量门禁和单元测试现在会检查 Prompt Pack `$schema` 引用。
 - 覆盖矩阵现在显示三位角色已完整覆盖全部输出类型。

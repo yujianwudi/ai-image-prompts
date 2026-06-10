@@ -91,6 +91,17 @@
 - 修改后运行 `python 工具/build_prompt_pack.py --validate`、`python 工具/build_prompt_pack.py --all` 和 `python 工具/check_prompt_repo.py`。
 - 新增 pack 后检查 `生成提示词/覆盖矩阵.md`，确认覆盖缺口符合预期。
 
+## 格式规范
+
+本仓库使用：
+
+```text
+.gitattributes
+.editorconfig
+```
+
+统一 UTF-8、LF 换行和基础缩进规则。Markdown 保留行尾空格，方便写两空格换行。
+
 ## 提交前检查
 
 提交前建议运行：

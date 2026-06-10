@@ -1,0 +1,20 @@
+# Normalize text files across Windows/macOS/Linux.
+* text=auto eol=lf
+
+# Documentation and source files.
+*.md text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.txt text eol=lf
+
+# Images and design assets stay binary.
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.webp binary
+*.gif binary
+*.psd binary
+*.clip binary
+*.kra binary

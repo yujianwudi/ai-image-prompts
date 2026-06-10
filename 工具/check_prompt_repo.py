@@ -27,6 +27,8 @@ REQUIRED_FILES = [
     "CONTRIBUTING.md",
     "CHANGELOG.md",
     "免责声明.md",
+    ".editorconfig",
+    ".gitattributes",
     "角色/README.md",
     "模板/README.md",
     "模板/01-固定模板-室内漫展手机随手拍.md",
@@ -92,6 +94,21 @@ def clean_target(target: str) -> str:
     target = target.split("#", 1)[0]
     target = target.split("?", 1)[0]
     return unquote(target)
+
+
+def check_repo_style_config(errors: list[str]) -> None:
+    gitattributes = ROOT / ".gitattributes"
+    editorconfig = ROOT / ".editorconfig"
+    if gitattributes.exists():
+        text = gitattributes.read_text(encoding="utf-8")
+        for required in ["* text=auto eol=lf", "*.md text eol=lf", "*.py text eol=lf", "*.json text eol=lf", "*.jpg binary"]:
+            if required not in text:
+                errors.append(f".gitattributes 缺少规则：{required}")
+    if editorconfig.exists():
+        text = editorconfig.read_text(encoding="utf-8")
+        for required in ["charset = utf-8", "end_of_line = lf", "insert_final_newline = true"]:
+            if required not in text:
+                errors.append(f".editorconfig 缺少规则：{required}")
 
 
 def check_required_dirs(errors: list[str]) -> None:
@@ -278,6 +295,7 @@ def main() -> int:
 
     check_required_dirs(errors)
     check_required_files(errors)
+    check_repo_style_config(errors)
     check_markdown_health(errors, warnings)
     check_local_links(errors)
     check_role_safety(errors)
@@ -303,7 +321,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、协作模板、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema 和自动导出文件通过。")
+        print("\nOK：结构、链接、仓库格式配置、协作模板、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema 和自动导出文件通过。")
         return 0
     return 1
 

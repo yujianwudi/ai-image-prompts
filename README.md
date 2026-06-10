@@ -121,6 +121,7 @@ python 工具/build_prompt_pack.py --all
 - README 预览图：展示模板生成效果，避免只看文字不直观。
 - 评估迭代：出图评分、失败修正词库、迭代记录模板。
 - Issue / PR 模板：规范角色新增、模板优化、出图问题反馈和提交检查。
+- 仓库格式规范：通过 `.gitattributes` 和 `.editorconfig` 固定 UTF-8、LF 和缩进规则。
 
 ## 交付文档
 
