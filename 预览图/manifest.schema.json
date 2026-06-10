@@ -13,19 +13,23 @@
   "additionalProperties": false,
   "properties": {
     "$schema": {
-      "type": "string"
+      "type": "string",
+      "const": "manifest.schema.json"
     },
     "version": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "^20[0-9]{2}-[0-9]{2}-[0-9]{2}-[a-z0-9][a-z0-9-]*$"
     },
     "description": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "\\S"
     },
     "images": {
       "type": "array",
       "minItems": 1,
+      "uniqueItems": true,
       "items": {
         "$ref": "#/$defs/preview_image"
       }
@@ -74,11 +78,13 @@
         },
         "character": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "scene": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "prompt_pack": {
           "type": "string",
@@ -86,14 +92,16 @@
         },
         "caption": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "public_safe": {
           "const": true
         },
         "notes": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         }
       }
     }

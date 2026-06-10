@@ -695,10 +695,26 @@ def check_preview_manifest_schema(manifest: dict, errors: list[str]) -> None:
     for key in ["version", "description", "images"]:
         if key not in schema.get("properties", {}):
             errors.append(f"预览图 manifest schema.properties 缺少：{key}")
+    manifest_props = schema.get("properties", {})
+    if manifest_props.get("$schema", {}).get("const") != "manifest.schema.json":
+        errors.append("预览图 manifest schema.properties.$schema 应固定为 manifest.schema.json")
+    version_pattern = "^20[0-9]{2}-[0-9]{2}-[0-9]{2}-[a-z0-9][a-z0-9-]*$"
+    if manifest_props.get("version", {}).get("pattern") != version_pattern:
+        errors.append("预览图 manifest schema.properties.version 应限制为日期前缀小写 slug")
+    if manifest_props.get("description", {}).get("pattern") != "\\S":
+        errors.append("预览图 manifest schema.properties.description 应设置非空白约束")
+    if manifest_props.get("images", {}).get("uniqueItems") is not True:
+        errors.append("预览图 manifest schema.properties.images 应设置 uniqueItems=true")
     preview_props = schema.get("$defs", {}).get("preview_image", {}).get("properties", {})
+    preview_schema = schema.get("$defs", {}).get("preview_image", {})
+    if preview_schema.get("additionalProperties") is not False:
+        errors.append("预览图 manifest schema.preview_image 应设置 additionalProperties=false")
     for key in ["width", "height", "aspect_ratio", "orientation"]:
         if key not in preview_props:
             errors.append(f"预览图 manifest schema.preview_image.properties 缺少：{key}")
+    for key in ["character", "scene", "caption", "notes"]:
+        if preview_props.get(key, {}).get("pattern") != "\\S":
+            errors.append(f"预览图 manifest schema.preview_image.properties.{key} 应设置非空白约束")
     preview_required = set(schema.get("$defs", {}).get("preview_image", {}).get("required", []))
     for key in ["width", "height", "aspect_ratio", "orientation"]:
         if key not in preview_required:
@@ -992,7 +1008,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、文本文件卫生、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、Prompt 文本质量规则未知字段/非空白文本/列表去重、失败修正词库未知字段/非空白文本/列表去重、结构化出图评分 slug ID/未知字段/日期/图片路径/非空白文本/failure_ids 去重/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、README 预览图 alt/caption/顺序、参考仓库追踪、Prompt Pack 配置/schema/ID slug、JSON bundle/schema 同步、标签 taxonomy 未知字段/日期格式/重复 alias、标签覆盖矩阵、API 请求 JSONL 未知字段/非空白 prompt/tags 去重、Python 源码编译、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、文本文件卫生、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、Prompt 文本质量规则未知字段/非空白文本/列表去重、失败修正词库未知字段/非空白文本/列表去重、结构化出图评分 slug ID/未知字段/日期/图片路径/非空白文本/failure_ids 去重/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/结构/尺寸方向/安全状态、README 预览图 alt/caption/顺序、参考仓库追踪、Prompt Pack 配置/schema/ID slug、JSON bundle/schema 同步、标签 taxonomy 未知字段/日期格式/重复 alias、标签覆盖矩阵、API 请求 JSONL 未知字段/非空白 prompt/tags 去重、Python 源码编译、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

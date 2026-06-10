@@ -24,18 +24,21 @@ manifest.schema.json
 - `public_safe`：必须为 `true`，表示端庄、非低俗、不性感化、无水印、无真实品牌 logo。
 - `notes`：补充说明。
 
+`manifest.json` 不应加入临时草稿字段；`character`、`scene`、`caption`、`notes` 不能是空白字符串，`prompt_pack` 必须引用 `配置/prompt_packs.json` 中已有的 Prompt Pack。
+
 ## 入库标准
 
 - 图片应压缩后提交，单张尽量低于 2MB。
 - 必须适合公开 README 展示。
 - 不要包含低俗、擦边、性感化、儿童化、隐私信息、真实品牌 logo、水印或乱码文字。
 - `width`、`height`、`aspect_ratio`、`orientation` 必须与实际图片一致；README 横向样张可以登记为 `landscape`，不代表 Prompt Pack 的最终输出比例。
+- `file` 不能重复，不能带目录路径，只能登记 jpg/jpeg/png/webp 图片文件名。
 - 如果图片被 README 引用，必须同时出现在 `manifest.json`。
 - 如果删除图片，也要同步删除 README 引用和 `manifest.json` 记录。
 
 ## 本地检查
 
-新增、替换或重新压缩预览图后，先同步 manifest 尺寸元数据：
+新增、替换或重新压缩预览图后，先校验并同步 manifest 尺寸元数据：
 
 ```powershell
 python 工具/sync_preview_manifest.py
@@ -53,4 +56,4 @@ python 工具/sync_preview_manifest.py --check
 python 工具/run_quality_gate.py
 ```
 
-质量门禁会检查图片文件、实际尺寸、方向、README 引用、`manifest.json` 和 `manifest.schema.json` 是否一致。
+质量门禁会检查图片文件、实际尺寸、方向、README 引用、`manifest.json` 和 `manifest.schema.json` 是否一致，也会拦截未知字段、空白文案、重复图片、失效 Prompt Pack 引用和 `public_safe` 失真。

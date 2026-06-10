@@ -76,6 +76,7 @@ from new_output_evaluation import (  # noqa: E402
 from sync_preview_manifest import (  # noqa: E402
     render_manifest as render_preview_manifest,
     sync_manifest,
+    validate_manifest as validate_preview_manifest,
 )
 from summarize_output_evaluations import (  # noqa: E402
     render_summary as render_output_evaluation_summary,
@@ -969,9 +970,21 @@ class PromptPackToolTests(unittest.TestCase):
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
         self.assertIn("images", schema["properties"])
         self.assertIn("preview_image", schema["$defs"])
+        self.assertFalse(schema["additionalProperties"])
+        self.assertFalse(schema["$defs"]["preview_image"]["additionalProperties"])
+        self.assertEqual(schema["properties"]["$schema"]["const"], "manifest.schema.json")
+        self.assertEqual(
+            schema["properties"]["version"]["pattern"],
+            "^20[0-9]{2}-[0-9]{2}-[0-9]{2}-[a-z0-9][a-z0-9-]*$",
+        )
+        self.assertEqual(schema["properties"]["description"]["pattern"], "\\S")
+        self.assertTrue(schema["properties"]["images"]["uniqueItems"])
+        for key in ["character", "scene", "caption", "notes"]:
+            self.assertEqual(schema["$defs"]["preview_image"]["properties"][key]["pattern"], "\\S")
         manifest_files = {item["file"] for item in manifest["images"]}
         actual_files = {path.name for path in preview_dir.iterdir() if path.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}}
         self.assertEqual(manifest_files, actual_files)
+        self.assertEqual(validate_preview_manifest(manifest, preview_dir, self.data), [])
         for item in manifest["images"]:
             self.assertTrue(item["public_safe"])
             self.assertIn(item["prompt_pack"], {pack["id"] for pack in self.data["packs"]})
@@ -1034,6 +1047,32 @@ class PromptPackToolTests(unittest.TestCase):
             check=True,
         )
         self.assertIn("OK：预览图 manifest 尺寸元数据已同步", result.stdout)
+
+    def test_preview_manifest_rejects_unknown_blank_duplicate_and_unsafe_entries(self) -> None:
+        preview_dir = ROOT / "预览图"
+        manifest = json.loads((preview_dir / "manifest.json").read_text(encoding="utf-8"))
+        mutated = json.loads(json.dumps(manifest, ensure_ascii=False))
+        mutated["draft_note"] = "临时字段"
+        mutated["$schema"] = "other.schema.json"
+        mutated["version"] = "2026/06/10"
+        mutated["description"] = "   "
+        mutated["images"][0]["draft_note"] = "临时字段"
+        mutated["images"][0]["file"] = mutated["images"][1]["file"]
+        mutated["images"][0]["character"] = "   "
+        mutated["images"][0]["caption"] = "   "
+        mutated["images"][0]["prompt_pack"] = "missing_pack"
+        mutated["images"][0]["public_safe"] = False
+        errors = validate_preview_manifest(mutated, preview_dir, self.data)
+        self.assertTrue(any("预览图 manifest 存在未知顶层字段：draft_note" in error for error in errors))
+        self.assertTrue(any("$schema 必须是 manifest.schema.json" in error for error in errors))
+        self.assertTrue(any("version 必须是日期前缀小写 slug：2026/06/10" in error for error in errors))
+        self.assertTrue(any("预览图 manifest 缺少 description" in error for error in errors))
+        self.assertTrue(any("预览图 manifest.furina-dessert-02.jpg 存在未知字段：draft_note" in error for error in errors))
+        self.assertTrue(any("预览图 manifest file 重复：furina-dessert-02.jpg" in error for error in errors))
+        self.assertTrue(any("预览图 manifest.furina-dessert-02.jpg.character 不能为空白" in error for error in errors))
+        self.assertTrue(any("预览图 manifest.furina-dessert-02.jpg.caption 不能为空白" in error for error in errors))
+        self.assertTrue(any("prompt_pack 不存在：missing_pack" in error for error in errors))
+        self.assertTrue(any("public_safe 必须是 true" in error for error in errors))
 
     def test_gitignore_keeps_local_noise_out(self) -> None:
         gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")

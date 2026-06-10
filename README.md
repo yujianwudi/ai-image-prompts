@@ -135,7 +135,7 @@ python -m compileall -q 工具 tests
 python -m unittest discover -s tests -v
 ```
 
-统一质量门禁会检查 Prompt Pack 配置、配置 ID slug、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、Prompt 文本质量规则、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、Markdown 代码块闭合、README 预览图引用、alt、caption 和展示顺序、角色安全约束、参考仓库追踪、自动导出文件、文本文件 LF / BOM / 末尾换行、Python 源码编译和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
+统一质量门禁会检查 Prompt Pack 配置、配置 ID slug、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、Prompt 文本质量规则、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 结构与尺寸元数据、目录结构、本地链接、Markdown 代码块闭合、README 预览图引用、alt、caption 和展示顺序、角色安全约束、参考仓库追踪、自动导出文件、文本文件 LF / BOM / 末尾换行、Python 源码编译和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 
@@ -160,8 +160,8 @@ python -m unittest discover -s tests -v
 - 三角色 × 五输出类型已完整覆盖：写实随手拍、README预览、角色卡、商业海报、竖版封面。
 - 参考优秀仓库补充：商业海报、电商主图、信息图、UI截图、角色卡、分镜板、九宫格、封面缩略图、长图教程、地图导览模板。
 - README 预览图：展示模板生成效果，避免只看文字不直观。
-- 预览图清单：通过 `预览图/manifest.json` 和 `预览图/manifest.schema.json` 记录文件、尺寸、方向、角色、场景、Prompt Pack 和公开安全状态。
-- 预览图元数据同步：通过 `工具/sync_preview_manifest.py` 自动刷新 manifest 中的宽高、比例和方向。
+- 预览图清单：通过 `预览图/manifest.json` 和 `预览图/manifest.schema.json` 记录文件、尺寸、方向、角色、场景、Prompt Pack 和公开安全状态；schema 和同步工具会拦截未知字段、空白文案、重复图片、未登记 Prompt Pack 和 `public_safe` 失真。
+- 预览图元数据同步：通过 `工具/sync_preview_manifest.py` 自动刷新 manifest 中的宽高、比例和方向，并在同步前检查清单结构。
 - 评估迭代：出图评分、失败修正词库、迭代记录模板。
 - 项目仪表盘：`评估/项目仪表盘.md` 自动汇总角色、Prompt Pack、tags、预览图、失败规则和评分记录数量。
 - 出图评分骨架：通过 `工具/new_output_evaluation.py` 从 Prompt Pack 和图片路径生成结构化评分 JSON，并在输出前即时校验，减少手写漏字段、图片路径填成非图片、failure_id 写错或重复。

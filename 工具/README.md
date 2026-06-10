@@ -22,7 +22,7 @@ python 工具/refresh_reference_summary.py
 
 ## check_prompt_repo.py
 
-用途：检查仓库结构、AGENTS 维护指引、Markdown 本地链接、README 预览图 alt/caption/顺序、预览图 manifest 尺寸/方向、角色安全约束和参考仓库追踪。
+用途：检查仓库结构、AGENTS 维护指引、Markdown 本地链接、README 预览图 alt/caption/顺序、预览图 manifest schema/结构/尺寸/方向、角色安全约束和参考仓库追踪。
 不依赖网络，适合本地和 GitHub Actions 使用。
 
 运行：
@@ -35,7 +35,7 @@ python 工具/check_prompt_repo.py
 
 ## sync_preview_manifest.py
 
-用途：读取 `预览图/manifest.json` 和实际图片文件，自动同步 `width`、`height`、`aspect_ratio` 和 `orientation`。
+用途：读取 `预览图/manifest.json` 和实际图片文件，先校验未知字段、空白文案、重复图片、Prompt Pack 引用和 `public_safe` 状态，再自动同步 `width`、`height`、`aspect_ratio` 和 `orientation`。
 不依赖网络，适合新增、替换或压缩 README 预览图后运行。
 
 同步 manifest：
@@ -377,4 +377,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、配置 ID slug、模板 `api_profile`、JSON bundle/schema 同步与结构约束、API 请求 JSONL 未知字段/非空白 prompt/tags 去重、标签 taxonomy 未知字段/日期格式/重复 alias、角色防串审计、Prompt 文本质量审计、Prompt 文本质量规则未知字段/非空白文本/列表去重、失败修正词库未知字段/非空白文本/列表去重、结构化出图评分 slug ID/未知字段/日期/图片路径/非空白文本/failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位、仓库结构、Markdown 代码块闭合、预览图尺寸、README 预览图 alt/caption/顺序、安全约束、文本文件 LF / BOM / 末尾换行、自动导出文件、Python 源码编译和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、配置 ID slug、api_profile 导出、JSON bundle/schema 同步、API JSON payload、tags 导出、API JSONL 未知字段/非空白 prompt/tags 去重、标签索引、标签 taxonomy 未知字段/日期格式/重复 alias、批量导出、CLI、预览图 manifest 同步、README 预览图 alt/caption/顺序、角色防串审计、Prompt 文本质量审计、Prompt 文本质量规则未知字段/非空白文本/列表去重、失败修正词库未知字段/非空白文本/列表去重、结构化出图评分 slug ID/未知字段/日期/图片路径/非空白文本/failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、配置 ID slug、模板 `api_profile`、JSON bundle/schema 同步与结构约束、API 请求 JSONL 未知字段/非空白 prompt/tags 去重、标签 taxonomy 未知字段/日期格式/重复 alias、角色防串审计、Prompt 文本质量审计、Prompt 文本质量规则未知字段/非空白文本/列表去重、失败修正词库未知字段/非空白文本/列表去重、结构化出图评分 slug ID/未知字段/日期/图片路径/非空白文本/failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位、仓库结构、Markdown 代码块闭合、预览图 manifest 结构/尺寸/安全状态、README 预览图 alt/caption/顺序、安全约束、文本文件 LF / BOM / 末尾换行、自动导出文件、Python 源码编译和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、配置 ID slug、api_profile 导出、JSON bundle/schema 同步、API JSON payload、tags 导出、API JSONL 未知字段/非空白 prompt/tags 去重、标签索引、标签 taxonomy 未知字段/日期格式/重复 alias、批量导出、CLI、预览图 manifest 结构/尺寸/安全状态、README 预览图 alt/caption/顺序、角色防串审计、Prompt 文本质量审计、Prompt 文本质量规则未知字段/非空白文本/列表去重、失败修正词库未知字段/非空白文本/列表去重、结构化出图评分 slug ID/未知字段/日期/图片路径/非空白文本/failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位和统一质量门禁帮助入口。
