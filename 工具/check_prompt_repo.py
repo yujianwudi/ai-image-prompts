@@ -27,6 +27,8 @@ REQUIRED_FILES = [
     "CONTRIBUTING.md",
     "CHANGELOG.md",
     "免责声明.md",
+    "内容安全政策.md",
+    "SECURITY.md",
     ".editorconfig",
     ".gitattributes",
     "角色/README.md",
@@ -181,6 +183,21 @@ def check_local_links(errors: list[str]) -> None:
                 errors.append(f"本地链接不存在：{rel(path)} -> {raw}")
 
 
+def check_content_safety_policy(errors: list[str]) -> None:
+    path = ROOT / "内容安全政策.md"
+    if not path.exists():
+        return
+    text = path.read_text(encoding="utf-8")
+    for term in ["非低俗", "不性感化", "不儿童化", "真实个人隐私", "不要真实品牌 logo", "不要混入其他角色元素"]:
+        if term not in text:
+            errors.append(f"内容安全政策缺少关键约束：{term}")
+    security = ROOT / "SECURITY.md"
+    if security.exists():
+        security_text = security.read_text(encoding="utf-8")
+        if "内容安全政策.md" not in security_text:
+            errors.append("SECURITY.md 应指向 内容安全政策.md")
+
+
 def check_role_safety(errors: list[str]) -> None:
     role_dir = ROOT / "角色"
     for path in sorted(role_dir.glob("*.md")):
@@ -323,6 +340,7 @@ def main() -> int:
     check_markdown_health(errors, warnings)
     check_local_links(errors)
     check_readme_badges(errors)
+    check_content_safety_policy(errors)
     check_role_safety(errors)
     check_reference_tracking(errors)
     check_preview_images(errors, warnings)
@@ -346,7 +364,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema 和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、内容安全政策、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema 和自动导出文件通过。")
         return 0
     return 1
 

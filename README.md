@@ -129,6 +129,7 @@ python 工具/build_prompt_pack.py --all
 - 评估迭代：出图评分、失败修正词库、迭代记录模板。
 - Issue / PR 模板：规范角色新增、模板优化、出图问题反馈和提交检查。
 - 仓库格式规范：通过 `.gitattributes` 和 `.editorconfig` 固定 UTF-8、LF 和缩进规则。
+- 内容安全政策：明确非低俗、不性感化、不儿童化、隐私和真实品牌 logo 规则。
 
 ## 交付文档
 
@@ -141,4 +142,6 @@ python 工具/build_prompt_pack.py --all
 - `生成提示词/README.md`：由 Prompt Pack 自动导出的可复制提示词。
 - `CONTRIBUTING.md`：新增角色和模板的规则。
 - `免责声明.md`：公开使用、版权和安全提醒。
+- `内容安全政策.md`：公开预览图、Issue/PR 和 Prompt Pack 的安全规则。
+- `SECURITY.md`：GitHub 安全入口，指向内容安全政策。
 - `CHANGELOG.md`：变更记录。

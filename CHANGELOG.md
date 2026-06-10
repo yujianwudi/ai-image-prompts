@@ -4,6 +4,7 @@
 
 ### Added
 
+- 新增 `内容安全政策.md` 和 `SECURITY.md`，明确公开预览、Issue/PR 和 Prompt Pack 的安全规则。
 - README 新增 CI、Prompt Pack、角色、模板和 JSON Schema 状态徽章。
 - 新增 `.gitattributes` 和 `.editorconfig`，统一文本换行、编码和缩进规则。
 - 新增 Pull Request 模板，提醒安全约束、Prompt Pack 导出和本地验证。
@@ -36,6 +37,7 @@
 
 ### Changed
 
+- 质量门禁现在会检查内容安全政策和 SECURITY 入口。
 - 修正 README 模板数量徽章，并将 README 徽章计数纳入质量门禁。
 - 质量门禁现在会检查仓库格式配置是否保留关键规则。
 - 质量门禁现在会检查 GitHub Issue / PR 协作模板是否存在。
