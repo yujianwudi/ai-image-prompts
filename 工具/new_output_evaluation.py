@@ -68,6 +68,9 @@ def failure_rule_lookup(failure_lexicon: dict[str, Any]) -> dict[str, str]:
 
 def validate_failure_ids(failure_ids: list[str], failure_lexicon: dict[str, Any]) -> None:
     known = failure_rule_lookup(failure_lexicon)
+    duplicates = sorted({failure_id for failure_id in failure_ids if failure_ids.count(failure_id) > 1})
+    if duplicates:
+        raise ValueError(f"failure_ids 重复：{', '.join(duplicates)}")
     unknown = [failure_id for failure_id in failure_ids if failure_id not in known]
     if unknown:
         raise ValueError(f"failure_ids 未登记：{', '.join(unknown)}。可用：{', '.join(sorted(known))}")

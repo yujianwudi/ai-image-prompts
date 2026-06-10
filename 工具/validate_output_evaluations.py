@@ -66,6 +66,8 @@ def validate_schema_file(schema_path: Path = DEFAULT_SCHEMA) -> list[str]:
     for key in ["prompt_pack", "character", "scores", "total_score", "decision", "failure_ids"]:
         if key not in evaluation_props:
             errors.append(f"出图评分 schema.evaluation.properties 缺少：{key}")
+    if evaluation_props.get("failure_ids", {}).get("uniqueItems") is not True:
+        errors.append("出图评分 schema.evaluation.properties.failure_ids 应设置 uniqueItems=true")
     return errors
 
 
@@ -171,10 +173,14 @@ def validate_document(
         if not isinstance(failure_ids, list):
             errors.append(f"{eval_id} failure_ids 必须是 array")
         else:
+            seen_failure_ids: set[str] = set()
             for failure_id in failure_ids:
                 if not isinstance(failure_id, str) or not failure_id.strip():
                     errors.append(f"{eval_id} failure_ids 不能包含空值")
                     continue
+                if failure_id in seen_failure_ids:
+                    errors.append(f"{eval_id} failure_ids 重复：{failure_id}")
+                seen_failure_ids.add(failure_id)
                 if failure_id not in failure_rule_ids:
                     errors.append(f"{eval_id} failure_ids 引用不存在的失败类型：{failure_id}")
             if decision in {"edit", "regenerate", "reject"} and not failure_ids:

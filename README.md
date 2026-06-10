@@ -164,7 +164,7 @@ python -m unittest discover -s tests -v
 - 预览图元数据同步：通过 `工具/sync_preview_manifest.py` 自动刷新 manifest 中的宽高、比例和方向。
 - 评估迭代：出图评分、失败修正词库、迭代记录模板。
 - 项目仪表盘：`评估/项目仪表盘.md` 自动汇总角色、Prompt Pack、tags、预览图、失败规则和评分记录数量。
-- 出图评分骨架：通过 `工具/new_output_evaluation.py` 从 Prompt Pack 和图片路径生成结构化评分 JSON，减少手写漏字段和 failure_id 写错。
+- 出图评分骨架：通过 `工具/new_output_evaluation.py` 从 Prompt Pack 和图片路径生成结构化评分 JSON，减少手写漏字段、failure_id 写错或重复。
 - Issue / PR 模板：规范角色新增、模板优化、出图问题反馈和提交检查。
 - 仓库格式规范：通过 `.gitattributes` 和 `.editorconfig` 固定 UTF-8、LF 和缩进规则，质量门禁会检查实际文本文件无 CRLF、无 UTF-8 BOM 且保留末尾换行。
 - 忽略规则：通过 `.gitignore` 避免提交缓存、虚拟环境、本地密钥和未压缩原图。
@@ -175,7 +175,7 @@ python -m unittest discover -s tests -v
 - 角色防串审计：`评估/角色防串审计报告.md` 自动汇总三角色锚点、防串、安全和成人化约束覆盖。
 - Prompt 文本质量审计：`评估/Prompt文本质量审计报告.md` 自动检查生成前 prompt 的结构、安全、质量、模板意图、角色词、长度范围和禁用平台参数泄漏。
 - 结构化失败修正词库：`评估/failure_fix_lexicon.json` 记录失败类型、识别线索、修正词和下一步动作，并自动生成 `评估/失败修正词库.md`。
-- 结构化出图评分：`评估/output_evaluations.example.json` 和 `评估/output_evaluations.schema.json` 可记录每张图的评分、问题、失败类型 ID 和下一步动作。
+- 结构化出图评分：`评估/output_evaluations.example.json` 和 `评估/output_evaluations.schema.json` 可记录每张图的评分、问题、失败类型 ID 和下一步动作，并禁止同一记录重复统计同一个失败类型。
 - 出图评分汇总：`评估/出图评分汇总.md` 自动汇总平均分、决策分布、常见问题、失败类型分布和记录明细。
 - 失败修正建议：`评估/失败修正建议.md` 自动把评分记录里的 `failure_ids` 转成可复制修正提示词。
 

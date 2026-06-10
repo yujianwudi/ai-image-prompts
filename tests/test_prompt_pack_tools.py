@@ -69,6 +69,7 @@ from new_output_evaluation import (  # noqa: E402
     build_document as build_output_evaluation_document,
     build_record as build_output_evaluation_record,
     parse_scores as parse_output_evaluation_scores,
+    validate_failure_ids as validate_new_output_failure_ids,
 )
 from sync_preview_manifest import (  # noqa: E402
     render_manifest as render_preview_manifest,
@@ -555,10 +556,26 @@ class PromptPackToolTests(unittest.TestCase):
 
     def test_output_evaluation_example_is_valid(self) -> None:
         document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
+        schema = load_evaluation_json(ROOT / "评估" / "output_evaluations.schema.json")
+        self.assertTrue(schema["$defs"]["evaluation"]["properties"]["failure_ids"]["uniqueItems"])
         result = validate_evaluation_document(document, self.data)
         self.assertEqual(result.errors, [])
         self.assertEqual(len(document["evaluations"]), 1)
         self.assertEqual(document["evaluations"][0]["failure_ids"], ["composition_ratio_mismatch"])
+
+    def test_output_evaluation_rejects_duplicate_failure_ids(self) -> None:
+        document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
+        mutated = json.loads(json.dumps(document, ensure_ascii=False))
+        mutated["evaluations"][0]["failure_ids"] = ["composition_ratio_mismatch", "composition_ratio_mismatch"]
+        result = validate_evaluation_document(mutated, self.data)
+        self.assertTrue(any("failure_ids 重复：composition_ratio_mismatch" in error for error in result.errors))
+
+        failure_lexicon = load_failure_fix_json(ROOT / "评估" / "failure_fix_lexicon.json")
+        with self.assertRaisesRegex(ValueError, "failure_ids 重复"):
+            validate_new_output_failure_ids(
+                ["composition_ratio_mismatch", "composition_ratio_mismatch"],
+                failure_lexicon,
+            )
 
     def test_new_output_evaluation_builder_creates_valid_document(self) -> None:
         scores = parse_output_evaluation_scores(

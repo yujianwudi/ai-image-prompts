@@ -4,6 +4,7 @@
 
 ### Added
 
+- 结构化出图评分 schema、校验器和评分骨架工具新增 `failure_ids` 去重检查，避免同一失败类型在汇总与修正建议中被重复统计。
 - Prompt Pack 配置和 schema 新增角色/模板/Pack ID 小写 slug 校验，防止生成文件名、JSONL 记录和配置引用漂移。
 - 质量门禁新增预览图 manifest 与 README 展示顺序/重复检查，避免公开预览区加图时出现重复或排序漂移。
 - README 预览图新增与 manifest caption 对齐的 `alt` 文本，质量门禁和单元测试会阻止预览图展示文案漂移。
