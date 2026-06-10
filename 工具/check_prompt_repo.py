@@ -49,6 +49,11 @@ REQUIRED_FILES = [
     "配置/prompt_packs.schema.json",
     "生成提示词/README.md",
     "tests/test_prompt_pack_tools.py",
+    ".github/ISSUE_TEMPLATE/output_issue.yml",
+    ".github/ISSUE_TEMPLATE/template_optimization.yml",
+    ".github/ISSUE_TEMPLATE/character_prompt.yml",
+    ".github/ISSUE_TEMPLATE/config.yml",
+    ".github/PULL_REQUEST_TEMPLATE.md",
 ]
 
 REFERENCE_REPOS = [
@@ -298,7 +303,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema 和自动导出文件通过。")
+        print("\nOK：结构、链接、协作模板、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema 和自动导出文件通过。")
         return 0
     return 1
 

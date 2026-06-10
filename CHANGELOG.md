@@ -4,6 +4,8 @@
 
 ### Added
 
+- 新增 Pull Request 模板，提醒安全约束、Prompt Pack 导出和本地验证。
+- 新增 GitHub Issue 模板：角色提示词、模板优化、出图问题反馈。
 - 新增 `配置/prompt_packs.schema.json`，为 Prompt Pack 配置提供 JSON Schema。
 - 补齐三位角色 × 五类输出类型的 Prompt Pack，共 15 个自动组合提示词。
 - 新增 `生成提示词/覆盖矩阵.md`，展示角色与输出类型覆盖情况。
@@ -32,6 +34,7 @@
 
 ### Changed
 
+- 质量门禁现在会检查 GitHub Issue / PR 协作模板是否存在。
 - 质量门禁和单元测试现在会检查 Prompt Pack `$schema` 引用。
 - 覆盖矩阵现在显示三位角色已完整覆盖全部输出类型。
 - 质量门禁和单元测试现在会检查覆盖矩阵是否与配置同步。

@@ -1,0 +1,50 @@
+﻿---
+name: 模板优化建议
+description: 新增或优化场景、镜头、海报、信息图、封面等模板
+title: "[模板] "
+labels: ["模板", "优化"]
+body:
+  - type: dropdown
+    id: category
+    attributes:
+      label: 模板类型
+      options:
+        - 场景模板
+        - 镜头构图
+        - 灯光色彩
+        - 真实材质
+        - 情绪动作
+        - 商业海报 / 电商
+        - 信息图 / UI
+        - 角色卡 / 分镜
+        - 封面缩略图
+        - 长图教程 / Slides
+        - 地图 / 导览图
+        - Prompt Pack
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 优化内容
+      description: 请描述想新增或修改的模板结构。
+      placeholder: 说明输出类型、版式、场景、光线、文字策略等。
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: 参考来源
+      description: 如果参考外部仓库，请只提炼结构，不直接复制长提示词。
+      placeholder: 可填链接或说明灵感来源。
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 检查项
+      options:
+        - label: 使用自然语言分段，不只是堆关键词。
+          required: true
+        - label: 包含非低俗、不性感化、安全公开约束。
+          required: true
+        - label: 如果包含文字生成，写了文字清晰、不要乱码。
+          required: false

@@ -1,0 +1,48 @@
+﻿---
+name: 出图问题反馈
+description: 反馈串角色、乱码、低质、构图或安全问题
+title: "[出图问题] "
+labels: ["出图问题", "评估"]
+body:
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: 问题类型
+      options:
+        - 角色串设定
+        - 发型/头饰/服装错误
+        - 文字乱码
+        - 构图错误
+        - 材质不真实
+        - 低俗/性感化风险
+        - Prompt Pack 输出不稳定
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: prompt
+    attributes:
+      label: 使用的提示词或 Prompt Pack ID
+      description: 请粘贴提示词，或写出使用的 pack id。
+      placeholder: 例如：furina_convention_phone
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: 结果问题
+      description: 具体哪里错了？如果能描述图像问题即可，不需要上传敏感图片。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望修正方向
+      placeholder: 例如：加强白蓝短发、蓝黑小礼帽；不要混入多莉商人帽。
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: 安全确认
+      options:
+        - label: 反馈内容不包含低俗、擦边、真实个人隐私或侵权素材。
+          required: true

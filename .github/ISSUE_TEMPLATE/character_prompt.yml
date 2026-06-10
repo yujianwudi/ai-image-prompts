@@ -1,0 +1,39 @@
+﻿---
+name: 角色提示词新增/修正
+description: 新增角色，或修正角色锚点、防串词、角色专属提示词
+title: "[角色] "
+labels: ["角色", "提示词"]
+body:
+  - type: textarea
+    id: character
+    attributes:
+      label: 角色信息
+      description: 角色名、来源作品、你想新增或修正的内容。
+      placeholder: 例如：新增某角色；修正发型、服装、气质等。
+    validations:
+      required: true
+  - type: textarea
+    id: anchors
+    attributes:
+      label: 关键识别点
+      description: 发型、发色、头饰、服装、道具、气质。
+      placeholder: 列出必须保留的识别点。
+    validations:
+      required: true
+  - type: textarea
+    id: anti_mix
+    attributes:
+      label: 防串要求
+      description: 容易混到哪些角色？需要禁止哪些元素？
+      placeholder: 不要混入某角色的发型、帽子、服装、气质。
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: 安全约束
+      options:
+        - label: 保持端庄自然、非低俗、不性感化。
+          required: true
+        - label: 不要求暴露化、擦边、儿童化或真实人物替身。
+          required: true

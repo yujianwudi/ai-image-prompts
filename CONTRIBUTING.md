@@ -15,6 +15,7 @@
 工具/     放维护脚本
 配置/     放机器可读 Prompt Pack 配置
 生成提示词/ 放自动导出的可复制提示词
+.github/     放 GitHub Actions、Issue 模板和 PR 模板
 ```
 
 ## 新增角色
@@ -106,3 +107,16 @@ python -m unittest discover -s tests -v
 - 新模板能在 `模板/README.md` 或 `参考仓库/分类映射表.md` 里找到对应分类。
 - 如果改动工具脚本，需要补充或更新 `tests/` 下的测试。
 - 不直接复制外部仓库长提示词。
+
+## Issue / PR 模板
+
+公开协作时优先使用 GitHub 模板：
+
+```text
+.github/ISSUE_TEMPLATE/character_prompt.yml
+.github/ISSUE_TEMPLATE/template_optimization.yml
+.github/ISSUE_TEMPLATE/output_issue.yml
+.github/PULL_REQUEST_TEMPLATE.md
+```
+
+这些模板会提醒提交者写清角色锚点、防串要求、安全约束、文字清晰和本地验证结果。
