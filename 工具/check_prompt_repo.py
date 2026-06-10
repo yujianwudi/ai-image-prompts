@@ -134,6 +134,7 @@ def clean_target(target: str) -> str:
 def check_readme_badges(errors: list[str]) -> None:
     readme_path = ROOT / "README.md"
     config_path = ROOT / "配置" / "prompt_packs.json"
+    preview_manifest_path = ROOT / "预览图" / "manifest.json"
     if not readme_path.exists() or not config_path.exists():
         return
     readme = readme_path.read_text(encoding="utf-8")
@@ -142,18 +143,28 @@ def check_readme_badges(errors: list[str]) -> None:
     except Exception as exc:  # noqa: BLE001
         errors.append(f"无法检查 README 徽章：{exc}")
         return
+    try:
+        preview_manifest = json.loads(preview_manifest_path.read_text(encoding="utf-8"))
+        preview_entries = preview_manifest.get("images", [])
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"无法检查 README 预览图徽章：{exc}")
+        return
+    if not isinstance(preview_entries, list):
+        errors.append("无法检查 README 预览图徽章：manifest.images 不是 array")
+        return
+    preview_count = len(preview_entries)
     template_count = len([path for path in (ROOT / "模板").glob("*.md") if path.name.lower() != "readme.md"])
     expected = {
         "CI badge": "actions/workflows/validate.yml/badge.svg",
         "Prompt Packs badge": f"Prompt%20Packs-{len(data.get('packs', []))}-",
         "Characters badge": f"Characters-{len(data.get('characters', {}))}-",
         "Templates badge": f"Templates-{template_count}-",
+        "Preview Images badge": f"Preview%20Images-{preview_count}-",
         "JSON Schema badge": "JSON%20Schema-enabled",
     }
     for label, needle in expected.items():
         if needle not in readme:
             errors.append(f"README 徽章缺失或数字过期：{label} 应包含 {needle}")
-
 
 def check_repo_style_config(errors: list[str]) -> None:
     gitattributes = ROOT / ".gitattributes"

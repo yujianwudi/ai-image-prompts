@@ -5,6 +5,7 @@
 ![Characters](https://img.shields.io/badge/Characters-3-purple)
 ![Templates](https://img.shields.io/badge/Templates-24-green)
 ![Schema](https://img.shields.io/badge/JSON%20Schema-enabled-orange)
+![Preview Images](https://img.shields.io/badge/Preview%20Images-4-lightgrey)
 
 
 用于整理 AI 生图提示词、角色专属设定、固定场景模板和防串提示词。  

@@ -12,7 +12,7 @@
 - 新增 `工具/audit_character_prompts.py` 和 `评估/角色防串审计报告.md`，自动检查角色锚点、防串、安全约束和芙宁娜污染源防护。
 - 新增 `预览图/README.md`、`预览图/manifest.json` 和 `预览图/manifest.schema.json`，记录公开预览图的角色、场景、Prompt Pack 和安全状态。
 - 新增 `内容安全政策.md` 和 `SECURITY.md`，明确公开预览、Issue/PR 和 Prompt Pack 的安全规则。
-- README 新增 CI、Prompt Pack、角色、模板和 JSON Schema 状态徽章。
+- README 新增 CI、Prompt Pack、角色、模板、预览图数量和 JSON Schema 状态徽章。
 - 新增 `.gitattributes` 和 `.editorconfig`，统一文本换行、编码和缩进规则。
 - 新增 Pull Request 模板，提醒安全约束、Prompt Pack 导出和本地验证。
 - 新增 GitHub Issue 模板：角色提示词、模板优化、出图问题反馈。
@@ -44,6 +44,7 @@
 
 ### Changed
 
+- README 预览图数量徽章现在会跟随 `预览图/manifest.json` 自动校验，避免公开预览图数量过期。
 - 质量门禁现在会检查授权与使用边界文件及 SECURITY 入口。
 - 质量门禁新增轻量密钥扫描，检查常见 API key、GitHub token、AWS key 和高风险明文 secret。
 - 扩展 `.gitignore`，并将 Python 缓存、虚拟环境、本地密钥和原始素材忽略规则纳入质量门禁。
