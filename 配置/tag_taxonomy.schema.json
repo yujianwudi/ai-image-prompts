@@ -12,14 +12,17 @@
   ],
   "properties": {
     "$schema": {
-      "type": "string"
+      "type": "string",
+      "const": "tag_taxonomy.schema.json"
     },
     "version": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^20[0-9]{2}-[0-9]{2}-[0-9]{2}$"
     },
     "description": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "\\S"
     },
     "categories": {
       "type": "array",
@@ -48,15 +51,17 @@
       "properties": {
         "id": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[a-z0-9_]+$"
         },
         "name": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "description": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         }
       }
     },
@@ -71,21 +76,24 @@
       "properties": {
         "id": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "category": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[a-z0-9_]+$"
         },
         "description": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "aliases": {
           "type": "array",
           "items": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": "\\S"
           },
           "uniqueItems": true
         }

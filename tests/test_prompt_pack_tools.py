@@ -133,6 +133,11 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertTrue(taxonomy_schema_path.exists())
         taxonomy_schema = json.loads(taxonomy_schema_path.read_text(encoding="utf-8"))
         self.assertIn("tags", taxonomy_schema["properties"])
+        self.assertEqual(taxonomy_schema["properties"]["$schema"]["const"], "tag_taxonomy.schema.json")
+        self.assertEqual(taxonomy_schema["properties"]["version"]["pattern"], "^20[0-9]{2}-[0-9]{2}-[0-9]{2}$")
+        self.assertEqual(taxonomy_schema["$defs"]["category"]["properties"]["id"]["pattern"], "^[a-z0-9_]+$")
+        self.assertEqual(taxonomy_schema["$defs"]["tag"]["properties"]["category"]["pattern"], "^[a-z0-9_]+$")
+        self.assertEqual(taxonomy_schema["$defs"]["tag"]["properties"]["aliases"]["items"]["pattern"], "\\S")
 
     def test_config_is_valid(self) -> None:
         self.assertEqual(validate_config(self.data), [])
@@ -144,6 +149,25 @@ class PromptPackToolTests(unittest.TestCase):
         used_tags = {tag for template in self.data["templates"].values() for tag in template["tags"]}
         self.assertTrue(used_tags <= known_tags)
         self.assertIn("公开安全", known_tags)
+
+    def test_tag_taxonomy_rejects_unknown_fields_and_duplicate_aliases(self) -> None:
+        taxonomy = load_tag_taxonomy(DEFAULT_TAG_TAXONOMY)
+        mutated = json.loads(json.dumps(taxonomy, ensure_ascii=False))
+        mutated["draft_note"] = "临时字段"
+        mutated["version"] = "2026/06/10"
+        mutated["description"] = "   "
+        mutated["categories"][0]["draft_note"] = "临时字段"
+        mutated["categories"][0]["id"] = "Bad-Category"
+        mutated["tags"][0]["draft_note"] = "临时字段"
+        mutated["tags"][0]["aliases"] = ["别名", "别名"]
+        errors = validate_tag_taxonomy(mutated)
+        self.assertTrue(any("tag_taxonomy.json 存在未知字段：draft_note" in error for error in errors))
+        self.assertTrue(any("tag_taxonomy.json version 必须是 YYYY-MM-DD：2026/06/10" in error for error in errors))
+        self.assertTrue(any("tag_taxonomy.json 缺少 description" in error for error in errors))
+        self.assertTrue(any("tag_taxonomy.categories[0] 存在未知字段：draft_note" in error for error in errors))
+        self.assertTrue(any("tag_taxonomy.categories.Bad-Category.id 必须只包含小写字母、数字和下划线" in error for error in errors))
+        self.assertTrue(any("tag_taxonomy.tags[0] 存在未知字段：draft_note" in error for error in errors))
+        self.assertTrue(any("tag_taxonomy.tags.写实cos.aliases 重复：别名" in error for error in errors))
 
     def test_config_rejects_unknown_or_alias_tags(self) -> None:
         mutated = json.loads(json.dumps(self.data, ensure_ascii=False))

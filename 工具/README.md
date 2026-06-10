@@ -294,7 +294,7 @@ python 工具/validate_api_requests.py --check
 ## build_prompt_pack.py
 
 用途：读取 `配置/prompt_packs.json`，把角色锚点、输出类型、场景、构图、光线、材质、安全约束、防串约束和 gpt-image-2 推荐 `api_profile` 组合成可复制提示词。
-校验时还会读取 `配置/tag_taxonomy.json`，确保模板 tags 都来自受控词表，并校验 `api_profile` 的 size、quality、output_format、output_compression 和 background，避免同义词或 API 参数漂移。
+校验时还会读取 `配置/tag_taxonomy.json`，确保模板 tags 都来自受控词表，并检查标签词表未知字段、版本日期格式、分类 slug、空白文本和重复 alias；同时校验 `api_profile` 的 size、quality、output_format、output_compression 和 background，避免同义词或 API 参数漂移。
 不依赖网络，适合本地快速出 prompt。
 
 查看可用组合：
@@ -377,4 +377,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、配置 ID slug、模板 `api_profile`、JSON bundle/schema 同步与结构约束、API 请求 JSONL 未知字段/非空白 prompt/tags 去重、标签 taxonomy、角色防串审计、Prompt 文本质量审计、失败修正词库未知字段/非空白文本/列表去重、结构化出图评分 slug ID/未知字段/日期/图片路径/非空白文本/failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位、仓库结构、Markdown 代码块闭合、预览图尺寸、README 预览图 alt/caption/顺序、安全约束、文本文件 LF / BOM / 末尾换行、自动导出文件、Python 源码编译和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、配置 ID slug、api_profile 导出、JSON bundle/schema 同步、API JSON payload、tags 导出、API JSONL 未知字段/非空白 prompt/tags 去重、标签索引、标签 taxonomy、批量导出、CLI、预览图 manifest 同步、README 预览图 alt/caption/顺序、角色防串审计、Prompt 文本质量审计、失败修正词库未知字段/非空白文本/列表去重、结构化出图评分 slug ID/未知字段/日期/图片路径/非空白文本/failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、配置 ID slug、模板 `api_profile`、JSON bundle/schema 同步与结构约束、API 请求 JSONL 未知字段/非空白 prompt/tags 去重、标签 taxonomy 未知字段/日期格式/重复 alias、角色防串审计、Prompt 文本质量审计、失败修正词库未知字段/非空白文本/列表去重、结构化出图评分 slug ID/未知字段/日期/图片路径/非空白文本/failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位、仓库结构、Markdown 代码块闭合、预览图尺寸、README 预览图 alt/caption/顺序、安全约束、文本文件 LF / BOM / 末尾换行、自动导出文件、Python 源码编译和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、配置 ID slug、api_profile 导出、JSON bundle/schema 同步、API JSON payload、tags 导出、API JSONL 未知字段/非空白 prompt/tags 去重、标签索引、标签 taxonomy 未知字段/日期格式/重复 alias、批量导出、CLI、预览图 manifest 同步、README 预览图 alt/caption/顺序、角色防串审计、Prompt 文本质量审计、失败修正词库未知字段/非空白文本/列表去重、结构化出图评分 slug ID/未知字段/日期/图片路径/非空白文本/failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位和统一质量门禁帮助入口。

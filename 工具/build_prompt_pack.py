@@ -40,6 +40,10 @@ API_PROFILE_ORDER = ["model", "size", "quality", "output_format", "output_compre
 VALID_API_QUALITIES = {"low", "medium", "high", "auto"}
 VALID_API_OUTPUT_FORMATS = {"png", "jpeg", "webp"}
 SLUG_ID_RE = re.compile(r"^[a-z0-9_]+$")
+TAXONOMY_VERSION_RE = re.compile(r"^20[0-9]{2}-[0-9]{2}-[0-9]{2}$")
+TAG_TAXONOMY_FIELDS = {"$schema", "version", "description", "categories", "tags"}
+TAG_CATEGORY_FIELDS = {"id", "name", "description"}
+TAG_FIELDS = {"id", "category", "description", "aliases"}
 
 
 def configure_stdout() -> None:
@@ -67,8 +71,16 @@ def validate_tag_taxonomy(data: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if data.get("$schema") != "tag_taxonomy.schema.json":
         errors.append("tag_taxonomy.json 的 $schema 应为 tag_taxonomy.schema.json")
-    if not str(data.get("version", "")).strip():
+    extra_fields = sorted(set(data) - TAG_TAXONOMY_FIELDS)
+    if extra_fields:
+        errors.append("tag_taxonomy.json 存在未知字段：" + "、".join(extra_fields))
+    version = str(data.get("version", "")).strip()
+    if not version:
         errors.append("tag_taxonomy.json 缺少 version")
+    elif not TAXONOMY_VERSION_RE.match(version):
+        errors.append(f"tag_taxonomy.json version 必须是 YYYY-MM-DD：{version}")
+    if not str(data.get("description", "")).strip():
+        errors.append("tag_taxonomy.json 缺少 description")
 
     categories = data.get("categories")
     if not isinstance(categories, list) or not categories:
@@ -79,10 +91,15 @@ def validate_tag_taxonomy(data: dict[str, Any]) -> list[str]:
         if not isinstance(category, dict):
             errors.append(f"tag_taxonomy.categories[{index}] 必须是 object")
             continue
+        extra_fields = sorted(set(category) - TAG_CATEGORY_FIELDS)
+        if extra_fields:
+            errors.append(f"tag_taxonomy.categories[{index}] 存在未知字段：" + "、".join(extra_fields))
         category_id = str(category.get("id", "")).strip()
         if not category_id:
             errors.append(f"tag_taxonomy.categories[{index}].id 不能为空")
             continue
+        if not is_slug_id(category_id):
+            errors.append(f"tag_taxonomy.categories.{category_id}.id 必须只包含小写字母、数字和下划线")
         if category_id in category_ids:
             errors.append(f"tag_taxonomy category id 重复：{category_id}")
         category_ids.add(category_id)
@@ -100,6 +117,9 @@ def validate_tag_taxonomy(data: dict[str, Any]) -> list[str]:
         if not isinstance(tag, dict):
             errors.append(f"tag_taxonomy.tags[{index}] 必须是 object")
             continue
+        extra_fields = sorted(set(tag) - TAG_FIELDS)
+        if extra_fields:
+            errors.append(f"tag_taxonomy.tags[{index}] 存在未知字段：" + "、".join(extra_fields))
         tag_id = str(tag.get("id", "")).strip()
         if not tag_id:
             errors.append(f"tag_taxonomy.tags[{index}].id 不能为空")
@@ -118,11 +138,15 @@ def validate_tag_taxonomy(data: dict[str, Any]) -> list[str]:
         if not isinstance(aliases, list):
             errors.append(f"tag_taxonomy.tags.{tag_id}.aliases 必须是 array")
             continue
+        seen_aliases: set[str] = set()
         for alias in aliases:
             alias = str(alias).strip()
             if not alias:
                 errors.append(f"tag_taxonomy.tags.{tag_id}.aliases 不能包含空值")
                 continue
+            if alias in seen_aliases:
+                errors.append(f"tag_taxonomy.tags.{tag_id}.aliases 重复：{alias}")
+            seen_aliases.add(alias)
             if alias == tag_id:
                 errors.append(f"tag_taxonomy.tags.{tag_id}.aliases 不应重复主标签")
             if alias in tag_ids:

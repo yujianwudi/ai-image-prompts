@@ -147,7 +147,7 @@ python -m unittest discover -s tests -v
 - Prompt as Code 字段化：把任务类型、主体锁定、版式、文字策略和防串约束拆开。
 - 机器可读 Prompt Pack：通过 `配置/prompt_packs.json` 和 `工具/build_prompt_pack.py` 自动组合可复制提示词。
 - Prompt Pack API 参数：每个输出模板都绑定 `api_profile`，记录 `model`、`size`、`quality`、`output_format`、压缩率和背景模式，避免复制提示词时漏掉 gpt-image-2 推荐参数。
-- 标签 taxonomy：通过 `配置/tag_taxonomy.json` 约束 Prompt Pack 模板 tags，避免标签同义词漂移，`商业海报图` 这类 alias 不能直接进模板。
+- 标签 taxonomy：通过 `配置/tag_taxonomy.json` 约束 Prompt Pack 模板 tags，避免标签同义词漂移，`商业海报图` 这类 alias 不能直接进模板；校验会拦截未知字段、版本日期格式错误、分类 ID 非 slug 和重复 alias。
 - JSON 输出：`工具/build_prompt_pack.py --format json` 可输出带 `api_profile` 的提示词记录，方便接 API、脚本或前端。
 - 全量 JSON Bundle：`生成提示词/prompt_packs.generated.json` 自动导出全部 Prompt Pack，`生成提示词/prompt_packs.generated.schema.json` 也由导出工具同步生成并描述结构；bundle 内含 `source_config_sha256`、tags 和 `api_profile`，方便前端或自动化工具核对来源配置、筛选用途并直接读取推荐参数。
 - API 请求 JSONL：`生成提示词/prompt_packs.api_requests.jsonl` 自动导出 15 条逐行请求草稿，`生成提示词/prompt_packs.api_requests.schema.json` 记录每行结构，`工具/build_prompt_pack.py --format api-json` 可输出单条 payload，`工具/validate_api_requests.py --check` 可单独校验是否过期，并拦截未知字段、空白 title/prompt 和重复 tags。
