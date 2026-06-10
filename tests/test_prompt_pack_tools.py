@@ -70,6 +70,14 @@ class PromptPackToolTests(unittest.TestCase):
                 path = out_dir / generated_filename(pack["id"])
                 self.assertEqual(path.read_text(encoding="utf-8"), render_pack(self.data, pack["id"], markdown=True))
 
+    def test_generated_index_has_copy_entrypoints(self) -> None:
+        index = render_generated_index(self.data)
+        self.assertIn("快速复制入口", index)
+        self.assertIn("按角色 × 用途", index)
+        self.assertIn("furina_convention_phone.md", index)
+        self.assertIn("citlali_readme_preview.md", index)
+        self.assertIn("dori_character_card.md", index)
+
     def test_coverage_matrix_lists_characters_and_templates(self) -> None:
         matrix = render_coverage_matrix(self.data)
         self.assertIn("Prompt Pack 覆盖矩阵", matrix)

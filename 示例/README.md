@@ -16,9 +16,10 @@
 
 ## 使用方法
 
-1. 打开任意示例文件，或者运行 `python 工具/build_prompt_pack.py --list` 查看可自动组合的提示词。
-2. 复制完整提示词。
-3. 如果使用 OpenAI Images API，建议：
+1. 打开任意示例文件，或者去 `../生成提示词/README.md` 按「角色 × 用途」直接选择自动生成提示词。
+2. 也可以运行 `python 工具/build_prompt_pack.py --list` 查看可自动组合的提示词。
+3. 复制完整提示词。
+4. 如果使用 OpenAI Images API，建议：
 
 ```text
 model: gpt-image-2
@@ -27,5 +28,5 @@ quality: medium 或 high
 output_format: jpeg
 ```
 
-4. 如果要编辑已有图，使用 `04-通用gpt-image-2编辑修正.md`。
+5. 如果要编辑已有图，使用 `04-通用gpt-image-2编辑修正.md`。
 

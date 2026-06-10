@@ -218,6 +218,10 @@ def render_coverage_matrix(data: dict[str, Any]) -> str:
 
 
 def render_generated_index(data: dict[str, Any]) -> str:
+    templates = list(data.get("templates", {}).items())
+    characters = list(data.get("characters", {}).items())
+    pack_lookup = {(pack["character"], pack["template"]): pack for pack in data.get("packs", [])}
+
     lines = [
         "# 自动生成提示词",
         "",
@@ -227,8 +231,58 @@ def render_generated_index(data: dict[str, Any]) -> str:
         "## 重新生成",
         "",
         "```powershell",
-        "python 工具/build_prompt_pack.py --all",
+        "python 工具/run_quality_gate.py --refresh-generated",
         "```",
+        "",
+        "## 快速复制入口",
+        "",
+        "不知道选哪条时，按用途选：",
+        "",
+        "- **看角色是否串**：优先复制 `写实 cos 手机随手拍`。",
+        "- **放 README 公开展示**：优先复制 `GitHub README 公开预览图`。",
+        "- **检查发型、头饰、服装细节**：优先复制 `角色参考卡`。",
+        "- **做宣传图或电商视觉**：优先复制 `商业联名海报 / 电商主图`。",
+        "- **做教程封面**：优先复制 `竖版社媒封面缩略图`。",
+        "",
+        "### 按角色 × 用途",
+        "",
+    ]
+
+    header = ["角色"] + [template["task_type"] for _, template in templates]
+    lines.append("| " + " | ".join(header) + " |")
+    lines.append("| " + " | ".join(["---"] * len(header)) + " |")
+    for char_id, char in characters:
+        row = [char["display_name"]]
+        for template_id, _template in templates:
+            pack = pack_lookup.get((char_id, template_id))
+            if pack:
+                filename = generated_filename(pack["id"])
+                row.append(f"[`{pack['id']}`]({filename})")
+            else:
+                row.append("—")
+        lines.append("| " + " | ".join(row) + " |")
+
+    lines.extend(
+        [
+            "",
+            "### 命令行复制",
+            "",
+            "```powershell",
+            "python 工具/build_prompt_pack.py furina_convention_phone",
+            "python 工具/build_prompt_pack.py citlali_readme_preview",
+            "python 工具/build_prompt_pack.py dori_character_card",
+            "```",
+            "",
+            "输出 Markdown 文件：",
+            "",
+            "```powershell",
+            "python 工具/build_prompt_pack.py dori_commercial_poster --format markdown --out 示例/自动生成-多莉商业海报.md",
+            "```",
+        ]
+    )
+
+    lines.extend(
+        [
         "",
         "## 覆盖矩阵",
         "",
@@ -238,7 +292,8 @@ def render_generated_index(data: dict[str, Any]) -> str:
         "",
         "| Prompt Pack | 文件 | 说明 |",
         "| --- | --- | --- |",
-    ]
+        ]
+    )
     for pack in data.get("packs", []):
         pack_id = pack["id"]
         filename = generated_filename(pack_id)

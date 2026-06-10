@@ -6,7 +6,39 @@
 ## 重新生成
 
 ```powershell
-python 工具/build_prompt_pack.py --all
+python 工具/run_quality_gate.py --refresh-generated
+```
+
+## 快速复制入口
+
+不知道选哪条时，按用途选：
+
+- **看角色是否串**：优先复制 `写实 cos 手机随手拍`。
+- **放 README 公开展示**：优先复制 `GitHub README 公开预览图`。
+- **检查发型、头饰、服装细节**：优先复制 `角色参考卡`。
+- **做宣传图或电商视觉**：优先复制 `商业联名海报 / 电商主图`。
+- **做教程封面**：优先复制 `竖版社媒封面缩略图`。
+
+### 按角色 × 用途
+
+| 角色 | 写实 cos 手机随手拍 | GitHub README 公开预览图 | 角色参考卡 | 商业联名海报 / 电商主图 | 竖版社媒封面缩略图 |
+| --- | --- | --- | --- | --- | --- |
+| 芙宁娜 Furina | [`furina_convention_phone`](furina_convention_phone.md) | [`furina_readme_preview`](furina_readme_preview.md) | [`furina_character_card`](furina_character_card.md) | [`furina_commercial_poster`](furina_commercial_poster.md) | [`furina_vertical_thumbnail`](furina_vertical_thumbnail.md) |
+| 茜特菈莉 Citlali | [`citlali_convention_phone`](citlali_convention_phone.md) | [`citlali_readme_preview`](citlali_readme_preview.md) | [`citlali_character_card`](citlali_character_card.md) | [`citlali_commercial_poster`](citlali_commercial_poster.md) | [`citlali_vertical_thumbnail`](citlali_vertical_thumbnail.md) |
+| 多莉 Dori | [`dori_convention_phone`](dori_convention_phone.md) | [`dori_readme_preview`](dori_readme_preview.md) | [`dori_character_card`](dori_character_card.md) | [`dori_commercial_poster`](dori_commercial_poster.md) | [`dori_vertical_thumbnail`](dori_vertical_thumbnail.md) |
+
+### 命令行复制
+
+```powershell
+python 工具/build_prompt_pack.py furina_convention_phone
+python 工具/build_prompt_pack.py citlali_readme_preview
+python 工具/build_prompt_pack.py dori_character_card
+```
+
+输出 Markdown 文件：
+
+```powershell
+python 工具/build_prompt_pack.py dori_commercial_poster --format markdown --out 示例/自动生成-多莉商业海报.md
 ```
 
 ## 覆盖矩阵
