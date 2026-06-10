@@ -68,6 +68,7 @@
 
 ### Changed
 
+- GitHub Actions 工作流升级到 `actions/checkout@v6` 和 `actions/setup-python@v6`，并补充 `contents: read` 最小权限与 10 分钟超时，提前规避 Node.js 20 runner 弃用提醒。
 - 统一质量门禁和单元测试现在会检查失败修正建议是否与评分记录和失败修正词库同步。
 - 统一质量门禁和单元测试现在会检查 gpt-image-2 推荐尺寸档位是否合规，并提醒 `1024x1536` 是 2:3 备选而不是严格 9:16。
 - `工具/build_prompt_pack.py --validate` 现在会同时校验 `配置/tag_taxonomy.json`，模板 tags 必须来自正式标签；alias 只能提示替换，不能直接进入模板。

@@ -430,6 +430,15 @@ def check_github_workflow(errors: list[str]) -> None:
     text = path.read_text(encoding="utf-8")
     if "工具/run_quality_gate.py" not in text:
         errors.append("GitHub Actions 应调用统一质量门禁：python 工具/run_quality_gate.py")
+    required_terms = {
+        "actions/checkout@v6": "GitHub Actions 应使用 Node 24 版本的 actions/checkout@v6",
+        "actions/setup-python@v6": "GitHub Actions 应使用 Node 24 版本的 actions/setup-python@v6",
+        "permissions:\n  contents: read": "GitHub Actions 应显式限制 contents: read 最小权限",
+        "timeout-minutes: 10": "GitHub Actions check job 应设置 10 分钟超时",
+    }
+    for term, message in required_terms.items():
+        if term not in text:
+            errors.append(message)
 
 
 def check_role_safety(errors: list[str]) -> None:
