@@ -121,12 +121,13 @@ python 工具/run_quality_gate.py --refresh-generated
 python 工具/build_prompt_pack.py --all
 python 工具/build_prompt_pack.py --validate
 python 工具/lint_prompt_quality.py --check
+python 工具/validate_output_evaluations.py --check
 python 工具/sync_preview_manifest.py --check
 python 工具/check_prompt_repo.py
 python -m unittest discover -s tests -v
 ```
 
-统一质量门禁会检查 Prompt Pack 配置、角色防串审计报告、Prompt 文本质量审计、预览图 manifest 尺寸元数据、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
+统一质量门禁会检查 Prompt Pack 配置、角色防串审计报告、Prompt 文本质量审计、结构化出图评分记录、预览图 manifest 尺寸元数据、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 
@@ -156,6 +157,7 @@ python -m unittest discover -s tests -v
 - 统一质量门禁：`工具/run_quality_gate.py` 统一串起 Prompt Pack 校验、仓库检查和单元测试。
 - 角色防串审计：`评估/角色防串审计报告.md` 自动汇总三角色锚点、防串、安全和成人化约束覆盖。
 - Prompt 文本质量审计：`评估/Prompt文本质量审计报告.md` 自动检查生成前 prompt 的结构、安全、质量、模板意图、角色词和长度范围。
+- 结构化出图评分：`评估/output_evaluations.example.json` 和 `评估/output_evaluations.schema.json` 可记录每张图的评分、问题和下一步动作。
 
 ## 交付文档
 
@@ -164,6 +166,7 @@ python -m unittest discover -s tests -v
 - `评估/仓库质量门禁.md`：仓库结构、链接、安全约束和 CI 检查规则。
 - `评估/角色防串审计报告.md`：由工具自动生成的角色防串覆盖报告。
 - `评估/Prompt文本质量审计报告.md`：由工具自动生成的 Prompt 文本质量预检报告。
+- `评估/output_evaluations.example.json`：结构化出图评分记录示例。
 - `参考仓库/README.md`：外部 awesome 仓库追踪与分类映射。
 - `工具/README.md`：维护脚本说明。
 - `配置/README.md`：机器可读 Prompt Pack 配置说明。

@@ -79,6 +79,28 @@ python 工具/lint_prompt_quality.py --check
 
 统一质量门禁会自动检查这份报告是否过期。
 
+## 结构化出图评分记录
+
+Markdown 评分表适合人工快速判断；如果要沉淀多轮出图结果，可以复制这个 JSON 示例：
+
+```text
+评估/output_evaluations.example.json
+```
+
+结构规则：
+
+```text
+评估/output_evaluations.schema.json
+```
+
+校验记录：
+
+```powershell
+python 工具/validate_output_evaluations.py --check
+```
+
+它会检查评分总分是否等于各项分数之和、Prompt Pack/角色引用是否存在、图片路径是否存在、decision 是否合法。
+
 
 ## 仓库质量门禁
 

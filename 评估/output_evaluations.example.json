@@ -1,0 +1,31 @@
+{
+  "$schema": "output_evaluations.schema.json",
+  "version": "2026-06-10-output-evaluation-example",
+  "description": "结构化出图评分记录示例。可复制为自己的评估日志，再用 工具/validate_output_evaluations.py 校验。",
+  "evaluations": [
+    {
+      "id": "preview-furina-dessert-01",
+      "date": "2026-06-10",
+      "prompt_pack": "furina_readme_preview",
+      "character": "furina",
+      "image_file": "预览图/furina-dessert-01.jpg",
+      "scores": {
+        "role_consistency": 23,
+        "composition_ratio": 11,
+        "material_detail": 13,
+        "scene_match": 9,
+        "public_safety": 15,
+        "text_ui": 10,
+        "delivery_usefulness": 8
+      },
+      "total_score": 89,
+      "public_safe": true,
+      "decision": "keep",
+      "issues": [
+        "README 样张为横向展示图，不代表正式 Prompt Pack 的 9:16 输出规格。"
+      ],
+      "next_action": "作为 README 公开预览样张保留；正式出图仍按 Prompt Pack 的 9:16 规格生成。",
+      "notes": "示例评估记录，用于演示结构化评分字段。"
+    }
+  ]
+}

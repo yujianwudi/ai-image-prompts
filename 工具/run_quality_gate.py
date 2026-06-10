@@ -39,7 +39,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--refresh-generated",
         action="store_true",
-        help="Regenerate 生成提示词/ and 评估/角色防串审计报告.md before validation. Do not use this in CI; CI should catch stale exports.",
+        help="Regenerate 生成提示词/ plus generated audit reports before validation. Do not use this in CI; CI should catch stale exports.",
     )
     return parser.parse_args()
 
@@ -63,6 +63,7 @@ def main() -> int:
             ("校验 Prompt Pack 配置", [python, "工具/build_prompt_pack.py", "--validate"]),
             ("校验角色防串审计报告", [python, "工具/audit_character_prompts.py", "--check"]),
             ("校验 Prompt 文本质量审计报告", [python, "工具/lint_prompt_quality.py", "--check"]),
+            ("校验结构化出图评分记录", [python, "工具/validate_output_evaluations.py", "--check"]),
             ("校验预览图 manifest 尺寸元数据", [python, "工具/sync_preview_manifest.py", "--check"]),
             ("检查仓库结构与安全约束", [python, "工具/check_prompt_repo.py"]),
             ("运行单元测试", [python, "-m", "unittest", "discover", "-s", "tests", "-v"]),

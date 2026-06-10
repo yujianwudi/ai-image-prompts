@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yujianwudi/ai-image-prompts/blob/main/评估/output_evaluations.schema.json",
+  "title": "AI Image Output Evaluations",
+  "description": "Schema for structured image output evaluation records.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "version",
+    "description",
+    "evaluations"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "output_evaluations.schema.json"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evaluations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/evaluation"
+      }
+    }
+  },
+  "$defs": {
+    "evaluation": {
+      "type": "object",
+      "required": [
+        "id",
+        "date",
+        "prompt_pack",
+        "character",
+        "image_file",
+        "scores",
+        "total_score",
+        "public_safe",
+        "decision",
+        "issues",
+        "next_action",
+        "notes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "date": {
+          "type": "string",
+          "pattern": "^20[0-9]{2}-[0-9]{2}-[0-9]{2}$"
+        },
+        "prompt_pack": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "character": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "image_file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scores": {
+          "$ref": "#/$defs/scores"
+        },
+        "total_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "public_safe": {
+          "type": "boolean"
+        },
+        "decision": {
+          "enum": [
+            "keep",
+            "edit",
+            "regenerate",
+            "reject"
+          ]
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "next_action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "scores": {
+      "type": "object",
+      "required": [
+        "role_consistency",
+        "composition_ratio",
+        "material_detail",
+        "scene_match",
+        "public_safety",
+        "text_ui",
+        "delivery_usefulness"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "role_consistency": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25
+        },
+        "composition_ratio": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "material_detail": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "scene_match": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "public_safety": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "text_ui": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "delivery_usefulness": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        }
+      }
+    }
+  }
+}
