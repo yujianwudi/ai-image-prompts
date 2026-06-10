@@ -984,7 +984,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、文本文件卫生、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/failure_ids 去重/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、README 预览图 alt/caption/顺序、参考仓库追踪、Prompt Pack 配置/schema/ID slug、标签 taxonomy、标签覆盖矩阵、API 请求 JSONL、Python 源码编译、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、文本文件卫生、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分图片路径/failure_ids 去重/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、README 预览图 alt/caption/顺序、参考仓库追踪、Prompt Pack 配置/schema/ID slug、标签 taxonomy、标签覆盖矩阵、API 请求 JSONL、Python 源码编译、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

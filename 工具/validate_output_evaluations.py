@@ -26,6 +26,7 @@ SCORE_LIMITS = {
 }
 DECISIONS = {"keep", "edit", "regenerate", "reject"}
 DATE_RE = re.compile(r"^20[0-9]{2}-[0-9]{2}-[0-9]{2}$")
+IMAGE_FILE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
 
 
 @dataclass(frozen=True)
@@ -66,6 +67,9 @@ def validate_schema_file(schema_path: Path = DEFAULT_SCHEMA) -> list[str]:
     for key in ["prompt_pack", "character", "scores", "total_score", "decision", "failure_ids"]:
         if key not in evaluation_props:
             errors.append(f"出图评分 schema.evaluation.properties 缺少：{key}")
+    image_pattern = evaluation_props.get("image_file", {}).get("pattern", "")
+    if "jpg" not in image_pattern or "webp" not in image_pattern:
+        errors.append("出图评分 schema.evaluation.properties.image_file 应限制为图片文件后缀")
     if evaluation_props.get("failure_ids", {}).get("uniqueItems") is not True:
         errors.append("出图评分 schema.evaluation.properties.failure_ids 应设置 uniqueItems=true")
     return errors
@@ -131,8 +135,12 @@ def validate_document(
             errors.append(f"{eval_id} 缺少 image_file")
         elif image_file.startswith("/") or ".." in Path(image_file).parts:
             errors.append(f"{eval_id} image_file 不能是绝对路径或包含上级目录：{image_file}")
-        elif not (root / image_file).exists():
-            errors.append(f"{eval_id} image_file 不存在：{image_file}")
+        else:
+            image_path = root / image_file
+            if image_path.suffix.lower() not in IMAGE_FILE_SUFFIXES:
+                errors.append(f"{eval_id} image_file 必须是图片文件：{image_file}")
+            elif not image_path.exists():
+                errors.append(f"{eval_id} image_file 不存在：{image_file}")
 
         scores = item.get("scores")
         score_sum = 0

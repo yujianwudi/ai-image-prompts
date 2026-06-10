@@ -149,7 +149,7 @@ python 工具/lint_prompt_quality.py --check
 
 ## validate_output_evaluations.py
 
-用途：校验结构化出图评分记录，检查评分总分、Prompt Pack/角色引用、图片路径、公开安全状态、decision、failure_ids 去重和下一步动作。
+用途：校验结构化出图评分记录，检查评分总分、Prompt Pack/角色引用、图片路径存在且为 jpg/jpeg/png/webp、公开安全状态、decision、failure_ids 去重和下一步动作。
 
 默认校验示例文件：
 
@@ -165,7 +165,7 @@ python 工具/validate_output_evaluations.py --file 评估/my_output_evaluations
 
 ## new_output_evaluation.py
 
-用途：根据 Prompt Pack 和图片路径生成一条结构化出图评分记录骨架，减少手写 JSON 漏字段、写错角色、写错或重复填写 `failure_ids` 的概率。
+用途：根据 Prompt Pack 和图片路径生成一条结构化出图评分记录骨架，减少手写 JSON 漏字段、图片路径填成非图片、写错角色、写错或重复填写 `failure_ids` 的概率。
 
 查看可用失败类型：
 
@@ -377,4 +377,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、配置 ID slug、模板 `api_profile`、API 请求 JSONL、标签 taxonomy、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与 failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位、仓库结构、Markdown 代码块闭合、预览图尺寸、README 预览图 alt/caption/顺序、安全约束、文本文件 LF / BOM / 末尾换行、自动导出文件、Python 源码编译和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、配置 ID slug、api_profile 导出、API JSON payload、tags 导出、标签索引、标签 taxonomy、批量导出、CLI、预览图 manifest 同步、README 预览图 alt/caption/顺序、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与 failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、配置 ID slug、模板 `api_profile`、API 请求 JSONL、标签 taxonomy、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分图片路径与 failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位、仓库结构、Markdown 代码块闭合、预览图尺寸、README 预览图 alt/caption/顺序、安全约束、文本文件 LF / BOM / 末尾换行、自动导出文件、Python 源码编译和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、配置 ID slug、api_profile 导出、API JSON payload、tags 导出、标签索引、标签 taxonomy、批量导出、CLI、预览图 manifest 同步、README 预览图 alt/caption/顺序、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分图片路径与 failure_ids 去重、评分汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位和统一质量门禁帮助入口。

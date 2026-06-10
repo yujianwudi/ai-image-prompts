@@ -4,6 +4,7 @@
 
 ### Added
 
+- 结构化出图评分校验和 schema 新增 `image_file` 图片后缀约束，只允许 jpg/jpeg/png/webp，避免把 README 或其他非图片文件误登记为评分图片。
 - 失败修正建议现在只为 `edit` / `regenerate` / `reject` 评分记录输出待修提示，避免 `keep` 记录被误当成仍需修正。
 - 结构化出图评分 schema、校验器和评分骨架工具新增 `failure_ids` 去重检查，避免同一失败类型在汇总与修正建议中被重复统计。
 - Prompt Pack 配置和 schema 新增角色/模板/Pack ID 小写 slug 校验，防止生成文件名、JSONL 记录和配置引用漂移。

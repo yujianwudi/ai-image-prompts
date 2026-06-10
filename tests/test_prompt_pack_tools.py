@@ -557,6 +557,8 @@ class PromptPackToolTests(unittest.TestCase):
     def test_output_evaluation_example_is_valid(self) -> None:
         document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
         schema = load_evaluation_json(ROOT / "评估" / "output_evaluations.schema.json")
+        self.assertIn("jpg", schema["$defs"]["evaluation"]["properties"]["image_file"]["pattern"])
+        self.assertIn("webp", schema["$defs"]["evaluation"]["properties"]["image_file"]["pattern"])
         self.assertTrue(schema["$defs"]["evaluation"]["properties"]["failure_ids"]["uniqueItems"])
         result = validate_evaluation_document(document, self.data)
         self.assertEqual(result.errors, [])
@@ -576,6 +578,13 @@ class PromptPackToolTests(unittest.TestCase):
                 ["composition_ratio_mismatch", "composition_ratio_mismatch"],
                 failure_lexicon,
             )
+
+    def test_output_evaluation_rejects_non_image_file_paths(self) -> None:
+        document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
+        mutated = json.loads(json.dumps(document, ensure_ascii=False))
+        mutated["evaluations"][0]["image_file"] = "README.md"
+        result = validate_evaluation_document(mutated, self.data)
+        self.assertTrue(any("image_file 必须是图片文件：README.md" in error for error in result.errors))
 
     def test_new_output_evaluation_builder_creates_valid_document(self) -> None:
         scores = parse_output_evaluation_scores(
