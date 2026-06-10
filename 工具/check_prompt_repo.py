@@ -652,7 +652,21 @@ def check_generated_json_bundle_schema(json_bundle_path: Path, errors: list[str]
     for key in ["$schema", "title", "type", "required", "properties", "$defs"]:
         if key not in schema:
             errors.append(f"自动生成 JSON bundle schema 缺少字段：{key}")
-    for key in ["source_config", "version", "pack_count", "characters", "templates", "packs"]:
+    generated_required = [
+        "source_config",
+        "source_config_sha256",
+        "generator",
+        "version",
+        "pack_count",
+        "characters",
+        "templates",
+        "packs",
+    ]
+    schema_required = set(schema.get("required", []))
+    for key in generated_required:
+        if key not in schema_required:
+            errors.append(f"自动生成 JSON bundle schema.required 缺少：{key}")
+    for key in generated_required:
         if key not in schema.get("properties", {}):
             errors.append(f"自动生成 JSON bundle schema.properties 缺少：{key}")
 

@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -191,10 +192,17 @@ def render_pack_record(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
     }
 
 
+def config_digest(data: dict[str, Any]) -> str:
+    canonical = json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def render_json_bundle(data: dict[str, Any]) -> str:
     bundle = {
         "$schema": GENERATED_JSON_BUNDLE_SCHEMA,
         "source_config": "配置/prompt_packs.json",
+        "source_config_sha256": config_digest(data),
+        "generator": "工具/build_prompt_pack.py",
         "version": data.get("version", ""),
         "description": "Generated copy-ready Prompt Pack bundle. Do not edit by hand.",
         "pack_count": len(data.get("packs", [])),
@@ -333,7 +341,7 @@ def render_generated_index(data: dict[str, Any]) -> str:
         "## 覆盖矩阵",
         "",
         "- [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。",
-        f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle。",
+        f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256` 方便核对来源配置。",
         f"- [`{GENERATED_JSON_BUNDLE_SCHEMA}`]({GENERATED_JSON_BUNDLE_SCHEMA})：JSON bundle 的结构说明。",
         "",
         "## 文件列表",

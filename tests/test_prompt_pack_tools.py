@@ -15,6 +15,7 @@ from build_prompt_pack import (  # noqa: E402
     DEFAULT_CONFIG,
     GENERATED_JSON_BUNDLE,
     GENERATED_JSON_BUNDLE_SCHEMA,
+    config_digest,
     export_all,
     generated_filename,
     load_config,
@@ -81,10 +82,15 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("非低俗", record["prompt"])
         bundle = json.loads(render_json_bundle(self.data))
         self.assertEqual(bundle["$schema"], GENERATED_JSON_BUNDLE_SCHEMA)
+        self.assertEqual(bundle["source_config"], "配置/prompt_packs.json")
+        self.assertEqual(bundle["source_config_sha256"], config_digest(self.data))
+        self.assertEqual(bundle["generator"], "工具/build_prompt_pack.py")
         self.assertEqual(bundle["pack_count"], len(self.data["packs"]))
         self.assertEqual(len(bundle["packs"]), len(self.data["packs"]))
         self.assertIn("characters", bundle)
         schema = json.loads((ROOT / "生成提示词" / GENERATED_JSON_BUNDLE_SCHEMA).read_text(encoding="utf-8"))
+        self.assertIn("source_config_sha256", schema["properties"])
+        self.assertIn("generator", schema["properties"])
         self.assertIn("generated_pack", schema["$defs"])
 
     def test_export_all_writes_expected_files(self) -> None:

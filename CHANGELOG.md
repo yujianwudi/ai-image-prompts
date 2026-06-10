@@ -8,6 +8,7 @@
 - `工具/build_prompt_pack.py` 新增 `--format json`，可输出带角色、模板和 prompt 的机器可读记录。
 - `工具/build_prompt_pack.py --all` 现在会导出 `生成提示词/prompt_packs.generated.json` 全量 JSON bundle。
 - 新增 `生成提示词/prompt_packs.generated.schema.json`，并为全量 JSON bundle 增加 `$schema`。
+- 全量 JSON bundle 新增 `source_config_sha256` 和 `generator` 元数据，方便外部工具核对来源配置与生成入口。
 - 新增 `工具/run_quality_gate.py`，统一运行 Prompt Pack 校验、仓库质量检查和单元测试。
 - 新增 `工具/sync_preview_manifest.py`，可自动同步 README 预览图的宽高、比例和方向元数据。
 - 新增 `工具/audit_character_prompts.py` 和 `评估/角色防串审计报告.md`，自动检查角色锚点、防串、安全约束和芙宁娜污染源防护。

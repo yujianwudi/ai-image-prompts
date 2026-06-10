@@ -1,6 +1,8 @@
 {
   "$schema": "prompt_packs.generated.schema.json",
   "source_config": "配置/prompt_packs.json",
+  "source_config_sha256": "eb3f0323c2915a4d613fda2c624e6669f02356205767dd4876da26409247cd62",
+  "generator": "工具/build_prompt_pack.py",
   "version": "2026-06-10-gpt-image-2-web-optimized",
   "description": "Generated copy-ready Prompt Pack bundle. Do not edit by hand.",
   "pack_count": 15,
