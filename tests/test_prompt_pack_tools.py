@@ -586,6 +586,13 @@ class PromptPackToolTests(unittest.TestCase):
         result = validate_evaluation_document(mutated, self.data)
         self.assertTrue(any("image_file 必须是图片文件：README.md" in error for error in result.errors))
 
+    def test_output_evaluation_rejects_invalid_calendar_dates(self) -> None:
+        document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
+        mutated = json.loads(json.dumps(document, ensure_ascii=False))
+        mutated["evaluations"][0]["date"] = "2026-99-99"
+        result = validate_evaluation_document(mutated, self.data)
+        self.assertTrue(any("date 不是有效日期：2026-99-99" in error for error in result.errors))
+
     def test_new_output_evaluation_builder_creates_valid_document(self) -> None:
         scores = parse_output_evaluation_scores(
             [
@@ -678,6 +685,28 @@ class PromptPackToolTests(unittest.TestCase):
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("image_file 必须是图片文件：README.md", result.stderr)
+
+    def test_new_output_evaluation_cli_rejects_invalid_date(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(TOOLS_DIR / "new_output_evaluation.py"),
+                "--prompt-pack",
+                "furina_readme_preview",
+                "--image-file",
+                "预览图/furina-dessert-01.jpg",
+                "--date",
+                "2026-99-99",
+            ],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("date 不是有效日期：2026-99-99", result.stderr)
 
     def test_output_evaluation_cli_check_passes(self) -> None:
         result = subprocess.run(

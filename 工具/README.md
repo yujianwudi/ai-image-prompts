@@ -149,7 +149,7 @@ python 工具/lint_prompt_quality.py --check
 
 ## validate_output_evaluations.py
 
-用途：校验结构化出图评分记录，检查评分总分、Prompt Pack/角色引用、图片路径存在且为 jpg/jpeg/png/webp、公开安全状态、decision、failure_ids 去重和下一步动作。
+用途：校验结构化出图评分记录，检查评分日期是否是真实日历日期、评分总分、Prompt Pack/角色引用、图片路径存在且为 jpg/jpeg/png/webp、公开安全状态、decision、failure_ids 去重和下一步动作。
 
 默认校验示例文件：
 

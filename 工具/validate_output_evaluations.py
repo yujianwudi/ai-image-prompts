@@ -5,6 +5,7 @@ import json
 import re
 import sys
 from dataclasses import dataclass
+from datetime import date as date_type
 from pathlib import Path
 from typing import Any
 
@@ -115,9 +116,14 @@ def validate_document(
             errors.append(f"出图评分 id 重复：{eval_id}")
         seen_ids.add(eval_id)
 
-        date = str(item.get("date", ""))
-        if not DATE_RE.match(date):
-            errors.append(f"{eval_id} date 必须是 YYYY-MM-DD：{date}")
+        date_text = str(item.get("date", ""))
+        if not DATE_RE.match(date_text):
+            errors.append(f"{eval_id} date 必须是 YYYY-MM-DD：{date_text}")
+        else:
+            try:
+                date_type.fromisoformat(date_text)
+            except ValueError:
+                errors.append(f"{eval_id} date 不是有效日期：{date_text}")
 
         prompt_pack = str(item.get("prompt_pack", ""))
         pack = packs.get(prompt_pack)

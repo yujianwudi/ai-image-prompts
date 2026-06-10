@@ -4,6 +4,7 @@
 
 ### Added
 
+- 结构化出图评分校验现在会验证 `date` 是真实日历日期，评分骨架 CLI 也会在输出前拦截无效日期。
 - `工具/new_output_evaluation.py` 现在会在输出前复用结构化评分校验器，直接拦截非图片 `image_file` 等无效评分骨架，并保证 Windows 管道下的错误输出为 UTF-8。
 - 结构化出图评分校验和 schema 新增 `image_file` 图片后缀约束，只允许 jpg/jpeg/png/webp，避免把 README 或其他非图片文件误登记为评分图片。
 - 失败修正建议现在只为 `edit` / `regenerate` / `reject` 评分记录输出待修提示，避免 `keep` 记录被误当成仍需修正。
