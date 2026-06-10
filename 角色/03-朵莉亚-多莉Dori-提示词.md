@@ -1,0 +1,63 @@
+# 朵莉亚 / 多莉 Dori：室内漫展手机随手拍提示词
+
+## 角色说明
+
+这里先按《原神》的 **多莉 Dori** 来记录。  
+如果后面确认「朵莉亚」是另一个角色，再单独改一版。
+
+## 角色锁定目标
+
+多莉的核心是「须弥商人、小个子、粉色卷发、紫金大帽子、方形眼镜、机灵爱财」。  
+她不能混成芙宁娜的枫丹歌剧贵族，也不能混成茜特菈莉的纳塔萨满风。
+
+因为多莉本身偏小个子可爱风，所以写实cos时要明确：**成年coser、非低俗、可爱但不性感化**。
+
+## 不能丢的识别点
+
+- **体型呈现**：小个子成年coser，比例自然，不儿童化，不性感化。
+- **发型**：粉色卷发或蓬松粉发，发量蓬松，活泼可爱。
+- **眼睛与脸部**：金色或暖色系眼睛，方形小眼镜很重要。
+- **头饰**：紫色与金色的大商人帽，带宝石、蝴蝶结、装饰物，帽子比普通帽子更夸张。
+- **服装配色**：紫色、金色、白色、黑色为主。
+- **服装风格**：须弥商人风，带异域商队感，不是枫丹贵族，不是纳塔萨满。
+- **道具**：金币、小灯壶、钱袋、商人小包、宝石饰品都可以强化识别。
+- **气质**：机灵、会做生意、笑眯眯、有点小狡黠，但整体可爱安全。
+
+## 完整正向提示词
+
+```text
+多莉 Dori cosplay，小个子成年coser，粉色卷发，方形小眼镜，紫金大商人帽，须弥商人风格，机灵爱财的可爱气质，
+室内漫展手机随手拍，9:16竖图，写实摄影风格，真人cosplay，普通观众视角，手持手机抓拍，室内展馆自然灯光，背景有人群和展位但轻微虚化，真实服装材质，布料纹理清晰，缝线、刺绣、金属扣、宝石和小道具真实，非低俗，端庄自然姿势，
+粉色卷发，蓬松柔软的粉色头发，金色或暖色系眼睛，方形小眼镜，紫色与金色的大商人帽，帽子上有宝石、金色装饰和大蝴蝶结，白色泡泡袖，黑金小马甲，紫色宽松灯笼裤或蓬松下装，腰间大蝴蝶结，金币钱袋，小灯壶道具，商人小包，宝石饰品，服装有真实棉布、丝绸、刺绣、皮革、金属和宝石质感，整体可爱、机灵、爱财、笑眯眯，像漫展摊位旁边正在招呼朋友拍照的真实coser，安全可爱，不性感化，不儿童化
+```
+
+## 英文辅助提示词
+
+```text
+Dori cosplay, petite adult cosplayer, fluffy pink curly hair, small square glasses, oversized purple and gold merchant hat, Sumeru merchant style, cute clever money-loving merchant personality, realistic live-action cosplay at an indoor anime convention, candid smartphone photo, vertical 9:16, warm golden eyes, gemstone ornaments, gold decorations, large bow on the hat, white puff sleeves, black and gold vest, purple loose harem pants or puffy bottom, large waist bow, coin pouch, small magic lamp prop, merchant bag, gemstone jewelry, realistic cotton, silk, embroidery, leather, metal and gem texture, modest and safe for work, not sexualized, not childlike
+```
+
+## 多莉专属反向提示词
+
+```text
+芙宁娜，Furina，白蓝短发，白色短发，浅蓝挑染短发，蓝黑色礼帽，枫丹贵族外套，蓝白歌剧礼服，水神气质，歌剧舞台女王气质，茜特菈莉，Citlali，粉紫长直发，前侧长辫，纳塔萨满服，紫蓝渐变长裙，冷淡神秘气质，低俗，性感化，儿童性感化，过度暴露，泳装化，内衣化，擦边姿势，插画风，CG风，塑料质感，角色混合
+```
+
+## 防串提醒
+
+多莉最容易被模型串成「粉紫色魔法少女」或者被带进芙宁娜的蓝白贵族风。  
+所以她的重点一定要压住：**粉色卷发 + 方形眼镜 + 紫金大商人帽 + 须弥商人道具 + 机灵爱财气质**。
+
+如果模型总是混到芙宁娜，可以把这一句放在提示词最前面：
+
+```text
+角色不是芙宁娜，不是枫丹贵族，不穿蓝白歌剧服，不戴蓝黑礼帽，不是白蓝短发
+```
+
+## 快速检查
+
+出图前看一眼：  
+如果没有方形眼镜和紫金大商人帽，多莉识别度会明显下降。  
+如果出现白蓝短发、蓝黑礼帽、蓝白歌剧服，就是串到芙宁娜。  
+如果出现粉紫长发、前侧细辫、黑紫萨满长裙，就是串到茜特菈莉。  
+多莉必须优先保住：**粉色卷发、方形眼镜、紫金商人帽、金币灯壶道具、机灵爱财气质**。
