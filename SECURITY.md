@@ -5,6 +5,7 @@ For content-safety, prompt-safety, privacy, or public-preview concerns, please s
 
 ```text
 内容安全政策.md
+授权与使用边界.md
 ```
 
 Please report issues through the GitHub issue templates, especially:

@@ -38,6 +38,7 @@ REQUIRED_FILES = [
     "CONTRIBUTING.md",
     "CHANGELOG.md",
     "免责声明.md",
+    "授权与使用边界.md",
     "内容安全政策.md",
     "SECURITY.md",
     ".editorconfig",
@@ -254,6 +255,14 @@ def check_content_safety_policy(errors: list[str]) -> None:
         security_text = security.read_text(encoding="utf-8")
         if "内容安全政策.md" not in security_text:
             errors.append("SECURITY.md 应指向 内容安全政策.md")
+        if "授权与使用边界.md" not in security_text:
+            errors.append("SECURITY.md 应指向 授权与使用边界.md")
+    usage_boundary = ROOT / "授权与使用边界.md"
+    if usage_boundary.exists():
+        text = usage_boundary.read_text(encoding="utf-8")
+        for term in ["不是法律意见", "第三方 IP", "不代表官方授权", "预览图", "商用", "LICENSE"]:
+            if term not in text:
+                errors.append(f"授权与使用边界缺少关键说明：{term}")
 
 
 def check_github_workflow(errors: list[str]) -> None:
@@ -565,7 +574,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、角色安全约束、角色防串审计、预览图清单/schema、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、预览图清单/schema、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

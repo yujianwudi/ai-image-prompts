@@ -4,6 +4,7 @@
 
 ### Added
 
+- 新增 `授权与使用边界.md`，说明原创模板、第三方 IP、预览图和商用场景边界。
 - `工具/build_prompt_pack.py` 新增 `--format json`，可输出带角色、模板和 prompt 的机器可读记录。
 - `工具/build_prompt_pack.py --all` 现在会导出 `生成提示词/prompt_packs.generated.json` 全量 JSON bundle。
 - 新增 `生成提示词/prompt_packs.generated.schema.json`，并为全量 JSON bundle 增加 `$schema`。
@@ -43,6 +44,7 @@
 
 ### Changed
 
+- 质量门禁现在会检查授权与使用边界文件及 SECURITY 入口。
 - 质量门禁新增轻量密钥扫描，检查常见 API key、GitHub token、AWS key 和高风险明文 secret。
 - 扩展 `.gitignore`，并将 Python 缓存、虚拟环境、本地密钥和原始素材忽略规则纳入质量门禁。
 - GitHub Actions 现在调用统一质量门禁入口 `python 工具/run_quality_gate.py`。
