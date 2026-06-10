@@ -48,6 +48,7 @@ python 工具/run_quality_gate.py
 
 ```text
 python 工具/build_prompt_pack.py --validate
+python 工具/audit_character_prompts.py --check
 python 工具/check_prompt_repo.py
 python -m unittest discover -s tests -v
 ```
@@ -59,6 +60,28 @@ python 工具/run_quality_gate.py --refresh-generated
 ```
 
 注意：CI 默认不使用 `--refresh-generated`，这样才能发现自动导出文件是否过期。
+
+## audit_character_prompts.py
+
+用途：根据 `配置/prompt_packs.json` 自动生成角色防串审计报告，检查三位角色的锚点、防串项、安全约束、芙宁娜污染源防护和多莉成年化/不儿童化约束。
+
+生成报告：
+
+```powershell
+python 工具/audit_character_prompts.py
+```
+
+默认输出：
+
+```text
+评估/角色防串审计报告.md
+```
+
+检查报告是否过期：
+
+```powershell
+python 工具/audit_character_prompts.py --check
+```
 
 ## build_prompt_pack.py
 
@@ -119,4 +142,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、仓库结构、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI 和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、仓库结构、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI、角色防串审计和统一质量门禁帮助入口。

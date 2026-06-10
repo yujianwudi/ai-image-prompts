@@ -38,6 +38,23 @@
 - 多格图优先检查角色一致性。
 - 公开展示图优先检查是否端庄、非低俗、无乱码。
 
+## 角色防串审计
+
+如果是维护角色设定或 Prompt Pack，优先看自动生成的审计报告：
+
+```text
+评估/角色防串审计报告.md
+```
+
+生成或检查报告：
+
+```powershell
+python 工具/audit_character_prompts.py
+python 工具/audit_character_prompts.py --check
+```
+
+统一质量门禁会自动检查这份报告是否过期。
+
 
 ## 仓库质量门禁
 
@@ -50,5 +67,5 @@
 本地运行：
 
 ```powershell
-python 工具/check_prompt_repo.py
+python 工具/run_quality_gate.py
 ```

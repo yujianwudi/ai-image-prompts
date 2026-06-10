@@ -21,6 +21,7 @@ from build_prompt_pack import (  # noqa: E402
     render_pack,
     validate_config,
 )
+from audit_character_prompts import audit, render_report  # noqa: E402
 
 
 class PromptPackToolTests(unittest.TestCase):
@@ -125,6 +126,24 @@ class PromptPackToolTests(unittest.TestCase):
             check=True,
         )
         self.assertIn("--refresh-generated", result.stdout)
+
+    def test_character_audit_report_is_current(self) -> None:
+        audit_result = audit(self.data)
+        self.assertEqual(audit_result.errors, [])
+        report_path = ROOT / "评估" / "角色防串审计报告.md"
+        self.assertEqual(report_path.read_text(encoding="utf-8"), render_report(self.data))
+
+    def test_character_audit_cli_check_passes(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "audit_character_prompts.py"), "--check"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("OK：角色防串审计通过", result.stdout)
 
 
 if __name__ == "__main__":

@@ -114,7 +114,7 @@ python 工具/check_prompt_repo.py
 python -m unittest discover -s tests -v
 ```
 
-统一质量门禁会检查 Prompt Pack 配置、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
+统一质量门禁会检查 Prompt Pack 配置、角色防串审计报告、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 
@@ -134,12 +134,14 @@ python -m unittest discover -s tests -v
 - 仓库格式规范：通过 `.gitattributes` 和 `.editorconfig` 固定 UTF-8、LF 和缩进规则。
 - 内容安全政策：明确非低俗、不性感化、不儿童化、隐私和真实品牌 logo 规则。
 - 统一质量门禁：`工具/run_quality_gate.py` 统一串起 Prompt Pack 校验、仓库检查和单元测试。
+- 角色防串审计：`评估/角色防串审计报告.md` 自动汇总三角色锚点、防串、安全和成人化约束覆盖。
 
 ## 交付文档
 
 - `示例/README.md`：完整可复制提示词示例。
 - `评估/README.md`：出图评估与迭代流程。
 - `评估/仓库质量门禁.md`：仓库结构、链接、安全约束和 CI 检查规则。
+- `评估/角色防串审计报告.md`：由工具自动生成的角色防串覆盖报告。
 - `参考仓库/README.md`：外部 awesome 仓库追踪与分类映射。
 - `工具/README.md`：维护脚本说明。
 - `配置/README.md`：机器可读 Prompt Pack 配置说明。

@@ -41,12 +41,14 @@ REQUIRED_FILES = [
     "模板/18-地图导览模板.md",
     "示例/README.md",
     "评估/README.md",
+    "评估/角色防串审计报告.md",
     "参考仓库/README.md",
     "参考仓库/仓库追踪清单.md",
     "参考仓库/分类映射表.md",
     "参考仓库/持续优化流程.md",
     "工具/README.md",
     "工具/refresh_reference_summary.py",
+    "工具/audit_character_prompts.py",
     "工具/build_prompt_pack.py",
     "工具/run_quality_gate.py",
     "配置/README.md",
@@ -376,7 +378,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、内容安全政策、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、内容安全政策、角色安全约束、角色防串审计、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 
