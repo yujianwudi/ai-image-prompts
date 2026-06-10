@@ -17,6 +17,7 @@ DEFAULT_TAG_TAXONOMY = ROOT / "配置" / "tag_taxonomy.json"
 DEFAULT_OUTPUT_DIR = ROOT / "生成提示词"
 GENERATED_JSON_BUNDLE = "prompt_packs.generated.json"
 GENERATED_JSON_BUNDLE_SCHEMA = "prompt_packs.generated.schema.json"
+GENERATED_API_REQUESTS_JSONL = "prompt_packs.api_requests.jsonl"
 GENERATED_CSV_INDEX = "prompt_packs.index.csv"
 GENERATED_TAG_INDEX = "标签索引.md"
 GENERATED_TAG_COVERAGE_MATRIX = "标签覆盖矩阵.md"
@@ -449,6 +450,41 @@ def render_json_bundle(data: dict[str, Any]) -> str:
     return json.dumps(bundle, ensure_ascii=False, indent=2) + "\n"
 
 
+def render_api_request_payload(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
+    pack = get_pack(data, pack_id)
+    template = data["templates"][pack["template"]]
+    profile = dict(template["api_profile"])
+    payload: dict[str, Any] = {
+        "model": profile["model"],
+        "prompt": render_pack(data, pack_id).strip(),
+    }
+    for key in API_PROFILE_ORDER:
+        if key != "model" and key in profile:
+            payload[key] = profile[key]
+    return payload
+
+
+def render_api_request_record(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
+    pack = get_pack(data, pack_id)
+    return {
+        "id": pack["id"],
+        "title": pack["title"],
+        "character": pack["character"],
+        "template": pack["template"],
+        "tags": render_pack_tags(data, pack),
+        "source_config_sha256": config_digest(data),
+        "request": render_api_request_payload(data, pack_id),
+    }
+
+
+def render_api_requests_jsonl(data: dict[str, Any]) -> str:
+    lines = [
+        json.dumps(render_api_request_record(data, pack["id"]), ensure_ascii=False, separators=(",", ":"))
+        for pack in data.get("packs", [])
+    ]
+    return "\n".join(lines) + ("\n" if lines else "")
+
+
 def render_csv_index(data: dict[str, Any]) -> str:
     buffer = io.StringIO(newline="")
     writer = csv.writer(buffer, lineterminator="\n")
@@ -723,7 +759,13 @@ def render_generated_index(data: dict[str, Any]) -> str:
             "python 工具/build_prompt_pack.py furina_convention_phone --format json",
             "```",
             "",
-            "每个 Markdown 文件顶部都会给出 `gpt-image-2` 推荐 API 参数；纯文本输出仍只保留可复制提示词，JSON 输出会包含 `api_profile`，方便脚本直接取 `model` / `size` / `quality` / `output_format`。",
+            "输出可直接接 API 的单条请求 JSON：",
+            "",
+            "```powershell",
+            "python 工具/build_prompt_pack.py furina_convention_phone --format api-json",
+            "```",
+            "",
+            "每个 Markdown 文件顶部都会给出 `gpt-image-2` 推荐 API 参数；纯文本输出仍只保留可复制提示词，JSON 输出会包含 `api_profile`，`api-json` 输出只保留请求 payload，方便脚本直接取 `model` / `prompt` / `size` / `quality` / `output_format`。",
         ]
     )
 
@@ -737,6 +779,7 @@ def render_generated_index(data: dict[str, Any]) -> str:
             f"- [`{GENERATED_TAG_COVERAGE_MATRIX}`]({GENERATED_TAG_COVERAGE_MATRIX})：查看每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack。",
             f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256`、tags 和 `api_profile` 方便核对来源配置并直接接 API。",
             f"- [`{GENERATED_JSON_BUNDLE_SCHEMA}`]({GENERATED_JSON_BUNDLE_SCHEMA})：JSON bundle 的结构说明。",
+            f"- [`{GENERATED_API_REQUESTS_JSONL}`]({GENERATED_API_REQUESTS_JSONL})：全部 Prompt Pack 的逐行 API 请求草稿，适合批量脚本逐行读取。",
             f"- [`{GENERATED_CSV_INDEX}`]({GENERATED_CSV_INDEX})：可用表格软件打开的 Prompt Pack 索引，含 tags 列方便筛选。",
             "",
             "## 文件列表",
@@ -771,6 +814,9 @@ def export_all(data: dict[str, Any], out_dir: Path = DEFAULT_OUTPUT_DIR) -> list
     json_bundle_path = out_dir / GENERATED_JSON_BUNDLE
     json_bundle_path.write_text(render_json_bundle(data), encoding="utf-8")
     written.append(json_bundle_path)
+    api_requests_path = out_dir / GENERATED_API_REQUESTS_JSONL
+    api_requests_path.write_text(render_api_requests_jsonl(data), encoding="utf-8")
+    written.append(api_requests_path)
     csv_index_path = out_dir / GENERATED_CSV_INDEX
     csv_index_path.write_text(render_csv_index(data), encoding="utf-8")
     written.append(csv_index_path)
@@ -828,7 +874,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--validate", action="store_true", help="Validate config and exit")
     parser.add_argument("--all", action="store_true", help="Export every Prompt Pack as Markdown")
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUTPUT_DIR, help="Directory for --all exports")
-    parser.add_argument("--format", choices=["text", "markdown", "json"], default="text", help="Output format")
+    parser.add_argument("--format", choices=["text", "markdown", "json", "api-json"], default="text", help="Output format")
     parser.add_argument("--out", type=Path, help="Write output to a file")
     return parser.parse_args()
 
@@ -870,6 +916,8 @@ def main() -> int:
 
     if args.format == "json":
         output = json.dumps(render_pack_record(data, args.pack_id), ensure_ascii=False, indent=2) + "\n"
+    elif args.format == "api-json":
+        output = json.dumps(render_api_request_payload(data, args.pack_id), ensure_ascii=False, indent=2) + "\n"
     else:
         output = render_pack(data, args.pack_id, markdown=args.format == "markdown")
     if args.out:

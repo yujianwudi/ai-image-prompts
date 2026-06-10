@@ -10,6 +10,7 @@ from typing import Any
 from build_prompt_pack import (
     DEFAULT_CONFIG,
     DEFAULT_TAG_TAXONOMY,
+    GENERATED_API_REQUESTS_JSONL,
     GENERATED_CSV_INDEX,
     GENERATED_JSON_BUNDLE,
     GENERATED_TAG_COVERAGE_MATRIX,
@@ -176,6 +177,7 @@ def render_dashboard(
             f"- [`生成提示词/{GENERATED_TAG_INDEX}`](../生成提示词/{GENERATED_TAG_INDEX})：按 tag 查找 Prompt Pack。",
             f"- [`生成提示词/{GENERATED_TAG_COVERAGE_MATRIX}`](../生成提示词/{GENERATED_TAG_COVERAGE_MATRIX})：查看 tag 覆盖矩阵。",
             f"- [`生成提示词/{GENERATED_JSON_BUNDLE}`](../生成提示词/{GENERATED_JSON_BUNDLE})：机器可读 Prompt Pack JSON bundle。",
+            f"- [`生成提示词/{GENERATED_API_REQUESTS_JSONL}`](../生成提示词/{GENERATED_API_REQUESTS_JSONL})：逐行 API 请求草稿 JSONL。",
             f"- [`生成提示词/{GENERATED_CSV_INDEX}`](../生成提示词/{GENERATED_CSV_INDEX})：表格索引。",
             "- [`评估/失败修正建议.md`](失败修正建议.md)：按评分记录生成可复制修正提示词。",
             "",

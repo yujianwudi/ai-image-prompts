@@ -149,6 +149,7 @@ python -m unittest discover -s tests -v
 - 标签 taxonomy：通过 `配置/tag_taxonomy.json` 约束 Prompt Pack 模板 tags，避免标签同义词漂移，`商业海报图` 这类 alias 不能直接进模板。
 - JSON 输出：`工具/build_prompt_pack.py --format json` 可输出带 `api_profile` 的提示词记录，方便接 API、脚本或前端。
 - 全量 JSON Bundle：`生成提示词/prompt_packs.generated.json` 自动导出全部 Prompt Pack，并由 `生成提示词/prompt_packs.generated.schema.json` 描述结构；bundle 内含 `source_config_sha256`、tags 和 `api_profile`，方便前端或自动化工具核对来源配置、筛选用途并直接读取推荐参数。
+- API 请求 JSONL：`生成提示词/prompt_packs.api_requests.jsonl` 自动导出 15 条逐行请求草稿，`工具/build_prompt_pack.py --format api-json` 可输出单条 payload，方便批量脚本直接读取。
 - CSV 索引：`生成提示词/prompt_packs.index.csv` 自动列出 Prompt Pack、角色、模板、gpt-image-2 推荐参数、tags 和文件名，方便表格筛选。
 - 标签索引：`生成提示词/标签索引.md` 自动按 tags 分组 Prompt Pack，也可以用 `python 工具/build_prompt_pack.py --tag 商业海报` 查询。
 - 标签覆盖矩阵：`生成提示词/标签覆盖矩阵.md` 自动显示每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack，方便发现标签空转或覆盖不足。

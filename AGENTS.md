@@ -52,7 +52,7 @@ python 工具/run_quality_gate.py --refresh-generated
 
 1. 改 `配置/prompt_packs.json` 或生成脚本。
 2. 运行 `python 工具/run_quality_gate.py --refresh-generated`。
-3. 检查 `生成提示词/README.md`、`生成提示词/覆盖矩阵.md`、`生成提示词/标签索引.md`、`生成提示词/标签覆盖矩阵.md`、JSON bundle 和 CSV 索引是否符合预期。
+3. 检查 `生成提示词/README.md`、`生成提示词/覆盖矩阵.md`、`生成提示词/标签索引.md`、`生成提示词/标签覆盖矩阵.md`、JSON bundle、API 请求 JSONL 和 CSV 索引是否符合预期。
 
 ## 提示词风格规则
 
@@ -71,7 +71,7 @@ OpenAI `gpt-image-2` 相关模板优先使用自然语言分段，不要只堆�
 
 角色图里，发型、头饰、服装体系、关键道具和气质要比「高清、精致、氛围感」更靠前。
 
-新增或修改 Prompt Pack 模板时，`templates.*.tags` 必须保留用途标签，并包含 `公开安全`；`templates.*.api_profile` 必须同步记录 gpt-image-2 推荐参数。tags 和 api_profile 都会进入 JSON bundle 和 CSV 索引，用于后续筛选与接 API。
+新增或修改 Prompt Pack 模板时，`templates.*.tags` 必须保留用途标签，并包含 `公开安全`；`templates.*.api_profile` 必须同步记录 gpt-image-2 推荐参数。tags 和 api_profile 都会进入 JSON bundle、API 请求 JSONL 和 CSV 索引，用于后续筛选与接 API。
 新增 tag 前必须先登记到 `配置/tag_taxonomy.json`，不要直接在 `prompt_packs.json` 里发明同义词。比如模板里应使用正式标签 `商业海报`，不要写成 `商业海报图`。
 
 严格 9:16 的 OpenAI 竖图参数优先写 `1024x1824`。`1024x1536` 是 2:3 备选，不要标成严格 9:16；jpeg/webp 的 `output_compression` 要写 0-100，png 不写压缩率。

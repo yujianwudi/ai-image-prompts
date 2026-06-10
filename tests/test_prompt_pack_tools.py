@@ -14,6 +14,7 @@ sys.path.insert(0, str(TOOLS_DIR))
 from build_prompt_pack import (  # noqa: E402
     DEFAULT_CONFIG,
     DEFAULT_TAG_TAXONOMY,
+    GENERATED_API_REQUESTS_JSONL,
     GENERATED_CSV_INDEX,
     GENERATED_JSON_BUNDLE,
     GENERATED_JSON_BUNDLE_SCHEMA,
@@ -24,6 +25,9 @@ from build_prompt_pack import (  # noqa: E402
     generated_filename,
     load_config,
     load_tag_taxonomy,
+    render_api_request_payload,
+    render_api_request_record,
+    render_api_requests_jsonl,
     render_coverage_matrix,
     render_csv_index,
     render_generated_index,
@@ -162,6 +166,17 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertEqual(record["template"]["api_profile"], record["api_profile"])
         self.assertIn("主体锁定", record["prompt"])
         self.assertIn("非低俗", record["prompt"])
+        api_payload = render_api_request_payload(self.data, "furina_convention_phone")
+        self.assertEqual(api_payload["model"], "gpt-image-2")
+        self.assertEqual(api_payload["size"], "1024x1824")
+        self.assertIn("主体锁定", api_payload["prompt"])
+        self.assertNotIn("id", api_payload)
+        api_record = render_api_request_record(self.data, "furina_convention_phone")
+        self.assertEqual(api_record["id"], "furina_convention_phone")
+        self.assertEqual(api_record["request"], api_payload)
+        jsonl_records = [json.loads(line) for line in render_api_requests_jsonl(self.data).splitlines()]
+        self.assertEqual(len(jsonl_records), len(self.data["packs"]))
+        self.assertEqual(jsonl_records[0]["request"], api_payload)
         bundle = json.loads(render_json_bundle(self.data))
         self.assertEqual(bundle["$schema"], GENERATED_JSON_BUNDLE_SCHEMA)
         self.assertEqual(bundle["source_config"], "配置/prompt_packs.json")
@@ -188,6 +203,7 @@ class PromptPackToolTests(unittest.TestCase):
                 GENERATED_TAG_INDEX,
                 GENERATED_TAG_COVERAGE_MATRIX,
                 GENERATED_JSON_BUNDLE,
+                GENERATED_API_REQUESTS_JSONL,
                 GENERATED_CSV_INDEX,
             } | {
                 generated_filename(pack["id"]) for pack in self.data["packs"]
@@ -198,6 +214,7 @@ class PromptPackToolTests(unittest.TestCase):
             self.assertEqual((out_dir / GENERATED_TAG_INDEX).read_text(encoding="utf-8"), render_tag_index(self.data))
             self.assertEqual((out_dir / GENERATED_TAG_COVERAGE_MATRIX).read_text(encoding="utf-8"), render_tag_coverage_matrix(self.data))
             self.assertEqual((out_dir / GENERATED_JSON_BUNDLE).read_text(encoding="utf-8"), render_json_bundle(self.data))
+            self.assertEqual((out_dir / GENERATED_API_REQUESTS_JSONL).read_text(encoding="utf-8"), render_api_requests_jsonl(self.data))
             self.assertEqual((out_dir / GENERATED_CSV_INDEX).read_text(encoding="utf-8"), render_csv_index(self.data))
             for pack in self.data["packs"]:
                 path = out_dir / generated_filename(pack["id"])
@@ -208,6 +225,7 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("快速复制入口", index)
         self.assertIn("按角色 × 用途", index)
         self.assertIn(GENERATED_JSON_BUNDLE_SCHEMA, index)
+        self.assertIn(GENERATED_API_REQUESTS_JSONL, index)
         self.assertIn("furina_convention_phone.md", index)
         self.assertIn("citlali_readme_preview.md", index)
         self.assertIn("dori_character_card.md", index)
@@ -290,6 +308,21 @@ class PromptPackToolTests(unittest.TestCase):
         payload = json.loads(json_output.stdout)
         self.assertEqual(payload["id"], "furina_convention_phone")
         self.assertIn("prompt", payload)
+
+        api_json_output = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "build_prompt_pack.py"), "furina_convention_phone", "--format", "api-json"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        api_payload = json.loads(api_json_output.stdout)
+        self.assertEqual(api_payload["model"], "gpt-image-2")
+        self.assertEqual(api_payload["size"], "1024x1824")
+        self.assertIn("主体锁定", api_payload["prompt"])
+        self.assertNotIn("api_profile", api_payload)
 
         tag_output = subprocess.run(
             [sys.executable, str(TOOLS_DIR / "build_prompt_pack.py"), "--tag", "商业海报"],

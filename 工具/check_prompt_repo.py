@@ -9,6 +9,7 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from build_prompt_pack import (
+    GENERATED_API_REQUESTS_JSONL,
     GENERATED_CSV_INDEX,
     GENERATED_JSON_BUNDLE,
     GENERATED_JSON_BUNDLE_SCHEMA,
@@ -18,6 +19,7 @@ from build_prompt_pack import (
     load_config,
     render_coverage_matrix,
     render_csv_index,
+    render_api_requests_jsonl,
     render_generated_index,
     render_json_bundle,
     render_tag_coverage_matrix,
@@ -678,6 +680,15 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
     else:
         check_generated_json_bundle_schema(json_bundle_path, errors)
 
+    api_requests_path = out_dir / GENERATED_API_REQUESTS_JSONL
+    expected_api_requests = render_api_requests_jsonl(data)
+    if not api_requests_path.exists():
+        errors.append(f"缺少自动生成 API 请求 JSONL：生成提示词/{GENERATED_API_REQUESTS_JSONL}")
+    elif api_requests_path.read_text(encoding="utf-8") != expected_api_requests:
+        errors.append(f"自动生成 API 请求 JSONL 已过期：生成提示词/{GENERATED_API_REQUESTS_JSONL}")
+    else:
+        check_generated_api_requests_jsonl(api_requests_path, data, errors)
+
     csv_index_path = out_dir / GENERATED_CSV_INDEX
     expected_csv_index = render_csv_index(data)
     if not csv_index_path.exists():
@@ -708,10 +719,42 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
         if path.name not in expected_json_files:
             errors.append(f"自动生成提示词目录存在多余 JSON：生成提示词/{path.name}")
 
+    expected_jsonl_files = {GENERATED_API_REQUESTS_JSONL}
+    for path in out_dir.glob("*.jsonl"):
+        if path.name not in expected_jsonl_files:
+            errors.append(f"自动生成提示词目录存在多余 JSONL：生成提示词/{path.name}")
+
     expected_csv_files = {GENERATED_CSV_INDEX}
     for path in out_dir.glob("*.csv"):
         if path.name not in expected_csv_files:
             errors.append(f"自动生成提示词目录存在多余 CSV：生成提示词/{path.name}")
+
+
+def check_generated_api_requests_jsonl(api_requests_path: Path, data: dict[str, object], errors: list[str]) -> None:
+    try:
+        records = [json.loads(line) for line in api_requests_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"自动生成 API 请求 JSONL 无法读取：{exc}")
+        return
+    expected_ids = [str(pack.get("id", "")) for pack in data.get("packs", []) if isinstance(pack, dict)]
+    record_ids = [str(record.get("id", "")) for record in records if isinstance(record, dict)]
+    if record_ids != expected_ids:
+        errors.append("自动生成 API 请求 JSONL 的记录顺序或数量与 Prompt Pack 不一致")
+    for record in records:
+        if not isinstance(record, dict):
+            errors.append("自动生成 API 请求 JSONL 包含非 object 行")
+            continue
+        request = record.get("request")
+        if not isinstance(request, dict):
+            errors.append(f"API 请求 JSONL 记录缺少 request：{record.get('id')}")
+            continue
+        for key in ["model", "prompt", "size", "quality", "output_format", "background"]:
+            if key not in request:
+                errors.append(f"API 请求 JSONL 记录 {record.get('id')} 缺少 request.{key}")
+        if request.get("model") != "gpt-image-2":
+            errors.append(f"API 请求 JSONL 记录 {record.get('id')} 的 model 不是 gpt-image-2")
+        if not str(request.get("prompt", "")).strip():
+            errors.append(f"API 请求 JSONL 记录 {record.get('id')} 的 prompt 为空")
 
 
 def check_generated_json_bundle_schema(json_bundle_path: Path, errors: list[str]) -> None:
@@ -802,7 +845,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、标签覆盖矩阵、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、标签覆盖矩阵、API 请求 JSONL、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

@@ -67,7 +67,7 @@ python 工具/build_prompt_pack.py dori_commercial_poster --out 示例/自动生
 - `templates` 放输出类型、tags、gpt-image-2 `api_profile`、构图、光线、材质、文字策略和安全约束。
 - `packs` 放具体组合案例，只引用已有角色和模板。
 - `tags` 用于 JSON bundle、CSV 索引和前端筛选；每个模板必须包含 `公开安全`，并且必须来自 `tag_taxonomy.json` 的正式标签。
-- `api_profile` 用于记录推荐 `model`、`size`、`quality`、`output_format`、`output_compression` 和 `background`；jpeg/webp 必须写 0-100 压缩率，png 不写压缩率。
+- `api_profile` 用于记录推荐 `model`、`size`、`quality`、`output_format`、`output_compression` 和 `background`；jpeg/webp 必须写 0-100 压缩率，png 不写压缩率，并会进入 JSON bundle、CSV 索引和 API 请求 JSONL。
 - 同义词不要直接写进模板 tags，例如 `商业海报图` 应登记为 `商业海报` 的 alias，模板里仍使用正式标签 `商业海报`。
 - 不要把外部仓库的长提示词直接复制进配置，只保留结构化字段。
 
