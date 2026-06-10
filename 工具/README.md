@@ -22,7 +22,7 @@ python 工具/refresh_reference_summary.py
 
 ## check_prompt_repo.py
 
-用途：检查仓库结构、AGENTS 维护指引、Markdown 本地链接、README 预览图 alt/caption/顺序、预览图 manifest schema/结构/尺寸/方向、角色安全约束和参考仓库追踪。
+用途：检查仓库结构、AGENTS 维护指引、Markdown 本地链接、README 预览图 alt/caption/顺序、预览图 manifest schema/结构/尺寸/方向、Prompt Pack schema 约束、角色安全约束和参考仓库追踪。
 不依赖网络，适合本地和 GitHub Actions 使用。
 
 运行：

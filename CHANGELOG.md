@@ -8,6 +8,7 @@
 - Prompt 文本质量规则 schema 和校验器新增 `$schema` 常量、日期前缀版本 slug、未知字段、空白字符串与重复词条检查，避免预检规则自身漂移。
 - 预览图 manifest schema 和同步工具新增 `$schema` 常量、日期前缀版本 slug、未知字段、空白文案、重复图片、Prompt Pack 引用和 `public_safe=true` 检查，避免 README 公开预览区漂移。
 - Prompt Pack 核心配置 schema 和校验器新增 `$schema` 常量、日期前缀版本 slug、未知字段、非空白文本、列表去重与 `api_profile` 未知字段检查，避免根配置草稿字段或重复项污染自动导出。
+- 仓库质量检查现在会自检 `配置/prompt_packs.schema.json` 的 `$schema` 常量、版本格式、非空白文本、列表去重、additionalProperties 和 slug 约束，避免 schema 自身退化。
 - 全量 JSON bundle schema 现在由 `工具/build_prompt_pack.py --all` 自动导出，并在质量门禁中与生成器结果比对同步；schema 也新增非空白文本、slug propertyNames 和列表去重约束。
 - API 请求 JSONL schema 和校验器新增未知字段、非空白 title/prompt、tags 去重与 tags 同步检查，减少批量请求草稿在脚本读取时才暴露的数据问题。
 - 失败修正词库 schema 和校验器新增未知字段、非空白文本与 applies_to / detect_terms / must_include 去重检查，避免草稿字段、空白修正词或重复识别线索污染修正建议。

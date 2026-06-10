@@ -767,16 +767,57 @@ def check_prompt_pack_schema(data: dict, errors: list[str]) -> None:
     for key in ["$schema", "title", "type", "required", "properties", "$defs"]:
         if key not in schema:
             errors.append(f"Prompt Pack schema 缺少字段：{key}")
+    if schema.get("additionalProperties") is not False:
+        errors.append("Prompt Pack schema 根节点应设置 additionalProperties=false")
+    schema_props = schema.get("properties", {})
+    if schema_props.get("$schema", {}).get("const") != "prompt_packs.schema.json":
+        errors.append("Prompt Pack schema.properties.$schema 应固定为 prompt_packs.schema.json")
+    version_pattern = "^20[0-9]{2}-[0-9]{2}-[0-9]{2}-[a-z0-9][a-z0-9-]*$"
+    if schema_props.get("version", {}).get("pattern") != version_pattern:
+        errors.append("Prompt Pack schema.properties.version 应限制为日期前缀小写 slug")
+    if schema_props.get("description", {}).get("pattern") != "\\S":
+        errors.append("Prompt Pack schema.properties.description 应设置非空白约束")
     for key in ["characters", "templates", "packs", "global_quality_constraints"]:
-        if key not in schema.get("properties", {}):
+        if key not in schema_props:
             errors.append(f"Prompt Pack schema.properties 缺少：{key}")
+    if schema_props.get("global_quality_constraints", {}).get("$ref") != "#/$defs/string_list":
+        errors.append("Prompt Pack schema.properties.global_quality_constraints 应复用 string_list")
+    string_list = schema.get("$defs", {}).get("string_list", {})
+    if string_list.get("uniqueItems") is not True or string_list.get("items", {}).get("pattern") != "\\S":
+        errors.append("Prompt Pack schema.string_list 应设置 uniqueItems=true 且 items 非空白")
     for key in ["characters", "templates"]:
-        property_names = schema.get("properties", {}).get(key, {}).get("propertyNames", {})
+        property_names = schema_props.get(key, {}).get("propertyNames", {})
         if property_names.get("pattern") != "^[a-z0-9_]+$":
             errors.append(f"Prompt Pack schema.properties.{key}.propertyNames.pattern 应限制为小写 slug")
-    template_props = schema.get("$defs", {}).get("template", {}).get("properties", {})
+    character_schema = schema.get("$defs", {}).get("character", {})
+    if character_schema.get("additionalProperties") is not False:
+        errors.append("Prompt Pack schema.character 应设置 additionalProperties=false")
+    character_props = character_schema.get("properties", {})
+    for key in ["display_name", "anchor"]:
+        if character_props.get(key, {}).get("pattern") != "\\S":
+            errors.append(f"Prompt Pack schema.character.properties.{key} 应设置非空白约束")
+    template_schema = schema.get("$defs", {}).get("template", {})
+    if template_schema.get("additionalProperties") is not False:
+        errors.append("Prompt Pack schema.template 应设置 additionalProperties=false")
+    template_props = template_schema.get("properties", {})
     if "tags" not in template_props:
         errors.append("Prompt Pack schema.template.properties 缺少：tags")
+    for key in ["task_type", "composition", "lighting", "material", "text_strategy", "safety"]:
+        if template_props.get(key, {}).get("pattern") != "\\S":
+            errors.append(f"Prompt Pack schema.template.properties.{key} 应设置非空白约束")
+    api_profile_schema = schema.get("$defs", {}).get("api_profile", {})
+    if api_profile_schema.get("additionalProperties") is not False:
+        errors.append("Prompt Pack schema.api_profile 应设置 additionalProperties=false")
+    pack_schema = schema.get("$defs", {}).get("pack", {})
+    if pack_schema.get("additionalProperties") is not False:
+        errors.append("Prompt Pack schema.pack 应设置 additionalProperties=false")
+    pack_props = pack_schema.get("properties", {})
+    for key in ["character", "template"]:
+        if pack_props.get(key, {}).get("pattern") != "^[a-z0-9_]+$":
+            errors.append(f"Prompt Pack schema.pack.properties.{key} 应限制为小写 slug")
+    for key in ["title", "scene", "action"]:
+        if pack_props.get(key, {}).get("pattern") != "\\S":
+            errors.append(f"Prompt Pack schema.pack.properties.{key} 应设置非空白约束")
 
 
 def check_generated_prompt_outputs(errors: list[str]) -> None:
