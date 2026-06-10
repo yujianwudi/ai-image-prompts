@@ -9,11 +9,13 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from build_prompt_pack import (
+    GENERATED_CSV_INDEX,
     GENERATED_JSON_BUNDLE,
     GENERATED_JSON_BUNDLE_SCHEMA,
     generated_filename,
     load_config,
     render_coverage_matrix,
+    render_csv_index,
     render_generated_index,
     render_json_bundle,
     render_pack,
@@ -615,6 +617,13 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
     else:
         check_generated_json_bundle_schema(json_bundle_path, errors)
 
+    csv_index_path = out_dir / GENERATED_CSV_INDEX
+    expected_csv_index = render_csv_index(data)
+    if not csv_index_path.exists():
+        errors.append(f"缺少自动生成 CSV 索引：生成提示词/{GENERATED_CSV_INDEX}")
+    elif csv_index_path.read_text(encoding="utf-8") != expected_csv_index:
+        errors.append(f"自动生成 CSV 索引已过期：生成提示词/{GENERATED_CSV_INDEX}")
+
     expected_files = {"README.md", "覆盖矩阵.md"}
     for pack in data.get("packs", []):
         pack_id = pack.get("id")
@@ -637,6 +646,11 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
     for path in out_dir.glob("*.json"):
         if path.name not in expected_json_files:
             errors.append(f"自动生成提示词目录存在多余 JSON：生成提示词/{path.name}")
+
+    expected_csv_files = {GENERATED_CSV_INDEX}
+    for path in out_dir.glob("*.csv"):
+        if path.name not in expected_csv_files:
+            errors.append(f"自动生成提示词目录存在多余 CSV：生成提示词/{path.name}")
 
 
 def check_generated_json_bundle_schema(json_bundle_path: Path, errors: list[str]) -> None:

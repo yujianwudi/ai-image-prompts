@@ -13,6 +13,7 @@ sys.path.insert(0, str(TOOLS_DIR))
 
 from build_prompt_pack import (  # noqa: E402
     DEFAULT_CONFIG,
+    GENERATED_CSV_INDEX,
     GENERATED_JSON_BUNDLE,
     GENERATED_JSON_BUNDLE_SCHEMA,
     config_digest,
@@ -20,6 +21,7 @@ from build_prompt_pack import (  # noqa: E402
     generated_filename,
     load_config,
     render_coverage_matrix,
+    render_csv_index,
     render_generated_index,
     render_json_bundle,
     render_pack,
@@ -109,13 +111,14 @@ class PromptPackToolTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             out_dir = Path(tmp)
             written = export_all(self.data, out_dir)
-            expected_names = {"README.md", "覆盖矩阵.md", GENERATED_JSON_BUNDLE} | {
+            expected_names = {"README.md", "覆盖矩阵.md", GENERATED_JSON_BUNDLE, GENERATED_CSV_INDEX} | {
                 generated_filename(pack["id"]) for pack in self.data["packs"]
             }
             self.assertEqual({path.name for path in written}, expected_names)
             self.assertEqual((out_dir / "README.md").read_text(encoding="utf-8"), render_generated_index(self.data))
             self.assertEqual((out_dir / "覆盖矩阵.md").read_text(encoding="utf-8"), render_coverage_matrix(self.data))
             self.assertEqual((out_dir / GENERATED_JSON_BUNDLE).read_text(encoding="utf-8"), render_json_bundle(self.data))
+            self.assertEqual((out_dir / GENERATED_CSV_INDEX).read_text(encoding="utf-8"), render_csv_index(self.data))
             for pack in self.data["packs"]:
                 path = out_dir / generated_filename(pack["id"])
                 self.assertEqual(path.read_text(encoding="utf-8"), render_pack(self.data, pack["id"], markdown=True))
@@ -128,6 +131,14 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("furina_convention_phone.md", index)
         self.assertIn("citlali_readme_preview.md", index)
         self.assertIn("dori_character_card.md", index)
+        self.assertIn(GENERATED_CSV_INDEX, index)
+
+    def test_csv_index_lists_prompt_pack_files(self) -> None:
+        csv_text = render_csv_index(self.data)
+        self.assertIn("id,title,character_id,character,template_id,template_type,file", csv_text)
+        self.assertIn("furina_convention_phone", csv_text)
+        self.assertIn("furina_convention_phone.md", csv_text)
+        self.assertIn("茜特菈莉 Citlali", csv_text)
 
     def test_coverage_matrix_lists_characters_and_templates(self) -> None:
         matrix = render_coverage_matrix(self.data)

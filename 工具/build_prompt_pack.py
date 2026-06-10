@@ -1,7 +1,9 @@
 ﻿from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
+import io
 import json
 import sys
 from pathlib import Path
@@ -12,6 +14,7 @@ DEFAULT_CONFIG = ROOT / "配置" / "prompt_packs.json"
 DEFAULT_OUTPUT_DIR = ROOT / "生成提示词"
 GENERATED_JSON_BUNDLE = "prompt_packs.generated.json"
 GENERATED_JSON_BUNDLE_SCHEMA = "prompt_packs.generated.schema.json"
+GENERATED_CSV_INDEX = "prompt_packs.index.csv"
 
 REQUIRED_CHARACTER_KEYS = ["display_name", "anchor", "must_keep", "avoid"]
 REQUIRED_TEMPLATE_KEYS = ["task_type", "composition", "lighting", "material", "text_strategy", "safety"]
@@ -213,6 +216,29 @@ def render_json_bundle(data: dict[str, Any]) -> str:
     return json.dumps(bundle, ensure_ascii=False, indent=2) + "\n"
 
 
+def render_csv_index(data: dict[str, Any]) -> str:
+    buffer = io.StringIO(newline="")
+    writer = csv.writer(buffer, lineterminator="\n")
+    writer.writerow(["id", "title", "character_id", "character", "template_id", "template_type", "file"])
+    characters = data.get("characters", {})
+    templates = data.get("templates", {})
+    for pack in data.get("packs", []):
+        char = characters.get(pack.get("character"), {})
+        template = templates.get(pack.get("template"), {})
+        writer.writerow(
+            [
+                pack.get("id", ""),
+                pack.get("title", ""),
+                pack.get("character", ""),
+                char.get("display_name", ""),
+                pack.get("template", ""),
+                template.get("task_type", ""),
+                generated_filename(str(pack.get("id", ""))),
+            ]
+        )
+    return buffer.getvalue()
+
+
 def generated_filename(pack_id: str) -> str:
     return f"{pack_id}.md"
 
@@ -343,6 +369,7 @@ def render_generated_index(data: dict[str, Any]) -> str:
         "- [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。",
         f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256` 方便核对来源配置。",
         f"- [`{GENERATED_JSON_BUNDLE_SCHEMA}`]({GENERATED_JSON_BUNDLE_SCHEMA})：JSON bundle 的结构说明。",
+        f"- [`{GENERATED_CSV_INDEX}`]({GENERATED_CSV_INDEX})：可用表格软件打开的 Prompt Pack 索引。",
         "",
         "## 文件列表",
         "",
@@ -370,6 +397,9 @@ def export_all(data: dict[str, Any], out_dir: Path = DEFAULT_OUTPUT_DIR) -> list
     json_bundle_path = out_dir / GENERATED_JSON_BUNDLE
     json_bundle_path.write_text(render_json_bundle(data), encoding="utf-8")
     written.append(json_bundle_path)
+    csv_index_path = out_dir / GENERATED_CSV_INDEX
+    csv_index_path.write_text(render_csv_index(data), encoding="utf-8")
+    written.append(csv_index_path)
     expected_names = {"README.md", "覆盖矩阵.md"}
     for pack in data.get("packs", []):
         pack_id = pack["id"]
