@@ -61,6 +61,7 @@ def main() -> int:
         [
             ("校验 Prompt Pack 配置", [python, "工具/build_prompt_pack.py", "--validate"]),
             ("校验角色防串审计报告", [python, "工具/audit_character_prompts.py", "--check"]),
+            ("校验预览图 manifest 尺寸元数据", [python, "工具/sync_preview_manifest.py", "--check"]),
             ("检查仓库结构与安全约束", [python, "工具/check_prompt_repo.py"]),
             ("运行单元测试", [python, "-m", "unittest", "discover", "-s", "tests", "-v"]),
         ]

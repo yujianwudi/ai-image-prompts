@@ -65,6 +65,7 @@ REQUIRED_FILES = [
     "工具/refresh_reference_summary.py",
     "工具/audit_character_prompts.py",
     "工具/build_prompt_pack.py",
+    "工具/sync_preview_manifest.py",
     "工具/run_quality_gate.py",
     "配置/README.md",
     "配置/prompt_packs.json",

@@ -33,6 +33,23 @@ python 工具/check_prompt_repo.py
 
 如果输出 `OK`，说明当前仓库基础质量门禁通过。
 
+## sync_preview_manifest.py
+
+用途：读取 `预览图/manifest.json` 和实际图片文件，自动同步 `width`、`height`、`aspect_ratio` 和 `orientation`。
+不依赖网络，适合新增、替换或压缩 README 预览图后运行。
+
+同步 manifest：
+
+```powershell
+python 工具/sync_preview_manifest.py
+```
+
+只检查是否过期：
+
+```powershell
+python 工具/sync_preview_manifest.py --check
+```
+
 ## run_quality_gate.py
 
 用途：统一运行本仓库的本地质量门禁，避免手动漏跑配置校验、仓库检查或单元测试。
@@ -49,6 +66,7 @@ python 工具/run_quality_gate.py
 ```text
 python 工具/build_prompt_pack.py --validate
 python 工具/audit_character_prompts.py --check
+python 工具/sync_preview_manifest.py --check
 python 工具/check_prompt_repo.py
 python -m unittest discover -s tests -v
 ```
@@ -150,4 +168,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI、预览图 manifest、角色防串审计和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI、预览图 manifest 同步、角色防串审计和统一质量门禁帮助入口。

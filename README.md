@@ -103,6 +103,12 @@
 python 工具/run_quality_gate.py
 ```
 
+如果新增或替换了 `预览图/` 里的图片，先同步 manifest 尺寸元数据：
+
+```powershell
+python 工具/sync_preview_manifest.py
+```
+
 如果修改了 `配置/prompt_packs.json`，并且需要先重新导出全部 Prompt Pack：
 
 ```powershell
@@ -114,11 +120,12 @@ python 工具/run_quality_gate.py --refresh-generated
 ```powershell
 python 工具/build_prompt_pack.py --all
 python 工具/build_prompt_pack.py --validate
+python 工具/sync_preview_manifest.py --check
 python 工具/check_prompt_repo.py
 python -m unittest discover -s tests -v
 ```
 
-统一质量门禁会检查 Prompt Pack 配置、角色防串审计报告、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
+统一质量门禁会检查 Prompt Pack 配置、角色防串审计报告、预览图 manifest 尺寸元数据、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 
@@ -137,6 +144,7 @@ python -m unittest discover -s tests -v
 - 参考优秀仓库补充：商业海报、电商主图、信息图、UI截图、角色卡、分镜板、九宫格、封面缩略图、长图教程、地图导览模板。
 - README 预览图：展示模板生成效果，避免只看文字不直观。
 - 预览图清单：通过 `预览图/manifest.json` 和 `预览图/manifest.schema.json` 记录文件、尺寸、方向、角色、场景、Prompt Pack 和公开安全状态。
+- 预览图元数据同步：通过 `工具/sync_preview_manifest.py` 自动刷新 manifest 中的宽高、比例和方向。
 - 评估迭代：出图评分、失败修正词库、迭代记录模板。
 - Issue / PR 模板：规范角色新增、模板优化、出图问题反馈和提交检查。
 - 仓库格式规范：通过 `.gitattributes` 和 `.editorconfig` 固定 UTF-8、LF 和缩进规则。

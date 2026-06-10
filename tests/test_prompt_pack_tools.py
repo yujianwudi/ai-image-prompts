@@ -32,6 +32,10 @@ from check_prompt_repo import (  # noqa: E402
     image_dimensions,
     reduced_aspect_ratio,
 )
+from sync_preview_manifest import (  # noqa: E402
+    render_manifest as render_preview_manifest,
+    sync_manifest,
+)
 
 
 class PromptPackToolTests(unittest.TestCase):
@@ -216,6 +220,24 @@ class PromptPackToolTests(unittest.TestCase):
             self.assertEqual(item["height"], height)
             self.assertEqual(item["aspect_ratio"], reduced_aspect_ratio(width, height))
             self.assertEqual(item["orientation"], classify_orientation(width, height))
+
+    def test_preview_manifest_sync_tool_is_current(self) -> None:
+        preview_dir = ROOT / "预览图"
+        manifest_path = preview_dir / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        synced = sync_manifest(manifest, preview_dir)
+        self.assertEqual(render_preview_manifest(synced), manifest_path.read_text(encoding="utf-8"))
+
+        result = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "sync_preview_manifest.py"), "--check"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("OK：预览图 manifest 尺寸元数据已同步", result.stdout)
 
     def test_gitignore_keeps_local_noise_out(self) -> None:
         gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")

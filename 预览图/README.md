@@ -35,6 +35,20 @@ manifest.schema.json
 
 ## 本地检查
 
+新增、替换或重新压缩预览图后，先同步 manifest 尺寸元数据：
+
+```powershell
+python 工具/sync_preview_manifest.py
+```
+
+只检查 manifest 是否已经同步：
+
+```powershell
+python 工具/sync_preview_manifest.py --check
+```
+
+然后运行统一质量门禁：
+
 ```powershell
 python 工具/run_quality_gate.py
 ```
