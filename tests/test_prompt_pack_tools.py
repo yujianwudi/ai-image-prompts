@@ -1,5 +1,6 @@
 ﻿from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import tempfile
@@ -26,6 +27,17 @@ class PromptPackToolTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.data = load_config(DEFAULT_CONFIG)
+
+    def test_schema_reference_exists(self) -> None:
+        schema_ref = self.data.get("$schema")
+        self.assertEqual(schema_ref, "prompt_packs.schema.json")
+        schema_path = ROOT / "配置" / schema_ref
+        self.assertTrue(schema_path.exists())
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        self.assertIn("characters", schema["properties"])
+        self.assertIn("templates", schema["properties"])
+        self.assertIn("packs", schema["properties"])
+        self.assertIn("global_quality_constraints", schema["properties"])
 
     def test_config_is_valid(self) -> None:
         self.assertEqual(validate_config(self.data), [])

@@ -1,4 +1,5 @@
 {
+  "$schema": "prompt_packs.schema.json",
   "version": "2026-06-10-full-coverage",
   "description": "机器可读 Prompt Pack：把角色锚点、输出类型、场景、构图、光线、材质和约束拆成可组合字段。",
   "characters": {

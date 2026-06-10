@@ -5,6 +5,7 @@
 
 ```text
 配置/prompt_packs.json
+配置/prompt_packs.schema.json
 ```
 
 ## 用途
@@ -39,6 +40,16 @@ python 工具/build_prompt_pack.py --all
 ```powershell
 python 工具/build_prompt_pack.py dori_commercial_poster --out 示例/自动生成-多莉商业海报.md
 ```
+
+## JSON Schema
+
+`prompt_packs.json` 已绑定本地 schema：
+
+```json
+"$schema": "prompt_packs.schema.json"
+```
+
+支持 JSON Schema 的编辑器可以根据 `配置/prompt_packs.schema.json` 提示字段结构。质量门禁也会检查 `$schema` 是否存在、是否指向配置目录内的 schema 文件。
 
 ## 维护规则
 

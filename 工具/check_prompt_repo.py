@@ -46,6 +46,7 @@ REQUIRED_FILES = [
     "工具/build_prompt_pack.py",
     "配置/README.md",
     "配置/prompt_packs.json",
+    "配置/prompt_packs.schema.json",
     "生成提示词/README.md",
     "tests/test_prompt_pack_tools.py",
 ]
@@ -179,6 +180,7 @@ def check_prompt_pack_config(errors: list[str]) -> None:
     except Exception as exc:  # noqa: BLE001
         errors.append(f"Prompt Pack 配置无法读取：{exc}")
         return
+    check_prompt_pack_schema(data, errors)
     for item in validate_config(data):
         errors.append(f"Prompt Pack 配置错误：{item}")
     for pack in data.get("packs", []):
@@ -189,6 +191,35 @@ def check_prompt_pack_config(errors: list[str]) -> None:
         for term in ["主体锁定", "安全约束", "防串约束", "非低俗", "不性感化", "不要混入"]:
             if term not in rendered:
                 errors.append(f"Prompt Pack 输出缺少必要字段“{term}”：{pack_id}")
+
+
+def check_prompt_pack_schema(data: dict, errors: list[str]) -> None:
+    schema_ref = data.get("$schema")
+    if not schema_ref:
+        errors.append("Prompt Pack 配置缺少 $schema 引用")
+        return
+    schema_path = (ROOT / "配置" / str(schema_ref)).resolve()
+    try:
+        schema_path.relative_to((ROOT / "配置").resolve())
+    except ValueError:
+        errors.append(f"Prompt Pack $schema 不能指向配置目录之外：{schema_ref}")
+        return
+    if not schema_path.exists():
+        errors.append(f"Prompt Pack $schema 文件不存在：配置/{schema_ref}")
+        return
+    try:
+        import json
+
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"Prompt Pack schema 无法读取：{exc}")
+        return
+    for key in ["$schema", "title", "type", "required", "properties", "$defs"]:
+        if key not in schema:
+            errors.append(f"Prompt Pack schema 缺少字段：{key}")
+    for key in ["characters", "templates", "packs", "global_quality_constraints"]:
+        if key not in schema.get("properties", {}):
+            errors.append(f"Prompt Pack schema.properties 缺少：{key}")
 
 
 def check_generated_prompt_outputs(errors: list[str]) -> None:
@@ -267,7 +298,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、角色安全约束、参考仓库追踪、Prompt Pack 配置和自动导出文件通过。")
+        print("\nOK：结构、链接、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema 和自动导出文件通过。")
         return 0
     return 1
 
