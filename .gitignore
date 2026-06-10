@@ -1,0 +1,19 @@
+# 临时文件
+tmp/
+temp/
+*.tmp
+*.bak
+*.log
+
+# 本地生成的大图/未压缩素材
+原图/
+raw/
+*.psd
+*.clip
+*.kra
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
