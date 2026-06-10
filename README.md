@@ -3,7 +3,7 @@
 [![validate-prompt-repo](https://github.com/yujianwudi/ai-image-prompts/actions/workflows/validate.yml/badge.svg)](https://github.com/yujianwudi/ai-image-prompts/actions/workflows/validate.yml)
 ![Prompt Packs](https://img.shields.io/badge/Prompt%20Packs-15-blue)
 ![Characters](https://img.shields.io/badge/Characters-3-purple)
-![Templates](https://img.shields.io/badge/Templates-25%2B-green)
+![Templates](https://img.shields.io/badge/Templates-24-green)
 ![Schema](https://img.shields.io/badge/JSON%20Schema-enabled-orange)
 
 

@@ -96,6 +96,30 @@ def clean_target(target: str) -> str:
     return unquote(target)
 
 
+def check_readme_badges(errors: list[str]) -> None:
+    readme_path = ROOT / "README.md"
+    config_path = ROOT / "配置" / "prompt_packs.json"
+    if not readme_path.exists() or not config_path.exists():
+        return
+    readme = readme_path.read_text(encoding="utf-8")
+    try:
+        data = load_config(config_path)
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"无法检查 README 徽章：{exc}")
+        return
+    template_count = len([path for path in (ROOT / "模板").glob("*.md") if path.name.lower() != "readme.md"])
+    expected = {
+        "CI badge": "actions/workflows/validate.yml/badge.svg",
+        "Prompt Packs badge": f"Prompt%20Packs-{len(data.get('packs', []))}-",
+        "Characters badge": f"Characters-{len(data.get('characters', {}))}-",
+        "Templates badge": f"Templates-{template_count}-",
+        "JSON Schema badge": "JSON%20Schema-enabled",
+    }
+    for label, needle in expected.items():
+        if needle not in readme:
+            errors.append(f"README 徽章缺失或数字过期：{label} 应包含 {needle}")
+
+
 def check_repo_style_config(errors: list[str]) -> None:
     gitattributes = ROOT / ".gitattributes"
     editorconfig = ROOT / ".editorconfig"
@@ -298,6 +322,7 @@ def main() -> int:
     check_repo_style_config(errors)
     check_markdown_health(errors, warnings)
     check_local_links(errors)
+    check_readme_badges(errors)
     check_role_safety(errors)
     check_reference_tracking(errors)
     check_preview_images(errors, warnings)
@@ -321,7 +346,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、仓库格式配置、协作模板、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema 和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema 和自动导出文件通过。")
         return 0
     return 1
 

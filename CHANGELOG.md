@@ -36,6 +36,7 @@
 
 ### Changed
 
+- 修正 README 模板数量徽章，并将 README 徽章计数纳入质量门禁。
 - 质量门禁现在会检查仓库格式配置是否保留关键规则。
 - 质量门禁现在会检查 GitHub Issue / PR 协作模板是否存在。
 - 质量门禁和单元测试现在会检查 Prompt Pack `$schema` 引用。
