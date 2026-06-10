@@ -177,7 +177,7 @@ python -m unittest discover -s tests -v
 - 结构化失败修正词库：`评估/failure_fix_lexicon.json` 记录失败类型、识别线索、修正词和下一步动作，并自动生成 `评估/失败修正词库.md`。
 - 结构化出图评分：`评估/output_evaluations.example.json` 和 `评估/output_evaluations.schema.json` 可记录每张图的评分、问题、失败类型 ID 和下一步动作，并禁止同一记录重复统计同一个失败类型。
 - 出图评分汇总：`评估/出图评分汇总.md` 自动汇总平均分、决策分布、常见问题、失败类型分布和记录明细。
-- 失败修正建议：`评估/失败修正建议.md` 自动把评分记录里的 `failure_ids` 转成可复制修正提示词。
+- 失败修正建议：`评估/失败修正建议.md` 只把 `edit` / `regenerate` / `reject` 评分记录里的 `failure_ids` 转成可复制修正提示词；`keep` 记录的 failure_ids 只用于汇总统计。
 
 ## 交付文档
 

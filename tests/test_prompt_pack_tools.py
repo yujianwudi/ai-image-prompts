@@ -686,8 +686,14 @@ class PromptPackToolTests(unittest.TestCase):
         report_path = ROOT / "评估" / "失败修正建议.md"
         report = report_path.read_text(encoding="utf-8")
         self.assertEqual(report, render_fix_suggestions(document, self.data, failure_lexicon))
-        self.assertIn("composition_ratio_mismatch", report)
-        self.assertIn("请生成 9:16 竖图", report)
+        self.assertIn("当前没有需要编辑、重生成或拒绝的 failure_ids", report)
+        self.assertNotIn("请生成 9:16 竖图", report)
+
+        actionable = json.loads(json.dumps(document, ensure_ascii=False))
+        actionable["evaluations"][0]["decision"] = "regenerate"
+        actionable_report = render_fix_suggestions(actionable, self.data, failure_lexicon)
+        self.assertIn("composition_ratio_mismatch", actionable_report)
+        self.assertIn("请生成 9:16 竖图", actionable_report)
 
     def test_failure_fix_suggestions_cli_check_passes(self) -> None:
         result = subprocess.run(

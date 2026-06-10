@@ -216,7 +216,7 @@ python 工具/summarize_output_evaluations.py --check
 
 ## suggest_failure_fixes.py
 
-用途：读取结构化出图评分记录里的 `failure_ids`，到 `评估/failure_fix_lexicon.json` 查找对应修正词，生成可复制的失败修正建议。
+用途：读取结构化出图评分记录里的 `failure_ids`，到 `评估/failure_fix_lexicon.json` 查找对应修正词，只为 `edit` / `regenerate` / `reject` 记录生成可复制的失败修正建议；`keep` 记录只进入汇总统计。
 
 生成建议：
 

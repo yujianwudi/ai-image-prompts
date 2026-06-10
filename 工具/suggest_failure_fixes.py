@@ -22,6 +22,7 @@ ACTION_LABELS = {
     "regenerate": "重新生成",
     "reject": "拒绝",
 }
+ACTIONABLE_DECISIONS = set(ACTION_LABELS)
 
 
 def configure_stdout() -> None:
@@ -44,7 +45,7 @@ def render_fix_suggestions(document: dict[str, Any], config: dict[str, Any], fai
         "# 失败修正建议",
         "",
         "这个报告由 `工具/suggest_failure_fixes.py` 根据结构化出图评分记录和失败修正词库自动生成。",
-        "它把 `failure_ids` 转成可复制的修正提示词，方便决定编辑、重生成或拒绝。",
+        "它只为 `edit` / `regenerate` / `reject` 记录把 `failure_ids` 转成可复制的修正提示词；`keep` 记录里的 failure_ids 仅进入统计。",
         "",
         f"- 来源评分：`评估/output_evaluations.example.json`",
         f"- 来源词库：`评估/failure_fix_lexicon.json`",
@@ -57,6 +58,9 @@ def render_fix_suggestions(document: dict[str, Any], config: dict[str, Any], fai
     suggestion_count = 0
     for item in evaluations:
         if not isinstance(item, dict):
+            continue
+        decision = str(item.get("decision", ""))
+        if decision not in ACTIONABLE_DECISIONS:
             continue
         failure_ids = [str(failure_id) for failure_id in item.get("failure_ids", []) if str(failure_id).strip()]
         if not failure_ids:
@@ -75,7 +79,7 @@ def render_fix_suggestions(document: dict[str, Any], config: dict[str, Any], fai
                 f"- 角色：{character.get('display_name', char_id)}",
                 f"- Prompt Pack：{pack.get('title', pack_id)} (`{pack_id}`)",
                 f"- 总分：{item.get('total_score', '')} / 100",
-                f"- 当前决策：{DECISION_LABELS.get(str(item.get('decision', '')), str(item.get('decision', '')))}",
+                f"- 当前决策：{DECISION_LABELS.get(decision, decision)}",
                 f"- 记录里的下一步：{item.get('next_action', '')}",
                 "",
                 "### 问题记录",
@@ -107,7 +111,7 @@ def render_fix_suggestions(document: dict[str, Any], config: dict[str, Any], fai
             )
 
     if suggestion_count == 0:
-        lines.extend(["## 建议", "", "当前评分记录没有填写 failure_ids，暂无自动修正建议。", ""])
+        lines.extend(["## 建议", "", "当前没有需要编辑、重生成或拒绝的 failure_ids，暂无自动修正建议。", ""])
 
     lines.extend(["## 校验结果", ""])
     if validation.errors:
