@@ -60,6 +60,7 @@ def main() -> int:
         steps.append(("重新生成失败修正词库 Markdown", [python, "工具/validate_failure_fix_lexicon.py"]))
         steps.append(("重新生成出图评分汇总", [python, "工具/summarize_output_evaluations.py"]))
         steps.append(("重新生成失败修正建议", [python, "工具/suggest_failure_fixes.py"]))
+        steps.append(("重新生成项目仪表盘", [python, "工具/build_project_dashboard.py"]))
 
     steps.extend(
         [
@@ -70,6 +71,7 @@ def main() -> int:
             ("校验结构化出图评分记录", [python, "工具/validate_output_evaluations.py", "--check"]),
             ("校验出图评分汇总", [python, "工具/summarize_output_evaluations.py", "--check"]),
             ("校验失败修正建议", [python, "工具/suggest_failure_fixes.py", "--check"]),
+            ("校验项目仪表盘", [python, "工具/build_project_dashboard.py", "--check"]),
             ("校验 gpt-image-2 参数档位", [python, "工具/validate_gpt_image2_parameters.py", "--check"]),
             ("校验预览图 manifest 尺寸元数据", [python, "工具/sync_preview_manifest.py", "--check"]),
             ("检查仓库结构与安全约束", [python, "工具/check_prompt_repo.py"]),

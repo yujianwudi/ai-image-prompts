@@ -71,6 +71,7 @@ python 工具/validate_failure_fix_lexicon.py --check
 python 工具/validate_output_evaluations.py --check
 python 工具/summarize_output_evaluations.py --check
 python 工具/suggest_failure_fixes.py --check
+python 工具/build_project_dashboard.py --check
 python 工具/validate_gpt_image2_parameters.py --check
 python 工具/sync_preview_manifest.py --check
 python 工具/check_prompt_repo.py
@@ -234,6 +235,28 @@ python 工具/suggest_failure_fixes.py
 python 工具/suggest_failure_fixes.py --check
 ```
 
+## build_project_dashboard.py
+
+用途：汇总 Prompt Pack、角色、模板、tags、预览图、失败修正规则和结构化评分记录，生成项目全局仪表盘。
+
+生成仪表盘：
+
+```powershell
+python 工具/build_project_dashboard.py
+```
+
+默认输出：
+
+```text
+评估/项目仪表盘.md
+```
+
+只检查是否同步：
+
+```powershell
+python 工具/build_project_dashboard.py --check
+```
+
 ## validate_gpt_image2_parameters.py
 
 用途：校验本仓库给 OpenAI `gpt-image-2` 使用的推荐尺寸档位，避免把 2:3 竖图误写成严格 9:16，或把不合规尺寸放进模板。
@@ -335,4 +358,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、标签 taxonomy、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、gpt-image-2 参数档位、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、tags 导出、标签索引、标签 taxonomy、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、gpt-image-2 参数档位和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、标签 taxonomy、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、tags 导出、标签索引、标签 taxonomy、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位和统一质量门禁帮助入口。

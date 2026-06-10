@@ -2,6 +2,21 @@
 
 这个文件夹用于记录「生成后怎么判断好不好、怎么修、怎么继续迭代」。
 
+## 项目仪表盘
+
+想快速看当前角色、Prompt Pack、tags、预览图、失败规则和评分记录数量，先打开：
+
+```text
+评估/项目仪表盘.md
+```
+
+生成或检查：
+
+```powershell
+python 工具/build_project_dashboard.py
+python 工具/build_project_dashboard.py --check
+```
+
 ## 推荐流程
 
 ```text

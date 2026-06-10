@@ -9,6 +9,7 @@
 - 新增 `配置/tag_taxonomy.json` 和 `配置/tag_taxonomy.schema.json`，把 Prompt Pack 模板 tags 变成受控词表，防止 `商业海报` / `商业海报图` 这类同义词漂移。
 - 自动导出新增 `生成提示词/标签覆盖矩阵.md`，展示每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack。
 - 新增 `工具/new_output_evaluation.py`，可按 Prompt Pack 和图片路径生成结构化出图评分 JSON 骨架，并校验 `failure_ids` 是否存在。
+- 新增 `工具/build_project_dashboard.py` 和 `评估/项目仪表盘.md`，自动汇总角色、模板、Prompt Pack、tags、预览图、失败规则和评分记录数量。
 - 结构化出图评分记录新增 `failure_ids`，可引用 `评估/failure_fix_lexicon.json` 中的失败类型，并在评分汇总中统计失败类型分布。
 - 失败修正词库新增 `composition_ratio_mismatch`，用于记录 9:16 构图比例不符、横图或方图等问题。
 - 自动导出新增 `生成提示词/标签索引.md`，按 tags 分组 Prompt Pack，方便人工查找。
@@ -68,6 +69,7 @@
 - `工具/build_prompt_pack.py --validate` 现在会同时校验 `配置/tag_taxonomy.json`，模板 tags 必须来自正式标签；alias 只能提示替换，不能直接进入模板。
 - `工具/build_prompt_pack.py --all` 现在会同时导出标签覆盖矩阵，质量门禁会检查它是否过期。
 - 单元测试现在覆盖出图评分记录骨架生成和 `--list-failures` CLI，减少手写评分 JSON 漏字段风险。
+- 统一质量门禁现在会生成并校验项目仪表盘，防止全局统计信息过期。
 - `validate_output_evaluations.py` 和 `summarize_output_evaluations.py` 现在会校验并汇总 failure_ids。
 - 质量门禁和单元测试现在会检查标签索引是否与 `配置/prompt_packs.json` 同步。
 - Prompt Pack schema、生成器、JSON bundle schema、CSV 索引和单元测试已同步校验 tags 字段。

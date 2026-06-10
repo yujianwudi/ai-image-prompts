@@ -35,6 +35,9 @@ from build_prompt_pack import (  # noqa: E402
     validate_config,
     validate_tag_taxonomy,
 )
+from build_project_dashboard import (  # noqa: E402
+    render_dashboard as render_project_dashboard,
+)
 from audit_character_prompts import audit, render_report  # noqa: E402
 from check_prompt_repo import (  # noqa: E402
     SECRET_PATTERNS,
@@ -530,6 +533,26 @@ class PromptPackToolTests(unittest.TestCase):
             check=True,
         )
         self.assertIn("OK：失败修正建议已同步", result.stdout)
+
+    def test_project_dashboard_is_current(self) -> None:
+        report_path = ROOT / "评估" / "项目仪表盘.md"
+        report = report_path.read_text(encoding="utf-8")
+        self.assertEqual(report, render_project_dashboard())
+        self.assertIn("项目仪表盘", report)
+        self.assertIn("Prompt Packs", report)
+        self.assertIn("标签覆盖矩阵", report)
+
+    def test_project_dashboard_cli_check_passes(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "build_project_dashboard.py"), "--check"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("OK：项目仪表盘已同步", result.stdout)
 
     def test_preview_manifest_matches_images(self) -> None:
         preview_dir = ROOT / "预览图"
