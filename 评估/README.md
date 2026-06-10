@@ -117,10 +117,24 @@ Markdown 评分表适合人工快速判断；如果要沉淀多轮出图结果�
 评估/output_evaluations.schema.json
 ```
 
+生成一条新的评分记录骨架：
+
+```powershell
+python 工具/new_output_evaluation.py --list-failures
+python 工具/new_output_evaluation.py --prompt-pack furina_readme_preview --image-file 预览图/furina-dessert-01.jpg --failure-id composition_ratio_mismatch
+```
+
+如果要保存成文件：
+
+```powershell
+python 工具/new_output_evaluation.py --prompt-pack furina_readme_preview --image-file 预览图/furina-dessert-01.jpg --out 评估/my_output_evaluations.json
+```
+
 校验记录：
 
 ```powershell
 python 工具/validate_output_evaluations.py --check
+python 工具/validate_output_evaluations.py --file 评估/my_output_evaluations.json --check
 ```
 
 它会检查评分总分是否等于各项分数之和、Prompt Pack/角色引用是否存在、图片路径是否存在、decision 是否合法，以及 `failure_ids` 是否引用了 `评估/failure_fix_lexicon.json` 里的真实失败类型。

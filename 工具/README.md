@@ -161,6 +161,35 @@ python 工具/validate_output_evaluations.py --check
 python 工具/validate_output_evaluations.py --file 评估/my_output_evaluations.json --check
 ```
 
+## new_output_evaluation.py
+
+用途：根据 Prompt Pack 和图片路径生成一条结构化出图评分记录骨架，减少手写 JSON 漏字段、写错角色或写错 `failure_ids` 的概率。
+
+查看可用失败类型：
+
+```powershell
+python 工具/new_output_evaluation.py --list-failures
+```
+
+生成完整 JSON 文档：
+
+```powershell
+python 工具/new_output_evaluation.py `
+  --prompt-pack furina_readme_preview `
+  --image-file 预览图/furina-dessert-01.jpg `
+  --id preview-furina-dessert-new `
+  --failure-id composition_ratio_mismatch `
+  --issue "README 样张为横向展示图。"
+```
+
+只输出单条 record：
+
+```powershell
+python 工具/new_output_evaluation.py --prompt-pack dori_commercial_poster --image-file 预览图/example.jpg --record-only
+```
+
+输出后再用 `python 工具/validate_output_evaluations.py --file <文件> --check` 校验。
+
 ## summarize_output_evaluations.py
 
 用途：读取结构化出图评分记录，生成平均分、决策分布、分项平均分、常见问题、失败类型分布和明细表。
@@ -306,4 +335,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、标签 taxonomy、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、失败修正建议、gpt-image-2 参数档位、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、tags 导出、标签索引、标签 taxonomy、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、失败修正建议、gpt-image-2 参数档位和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、标签 taxonomy、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、gpt-image-2 参数档位、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、tags 导出、标签索引、标签 taxonomy、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、gpt-image-2 参数档位和统一质量门禁帮助入口。

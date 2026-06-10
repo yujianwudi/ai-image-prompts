@@ -47,6 +47,11 @@ from lint_prompt_quality import (  # noqa: E402
     load_rules,
     render_report as render_prompt_quality_report,
 )
+from new_output_evaluation import (  # noqa: E402
+    build_document as build_output_evaluation_document,
+    build_record as build_output_evaluation_record,
+    parse_scores as parse_output_evaluation_scores,
+)
 from sync_preview_manifest import (  # noqa: E402
     render_manifest as render_preview_manifest,
     sync_manifest,
@@ -401,6 +406,79 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertEqual(result.errors, [])
         self.assertEqual(len(document["evaluations"]), 1)
         self.assertEqual(document["evaluations"][0]["failure_ids"], ["composition_ratio_mismatch"])
+
+    def test_new_output_evaluation_builder_creates_valid_document(self) -> None:
+        scores = parse_output_evaluation_scores(
+            [
+                "role_consistency=23",
+                "composition_ratio=11",
+                "material_detail=13",
+                "scene_match=9",
+                "public_safety=15",
+                "text_ui=10",
+                "delivery_usefulness=8",
+            ]
+        )
+        record = build_output_evaluation_record(
+            self.data,
+            "furina_readme_preview",
+            "预览图/furina-dessert-01.jpg",
+            record_id="preview-furina-dessert-builder",
+            record_date="2026-06-10",
+            scores=scores,
+            public_safe=True,
+            decision="keep",
+            failure_ids=["composition_ratio_mismatch"],
+            issues=["README 样张为横向展示图。"],
+            next_action="作为 README 公开预览样张保留。",
+            notes="单元测试生成的评分记录。",
+        )
+        self.assertEqual(record["character"], "furina")
+        self.assertEqual(record["total_score"], 89)
+        document = build_output_evaluation_document([record], version="test-output-evaluations")
+        result = validate_evaluation_document(document, self.data)
+        self.assertEqual(result.errors, [])
+
+    def test_new_output_evaluation_cli_outputs_document(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(TOOLS_DIR / "new_output_evaluation.py"),
+                "--prompt-pack",
+                "furina_readme_preview",
+                "--image-file",
+                "预览图/furina-dessert-01.jpg",
+                "--id",
+                "preview-furina-dessert-cli",
+                "--date",
+                "2026-06-10",
+                "--failure-id",
+                "composition_ratio_mismatch",
+                "--issue",
+                "README 样张为横向展示图。",
+            ],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["$schema"], "output_evaluations.schema.json")
+        self.assertEqual(payload["evaluations"][0]["character"], "furina")
+        self.assertEqual(payload["evaluations"][0]["failure_ids"], ["composition_ratio_mismatch"])
+
+        failures = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "new_output_evaluation.py"), "--list-failures"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("composition_ratio_mismatch", failures.stdout)
 
     def test_output_evaluation_cli_check_passes(self) -> None:
         result = subprocess.run(
