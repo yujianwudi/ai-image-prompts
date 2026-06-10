@@ -76,6 +76,7 @@ def main() -> int:
             ("校验 API 请求 JSONL", [python, "工具/validate_api_requests.py", "--check"]),
             ("校验预览图 manifest 尺寸元数据", [python, "工具/sync_preview_manifest.py", "--check"]),
             ("检查仓库结构与安全约束", [python, "工具/check_prompt_repo.py"]),
+            ("编译 Python 源码", [python, "-m", "compileall", "-q", "工具", "tests"]),
             ("运行单元测试", [python, "-m", "unittest", "discover", "-s", "tests", "-v"]),
         ]
     )

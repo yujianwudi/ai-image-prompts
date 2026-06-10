@@ -68,6 +68,7 @@
 
 ### Changed
 
+- 统一质量门禁新增 `python -m compileall -q 工具 tests`，并由仓库检查和单元测试确认该步骤存在，防止未导入脚本藏语法错误。
 - GitHub Actions 工作流升级到 `actions/checkout@v6` 和 `actions/setup-python@v6`，并补充 `contents: read` 最小权限与 10 分钟超时，提前规避 Node.js 20 runner 弃用提醒。
 - 统一质量门禁和单元测试现在会检查失败修正建议是否与评分记录和失败修正词库同步。
 - 统一质量门禁和单元测试现在会检查 gpt-image-2 推荐尺寸档位是否合规，并提醒 `1024x1536` 是 2:3 备选而不是严格 9:16。

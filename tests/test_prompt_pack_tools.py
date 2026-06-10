@@ -48,6 +48,7 @@ from audit_character_prompts import audit, render_report  # noqa: E402
 from check_prompt_repo import (  # noqa: E402
     SECRET_PATTERNS,
     check_github_workflow,
+    check_unified_quality_gate,
     classify_orientation,
     image_dimensions,
     reduced_aspect_ratio,
@@ -375,6 +376,11 @@ class PromptPackToolTests(unittest.TestCase):
     def test_github_workflow_uses_node24_actions(self) -> None:
         errors: list[str] = []
         check_github_workflow(errors)
+        self.assertEqual(errors, [])
+
+    def test_unified_quality_gate_compiles_python_sources(self) -> None:
+        errors: list[str] = []
+        check_unified_quality_gate(errors)
         self.assertEqual(errors, [])
 
     def test_unified_quality_gate_help(self) -> None:

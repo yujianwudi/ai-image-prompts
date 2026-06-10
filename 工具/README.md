@@ -52,7 +52,7 @@ python 工具/sync_preview_manifest.py --check
 
 ## run_quality_gate.py
 
-用途：统一运行本仓库的本地质量门禁，避免手动漏跑配置校验、仓库检查或单元测试。
+用途：统一运行本仓库的本地质量门禁，避免手动漏跑配置校验、仓库检查、Python 源码编译或单元测试。
 不依赖网络，GitHub Actions 也使用这个入口。
 
 运行：
@@ -75,6 +75,7 @@ python 工具/build_project_dashboard.py --check
 python 工具/validate_gpt_image2_parameters.py --check
 python 工具/sync_preview_manifest.py --check
 python 工具/check_prompt_repo.py
+python -m compileall -q 工具 tests
 python -m unittest discover -s tests -v
 ```
 
@@ -376,4 +377,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、模板 `api_profile`、API 请求 JSONL、标签 taxonomy、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、api_profile 导出、API JSON payload、tags 导出、标签索引、标签 taxonomy、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、模板 `api_profile`、API 请求 JSONL、标签 taxonomy、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位、仓库结构、预览图尺寸、安全约束、自动导出文件、Python 源码编译和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、api_profile 导出、API JSON payload、tags 导出、标签索引、标签 taxonomy、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位和统一质量门禁帮助入口。

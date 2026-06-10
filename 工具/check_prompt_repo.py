@@ -441,6 +441,20 @@ def check_github_workflow(errors: list[str]) -> None:
             errors.append(message)
 
 
+def check_unified_quality_gate(errors: list[str]) -> None:
+    path = ROOT / "工具" / "run_quality_gate.py"
+    if not path.exists():
+        return
+    text = path.read_text(encoding="utf-8")
+    required_terms = {
+        '"compileall", "-q", "工具", "tests"': "统一质量门禁应编译 工具/ 和 tests/ 下的 Python 源码",
+        '"unittest", "discover", "-s", "tests", "-v"': "统一质量门禁应继续运行 unittest",
+    }
+    for term, message in required_terms.items():
+        if term not in text:
+            errors.append(message)
+
+
 def check_role_safety(errors: list[str]) -> None:
     role_dir = ROOT / "角色"
     for path in sorted(role_dir.glob("*.md")):
@@ -843,6 +857,7 @@ def main() -> int:
     check_content_safety_policy(errors)
     check_agent_guidance(errors)
     check_github_workflow(errors)
+    check_unified_quality_gate(errors)
     check_role_safety(errors)
     check_reference_tracking(errors)
     check_preview_images(errors, warnings)
@@ -866,7 +881,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、标签覆盖矩阵、API 请求 JSONL、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、标签覆盖矩阵、API 请求 JSONL、Python 源码编译、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

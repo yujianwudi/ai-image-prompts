@@ -131,10 +131,11 @@ python 工具/suggest_failure_fixes.py --check
 python 工具/validate_gpt_image2_parameters.py --check
 python 工具/sync_preview_manifest.py --check
 python 工具/check_prompt_repo.py
+python -m compileall -q 工具 tests
 python -m unittest discover -s tests -v
 ```
 
-统一质量门禁会检查 Prompt Pack 配置、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
+统一质量门禁会检查 Prompt Pack 配置、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件、Python 源码编译和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 
@@ -170,7 +171,7 @@ python -m unittest discover -s tests -v
 - 密钥扫描：质量门禁会检查常见 API key、GitHub token、AWS key 和高风险明文 secret。
 - 内容安全政策：明确非低俗、不性感化、不儿童化、隐私和真实品牌 logo 规则。
 - 授权与使用边界：明确原创模板、第三方角色 IP、预览图和商用场景的边界。
-- 统一质量门禁：`工具/run_quality_gate.py` 统一串起 Prompt Pack 校验、仓库检查和单元测试。
+- 统一质量门禁：`工具/run_quality_gate.py` 统一串起 Prompt Pack 校验、仓库检查、Python 源码编译和单元测试。
 - 角色防串审计：`评估/角色防串审计报告.md` 自动汇总三角色锚点、防串、安全和成人化约束覆盖。
 - Prompt 文本质量审计：`评估/Prompt文本质量审计报告.md` 自动检查生成前 prompt 的结构、安全、质量、模板意图、角色词、长度范围和禁用平台参数泄漏。
 - 结构化失败修正词库：`评估/failure_fix_lexicon.json` 记录失败类型、识别线索、修正词和下一步动作，并自动生成 `评估/失败修正词库.md`。
