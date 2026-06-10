@@ -557,8 +557,11 @@ class PromptPackToolTests(unittest.TestCase):
     def test_output_evaluation_example_is_valid(self) -> None:
         document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
         schema = load_evaluation_json(ROOT / "评估" / "output_evaluations.schema.json")
+        self.assertFalse(schema["additionalProperties"])
+        self.assertFalse(schema["$defs"]["evaluation"]["additionalProperties"])
         self.assertEqual(schema["properties"]["version"]["pattern"], "\\S")
         self.assertEqual(schema["properties"]["description"]["pattern"], "\\S")
+        self.assertEqual(schema["$defs"]["evaluation"]["properties"]["id"]["pattern"], "^[a-z0-9][a-z0-9_-]*$")
         self.assertIn("jpg", schema["$defs"]["evaluation"]["properties"]["image_file"]["pattern"])
         self.assertIn("webp", schema["$defs"]["evaluation"]["properties"]["image_file"]["pattern"])
         self.assertTrue(schema["$defs"]["evaluation"]["properties"]["failure_ids"]["uniqueItems"])
@@ -619,6 +622,17 @@ class PromptPackToolTests(unittest.TestCase):
         result = validate_evaluation_document(mutated, self.data)
         self.assertTrue(any("出图评分记录缺少 version" in error for error in result.errors))
         self.assertTrue(any("出图评分记录缺少 description" in error for error in result.errors))
+
+    def test_output_evaluation_rejects_unknown_fields_and_invalid_ids(self) -> None:
+        document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
+        mutated = json.loads(json.dumps(document, ensure_ascii=False))
+        mutated["draft_note"] = "临时字段不应进入结构化评分记录"
+        mutated["evaluations"][0]["id"] = "Preview Furina"
+        mutated["evaluations"][0]["draft_note"] = "临时字段"
+        result = validate_evaluation_document(mutated, self.data)
+        self.assertTrue(any("未知顶层字段：draft_note" in error for error in result.errors))
+        self.assertTrue(any("Preview Furina id 必须是小写 slug" in error for error in result.errors))
+        self.assertTrue(any("Preview Furina 存在未知字段：draft_note" in error for error in result.errors))
 
     def test_new_output_evaluation_builder_creates_valid_document(self) -> None:
         scores = parse_output_evaluation_scores(

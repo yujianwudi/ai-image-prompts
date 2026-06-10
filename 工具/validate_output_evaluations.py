@@ -27,7 +27,24 @@ SCORE_LIMITS = {
 }
 DECISIONS = {"keep", "edit", "regenerate", "reject"}
 DATE_RE = re.compile(r"^20[0-9]{2}-[0-9]{2}-[0-9]{2}$")
+EVALUATION_ID_RE = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 IMAGE_FILE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
+TOP_LEVEL_FIELDS = {"$schema", "version", "description", "evaluations"}
+EVALUATION_FIELDS = {
+    "id",
+    "date",
+    "prompt_pack",
+    "character",
+    "image_file",
+    "scores",
+    "total_score",
+    "public_safe",
+    "decision",
+    "failure_ids",
+    "issues",
+    "next_action",
+    "notes",
+}
 
 
 @dataclass(frozen=True)
@@ -61,6 +78,8 @@ def validate_schema_file(schema_path: Path = DEFAULT_SCHEMA) -> list[str]:
     for key in ["$schema", "$id", "title", "type", "required", "properties", "$defs"]:
         if key not in schema:
             errors.append(f"出图评分 schema 缺少字段：{key}")
+    if schema.get("additionalProperties") is not False:
+        errors.append("出图评分 schema 根节点应设置 additionalProperties=false")
     for key in ["$schema", "version", "description", "evaluations"]:
         if key not in schema.get("properties", {}):
             errors.append(f"出图评分 schema.properties 缺少：{key}")
@@ -68,10 +87,15 @@ def validate_schema_file(schema_path: Path = DEFAULT_SCHEMA) -> list[str]:
         prop = schema.get("properties", {}).get(key, {})
         if prop.get("minLength") != 1 or prop.get("pattern") != "\\S":
             errors.append(f"出图评分 schema.properties.{key} 应设置 minLength=1 且 pattern=\\S")
-    evaluation_props = schema.get("$defs", {}).get("evaluation", {}).get("properties", {})
+    evaluation_schema = schema.get("$defs", {}).get("evaluation", {})
+    if evaluation_schema.get("additionalProperties") is not False:
+        errors.append("出图评分 schema.evaluation 应设置 additionalProperties=false")
+    evaluation_props = evaluation_schema.get("properties", {})
     for key in ["prompt_pack", "character", "scores", "total_score", "decision", "failure_ids"]:
         if key not in evaluation_props:
             errors.append(f"出图评分 schema.evaluation.properties 缺少：{key}")
+    if evaluation_props.get("id", {}).get("pattern") != EVALUATION_ID_RE.pattern:
+        errors.append("出图评分 schema.evaluation.properties.id 应限制为小写 slug")
     image_pattern = evaluation_props.get("image_file", {}).get("pattern", "")
     if "jpg" not in image_pattern or "webp" not in image_pattern:
         errors.append("出图评分 schema.evaluation.properties.image_file 应限制为图片文件后缀")
@@ -106,6 +130,9 @@ def validate_document(
 
     if document.get("$schema") != "output_evaluations.schema.json":
         errors.append("出图评分记录 $schema 必须是 output_evaluations.schema.json")
+    top_level_extra = sorted(set(document) - TOP_LEVEL_FIELDS)
+    if top_level_extra:
+        errors.append(f"出图评分记录存在未知顶层字段：{', '.join(top_level_extra)}")
     for key in ["version", "description"]:
         value = document.get(key)
         if not isinstance(value, str) or not value.strip():
@@ -125,8 +152,14 @@ def validate_document(
             errors.append(f"evaluations[{index}] 必须是 object")
             continue
         eval_id = str(item.get("id", ""))
+        context = eval_id or f"evaluations[{index}]"
+        extra_fields = sorted(set(item) - EVALUATION_FIELDS)
+        if extra_fields:
+            errors.append(f"{context} 存在未知字段：{', '.join(extra_fields)}")
         if not eval_id:
             errors.append(f"evaluations[{index}] 缺少 id")
+        elif not EVALUATION_ID_RE.match(eval_id):
+            errors.append(f"{eval_id} id 必须是小写 slug：{eval_id}")
         if eval_id in seen_ids:
             errors.append(f"出图评分 id 重复：{eval_id}")
         seen_ids.add(eval_id)

@@ -4,6 +4,7 @@
 
 ### Added
 
+- 结构化出图评分校验器新增未知顶层/记录字段检查，并要求评分记录 `id` 与 schema 一样使用小写 slug，避免草稿字段或不稳定 ID 混入评估数据。
 - 结构化出图评分 schema 和校验器新增空白字符串检查，`version`、`description`、`issues`、`next_action` 和 `notes` 必须包含非空白字符。
 - 结构化出图评分 schema 和校验器新增 issues / notes 空文本检查，避免问题记录或备注字段被空字符串污染。
 - 结构化出图评分校验现在会验证 `date` 是真实日历日期，评分骨架 CLI 也会在输出前拦截无效日期。
