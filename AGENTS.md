@@ -33,6 +33,7 @@ python 工具/run_quality_gate.py --refresh-generated
 - 修改 `配置/prompt_packs.json`。
 - 修改 `工具/build_prompt_pack.py` 或 Prompt Pack 渲染逻辑。
 - 修改 Prompt 文本质量规则、角色防串审计规则或出图评分汇总逻辑。
+- 修改 `评估/failure_fix_lexicon.json` 或失败修正词库生成逻辑。
 - 修改会影响 `生成提示词/` 自动导出结果的字段。
 - 替换或新增预览图后，先运行 `python 工具/sync_preview_manifest.py`。
 

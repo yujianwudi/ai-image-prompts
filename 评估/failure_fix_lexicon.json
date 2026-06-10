@@ -1,0 +1,251 @@
+{
+  "$schema": "failure_fix_lexicon.schema.json",
+  "version": "2026-06-10",
+  "description": "结构化失败修正词库：记录常见出图失败类型、识别线索、gpt-image-2 自然语言修正写法和下一步动作。",
+  "rules": [
+    {
+      "id": "furina_contamination",
+      "title": "角色串到芙宁娜",
+      "category": "character_consistency",
+      "severity": "high",
+      "applies_to": [
+        "citlali",
+        "dori"
+      ],
+      "detect_terms": [
+        "白蓝短发",
+        "蓝黑礼帽",
+        "枫丹蓝白歌剧服",
+        "水神舞台女王气质"
+      ],
+      "problem": "非芙宁娜角色出现白蓝短发、蓝黑礼帽、枫丹蓝白歌剧服或水神舞台女王气质。",
+      "fix_prompt": "当前角色不是芙宁娜。不要出现白蓝短发、蓝黑礼帽、枫丹蓝白歌剧服、水滴宝石和水神舞台女王气质。请严格保持当前角色的发型、头饰、服装体系和气质。",
+      "must_include": [
+        "当前角色不是芙宁娜",
+        "不要出现白蓝短发",
+        "蓝黑礼帽",
+        "枫丹蓝白歌剧服"
+      ],
+      "next_action": "edit"
+    },
+    {
+      "id": "wrong_hair_color",
+      "title": "发型发色错误",
+      "category": "role_anchor",
+      "severity": "high",
+      "applies_to": [
+        "all"
+      ],
+      "detect_terms": [
+        "发色错误",
+        "发长错误",
+        "辫子丢失",
+        "头饰位置错误"
+      ],
+      "problem": "角色发型、发色、刘海、辫子、卷曲程度或头饰位置偏离角色锚点。",
+      "fix_prompt": "发型是角色识别重点。请严格保持：{正确发型描述}。不要改变发长、发色、刘海、辫子、卷曲程度和头饰位置。",
+      "must_include": [
+        "发型是角色识别重点",
+        "请严格保持",
+        "不要改变发长",
+        "发色"
+      ],
+      "next_action": "edit"
+    },
+    {
+      "id": "ordinary_clothing",
+      "title": "服装变普通衣服",
+      "category": "costume_material",
+      "severity": "high",
+      "applies_to": [
+        "all"
+      ],
+      "detect_terms": [
+        "普通日常服",
+        "服装简化",
+        "配色丢失",
+        "标志性道具丢失"
+      ],
+      "problem": "角色 cosplay 服装被简化成普通日常服，缺少头饰、腰饰、道具或标志性配色。",
+      "fix_prompt": "服装必须保持角色 cosplay 结构，不要简化成普通日常服。请保留头饰、领口、袖口、腰饰、下装、道具和标志性配色，材质要真实。",
+      "must_include": [
+        "服装必须保持角色 cosplay 结构",
+        "不要简化成普通日常服",
+        "请保留头饰",
+        "标志性配色"
+      ],
+      "next_action": "edit"
+    },
+    {
+      "id": "multi_panel_drift",
+      "title": "多格图角色漂移",
+      "category": "consistency_layout",
+      "severity": "high",
+      "applies_to": [
+        "all"
+      ],
+      "detect_terms": [
+        "九宫格漂移",
+        "分镜角色不一致",
+        "多格图发型变化",
+        "服装配色变化"
+      ],
+      "problem": "九宫格、分镜板、角色卡等多区域图中，同一角色在不同格子里发型、服装、配色或气质漂移。",
+      "fix_prompt": "所有格子都必须是同一个角色。每格只改变姿势、表情、镜头或场景，不改变发型、头饰、服装配色、关键配件和气质。",
+      "must_include": [
+        "所有格子都必须是同一个角色",
+        "每格只改变姿势",
+        "不改变发型",
+        "服装配色"
+      ],
+      "next_action": "edit"
+    },
+    {
+      "id": "public_safety_lowbrow",
+      "title": "画面低俗或擦边",
+      "category": "safety",
+      "severity": "critical",
+      "applies_to": [
+        "all"
+      ],
+      "detect_terms": [
+        "低俗",
+        "性感化",
+        "擦边",
+        "卧室暧昧感",
+        "泳装化",
+        "内衣化"
+      ],
+      "problem": "画面出现低俗、性感化、擦边、刻意暴露、卧室暧昧感、泳装化或内衣化，不适合公开展示。",
+      "fix_prompt": "画面必须端庄自然，非低俗，不性感化，不擦边。不要暴露服装、性感姿势、卧室暧昧感、泳装化或内衣化。适合公开 GitHub README 展示。",
+      "must_include": [
+        "端庄自然",
+        "非低俗",
+        "不性感化",
+        "不擦边"
+      ],
+      "next_action": "edit"
+    },
+    {
+      "id": "garbled_text",
+      "title": "文字乱码",
+      "category": "text_rendering",
+      "severity": "medium",
+      "applies_to": [
+        "all"
+      ],
+      "detect_terms": [
+        "乱码",
+        "随机英文",
+        "水印",
+        "logo",
+        "长段文字"
+      ],
+      "problem": "海报、信息图、UI 或封面中的文字乱码、随机英文、伪水印、伪 logo 或长段小字不可读。",
+      "fix_prompt": "如果需要文字，只使用少量短中文标签，文字必须清晰可读。如果不能保证清晰文字，就不要生成任何可读文字。不要乱码、随机英文、水印或 logo。",
+      "must_include": [
+        "少量短中文标签",
+        "文字必须清晰可读",
+        "不要乱码",
+        "随机英文"
+      ],
+      "next_action": "edit"
+    },
+    {
+      "id": "hands_props_error",
+      "title": "手部或道具错误",
+      "category": "anatomy_props",
+      "severity": "medium",
+      "applies_to": [
+        "all"
+      ],
+      "detect_terms": [
+        "手指错误",
+        "道具变形",
+        "道具遮脸",
+        "手和道具融合"
+      ],
+      "problem": "手部结构、持物动作或角色专属道具不自然，出现融合、变形、遮脸或拿法不合理。",
+      "fix_prompt": "手部动作自然，五指清晰，道具拿法合理。道具不要遮挡脸，不要变形，不要和手融合。角色专属道具必须保持准确。",
+      "must_include": [
+        "手部动作自然",
+        "五指清晰",
+        "道具拿法合理",
+        "角色专属道具必须保持准确"
+      ],
+      "next_action": "edit"
+    },
+    {
+      "id": "busy_background",
+      "title": "背景太乱",
+      "category": "scene_composition",
+      "severity": "medium",
+      "applies_to": [
+        "all"
+      ],
+      "detect_terms": [
+        "背景太乱",
+        "乱码招牌",
+        "杂乱人群",
+        "干扰色"
+      ],
+      "problem": "背景元素太杂、招牌乱码、人群干扰强或色块抢主体，导致角色识别点不突出。",
+      "fix_prompt": "背景保留真实环境感，但必须轻微虚化，不要抢主体。减少无关物体、乱码招牌、杂乱人群和强烈干扰色。",
+      "must_include": [
+        "背景保留真实环境感",
+        "必须轻微虚化",
+        "不要抢主体",
+        "减少无关物体"
+      ],
+      "next_action": "edit"
+    },
+    {
+      "id": "too_staged",
+      "title": "过度棚拍，不像手机随手拍",
+      "category": "photography_style",
+      "severity": "medium",
+      "applies_to": [
+        "all"
+      ],
+      "detect_terms": [
+        "过度棚拍",
+        "商业大片",
+        "塑料皮肤",
+        "不像手机拍"
+      ],
+      "problem": "画面过度棚拍、商业大片感太强、皮肤过度磨皮或缺少真实手机随手拍生活感。",
+      "fix_prompt": "画面像朋友用手机随手拍下的真实照片，不是专业棚拍，不是商业大片。保留轻微生活感、真实室内光线和自然构图。",
+      "must_include": [
+        "手机随手拍",
+        "真实照片",
+        "不是专业棚拍",
+        "保留轻微生活感"
+      ],
+      "next_action": "edit"
+    },
+    {
+      "id": "bad_crop",
+      "title": "裁切错误",
+      "category": "composition",
+      "severity": "medium",
+      "applies_to": [
+        "all"
+      ],
+      "detect_terms": [
+        "裁掉帽子",
+        "裁掉手部",
+        "鞋子不可见",
+        "关键道具被裁切"
+      ],
+      "problem": "全身图、半身图或角色卡构图裁掉头饰、手部、鞋子、关键服装结构或道具。",
+      "fix_prompt": "请保持完整构图。全身图需要从头到脚完整入镜，鞋子可见；半身图需要头饰和上半身服装完整，不要裁掉帽子、手部或关键道具。",
+      "must_include": [
+        "请保持完整构图",
+        "从头到脚完整入镜",
+        "鞋子可见",
+        "不要裁掉帽子"
+      ],
+      "next_action": "edit"
+    }
+  ]
+}

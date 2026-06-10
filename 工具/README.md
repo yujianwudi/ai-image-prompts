@@ -67,6 +67,7 @@ python 工具/run_quality_gate.py
 python 工具/build_prompt_pack.py --validate
 python 工具/audit_character_prompts.py --check
 python 工具/lint_prompt_quality.py --check
+python 工具/validate_failure_fix_lexicon.py --check
 python 工具/validate_output_evaluations.py --check
 python 工具/summarize_output_evaluations.py --check
 python 工具/sync_preview_manifest.py --check
@@ -81,6 +82,22 @@ python 工具/run_quality_gate.py --refresh-generated
 ```
 
 注意：CI 默认不使用 `--refresh-generated`，这样才能发现自动导出文件是否过期。
+
+## validate_failure_fix_lexicon.py
+
+用途：校验 `评估/failure_fix_lexicon.json`，并用它生成可读版 `评估/失败修正词库.md`。用于把常见失败类型、识别线索、修正词和下一步动作结构化。
+
+生成 Markdown：
+
+```powershell
+python 工具/validate_failure_fix_lexicon.py
+```
+
+只检查 JSON 和 Markdown 是否同步：
+
+```powershell
+python 工具/validate_failure_fix_lexicon.py --check
+```
 
 ## audit_character_prompts.py
 

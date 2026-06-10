@@ -79,6 +79,30 @@ python 工具/lint_prompt_quality.py --check
 
 统一质量门禁会自动检查这份报告是否过期。
 
+## 结构化失败修正词库
+
+如果是维护「失败类型 → 修正词」映射，优先改机器可读 JSON：
+
+```text
+评估/failure_fix_lexicon.json
+评估/failure_fix_lexicon.schema.json
+```
+
+生成或检查可读版 Markdown：
+
+```powershell
+python 工具/validate_failure_fix_lexicon.py
+python 工具/validate_failure_fix_lexicon.py --check
+```
+
+默认输出：
+
+```text
+评估/失败修正词库.md
+```
+
+统一质量门禁会自动检查 JSON 结构、核心失败类型、必含修正词，以及 Markdown 是否同步。
+
 ## 结构化出图评分记录
 
 Markdown 评分表适合人工快速判断；如果要沉淀多轮出图结果，可以复制这个 JSON 示例：

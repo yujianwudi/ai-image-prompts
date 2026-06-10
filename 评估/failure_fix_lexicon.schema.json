@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yujianwudi/ai-image-prompts/blob/main/评估/failure_fix_lexicon.schema.json",
+  "title": "Failure Fix Lexicon",
+  "description": "Schema for structured AI image failure categories and natural-language fix prompts.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "version",
+    "description",
+    "rules"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "failure_fix_lexicon.schema.json"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/rule"
+      }
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "category",
+        "severity",
+        "applies_to",
+        "detect_terms",
+        "problem",
+        "fix_prompt",
+        "must_include",
+        "next_action"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_]*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "enum": [
+            "character_consistency",
+            "role_anchor",
+            "costume_material",
+            "consistency_layout",
+            "safety",
+            "text_rendering",
+            "anatomy_props",
+            "scene_composition",
+            "photography_style",
+            "composition"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "applies_to": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "detect_terms": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "problem": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fix_prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "must_include": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "next_action": {
+          "enum": [
+            "edit",
+            "regenerate",
+            "reject"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -47,6 +47,11 @@ from sync_preview_manifest import (  # noqa: E402
 from summarize_output_evaluations import (  # noqa: E402
     render_summary as render_output_evaluation_summary,
 )
+from validate_failure_fix_lexicon import (  # noqa: E402
+    load_json as load_failure_fix_json,
+    render_markdown as render_failure_fix_markdown,
+    validate_document as validate_failure_fix_document,
+)
 from validate_output_evaluations import (  # noqa: E402
     load_json as load_evaluation_json,
     validate_document as validate_evaluation_document,
@@ -246,6 +251,27 @@ class PromptPackToolTests(unittest.TestCase):
             check=True,
         )
         self.assertIn("OK：Prompt 文本质量审计通过", result.stdout)
+
+    def test_failure_fix_lexicon_is_valid_and_markdown_current(self) -> None:
+        document = load_failure_fix_json(ROOT / "评估" / "failure_fix_lexicon.json")
+        result = validate_failure_fix_document(document, self.data)
+        self.assertEqual(result.errors, [])
+        self.assertEqual(len(document["rules"]), 10)
+        self.assertIn("furina_contamination", {rule["id"] for rule in document["rules"]})
+        report_path = ROOT / "评估" / "失败修正词库.md"
+        self.assertEqual(report_path.read_text(encoding="utf-8"), render_failure_fix_markdown(document))
+
+    def test_failure_fix_lexicon_cli_check_passes(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "validate_failure_fix_lexicon.py"), "--check"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("OK：失败修正词库校验通过", result.stdout)
 
     def test_output_evaluation_example_is_valid(self) -> None:
         document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")

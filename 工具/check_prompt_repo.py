@@ -61,8 +61,11 @@ REQUIRED_FILES = [
     "评估/README.md",
     "评估/角色防串审计报告.md",
     "评估/Prompt文本质量审计报告.md",
+    "评估/失败修正词库.md",
     "评估/prompt_quality_rules.json",
     "评估/prompt_quality_rules.schema.json",
+    "评估/failure_fix_lexicon.json",
+    "评估/failure_fix_lexicon.schema.json",
     "评估/output_evaluations.example.json",
     "评估/output_evaluations.schema.json",
     "评估/出图评分汇总.md",
@@ -74,6 +77,7 @@ REQUIRED_FILES = [
     "工具/refresh_reference_summary.py",
     "工具/audit_character_prompts.py",
     "工具/lint_prompt_quality.py",
+    "工具/validate_failure_fix_lexicon.py",
     "工具/validate_output_evaluations.py",
     "工具/summarize_output_evaluations.py",
     "工具/build_prompt_pack.py",
@@ -756,7 +760,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、结构化出图评分/汇总、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 
