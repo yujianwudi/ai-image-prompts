@@ -68,6 +68,7 @@ python 工具/build_prompt_pack.py --validate
 python 工具/audit_character_prompts.py --check
 python 工具/lint_prompt_quality.py --check
 python 工具/validate_output_evaluations.py --check
+python 工具/summarize_output_evaluations.py --check
 python 工具/sync_preview_manifest.py --check
 python 工具/check_prompt_repo.py
 python -m unittest discover -s tests -v
@@ -141,6 +142,28 @@ python 工具/validate_output_evaluations.py --check
 python 工具/validate_output_evaluations.py --file 评估/my_output_evaluations.json --check
 ```
 
+## summarize_output_evaluations.py
+
+用途：读取结构化出图评分记录，生成平均分、决策分布、分项平均分、常见问题和明细表。
+
+生成默认汇总：
+
+```powershell
+python 工具/summarize_output_evaluations.py
+```
+
+默认输出：
+
+```text
+评估/出图评分汇总.md
+```
+
+检查汇总是否过期：
+
+```powershell
+python 工具/summarize_output_evaluations.py --check
+```
+
 ## build_prompt_pack.py
 
 用途：读取 `配置/prompt_packs.json`，把角色锚点、输出类型、场景、构图、光线、材质、安全约束和防串约束组合成可复制提示词。
@@ -208,4 +231,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、Prompt 文本质量审计、结构化出图评分、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、结构化出图评分和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、Prompt 文本质量审计、结构化出图评分与汇总、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、结构化出图评分与汇总和统一质量门禁帮助入口。

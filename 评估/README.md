@@ -101,6 +101,19 @@ python 工具/validate_output_evaluations.py --check
 
 它会检查评分总分是否等于各项分数之和、Prompt Pack/角色引用是否存在、图片路径是否存在、decision 是否合法。
 
+自动生成汇总：
+
+```powershell
+python 工具/summarize_output_evaluations.py
+python 工具/summarize_output_evaluations.py --check
+```
+
+默认输出：
+
+```text
+评估/出图评分汇总.md
+```
+
 
 ## 仓库质量门禁
 

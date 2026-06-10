@@ -42,6 +42,9 @@ from sync_preview_manifest import (  # noqa: E402
     render_manifest as render_preview_manifest,
     sync_manifest,
 )
+from summarize_output_evaluations import (  # noqa: E402
+    render_summary as render_output_evaluation_summary,
+)
 from validate_output_evaluations import (  # noqa: E402
     load_json as load_evaluation_json,
     validate_document as validate_evaluation_document,
@@ -250,6 +253,23 @@ class PromptPackToolTests(unittest.TestCase):
             check=True,
         )
         self.assertIn("OK：出图评分记录校验通过", result.stdout)
+
+    def test_output_evaluation_summary_is_current(self) -> None:
+        document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
+        report_path = ROOT / "评估" / "出图评分汇总.md"
+        self.assertEqual(report_path.read_text(encoding="utf-8"), render_output_evaluation_summary(document, self.data))
+
+    def test_output_evaluation_summary_cli_check_passes(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "summarize_output_evaluations.py"), "--check"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("OK：出图评分汇总已同步", result.stdout)
 
     def test_preview_manifest_matches_images(self) -> None:
         preview_dir = ROOT / "预览图"
