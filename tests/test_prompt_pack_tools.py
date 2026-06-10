@@ -557,11 +557,16 @@ class PromptPackToolTests(unittest.TestCase):
     def test_output_evaluation_example_is_valid(self) -> None:
         document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
         schema = load_evaluation_json(ROOT / "评估" / "output_evaluations.schema.json")
+        self.assertEqual(schema["properties"]["version"]["pattern"], "\\S")
+        self.assertEqual(schema["properties"]["description"]["pattern"], "\\S")
         self.assertIn("jpg", schema["$defs"]["evaluation"]["properties"]["image_file"]["pattern"])
         self.assertIn("webp", schema["$defs"]["evaluation"]["properties"]["image_file"]["pattern"])
         self.assertTrue(schema["$defs"]["evaluation"]["properties"]["failure_ids"]["uniqueItems"])
         self.assertEqual(schema["$defs"]["evaluation"]["properties"]["issues"]["items"]["minLength"], 1)
+        self.assertEqual(schema["$defs"]["evaluation"]["properties"]["issues"]["items"]["pattern"], "\\S")
+        self.assertEqual(schema["$defs"]["evaluation"]["properties"]["next_action"]["pattern"], "\\S")
         self.assertEqual(schema["$defs"]["evaluation"]["properties"]["notes"]["minLength"], 1)
+        self.assertEqual(schema["$defs"]["evaluation"]["properties"]["notes"]["pattern"], "\\S")
         result = validate_evaluation_document(document, self.data)
         self.assertEqual(result.errors, [])
         self.assertEqual(len(document["evaluations"]), 1)
@@ -598,11 +603,22 @@ class PromptPackToolTests(unittest.TestCase):
     def test_output_evaluation_rejects_empty_issue_and_notes_text(self) -> None:
         document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
         mutated = json.loads(json.dumps(document, ensure_ascii=False))
-        mutated["evaluations"][0]["issues"] = [""]
-        mutated["evaluations"][0]["notes"] = ""
+        mutated["evaluations"][0]["issues"] = ["   "]
+        mutated["evaluations"][0]["next_action"] = "   "
+        mutated["evaluations"][0]["notes"] = "   "
         result = validate_evaluation_document(mutated, self.data)
         self.assertTrue(any("issues 不能包含空值" in error for error in result.errors))
+        self.assertTrue(any("缺少 next_action" in error for error in result.errors))
         self.assertTrue(any("缺少 notes" in error for error in result.errors))
+
+    def test_output_evaluation_rejects_blank_metadata_text(self) -> None:
+        document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
+        mutated = json.loads(json.dumps(document, ensure_ascii=False))
+        mutated["version"] = "   "
+        mutated["description"] = ""
+        result = validate_evaluation_document(mutated, self.data)
+        self.assertTrue(any("出图评分记录缺少 version" in error for error in result.errors))
+        self.assertTrue(any("出图评分记录缺少 description" in error for error in result.errors))
 
     def test_new_output_evaluation_builder_creates_valid_document(self) -> None:
         scores = parse_output_evaluation_scores(

@@ -64,6 +64,10 @@ def validate_schema_file(schema_path: Path = DEFAULT_SCHEMA) -> list[str]:
     for key in ["$schema", "version", "description", "evaluations"]:
         if key not in schema.get("properties", {}):
             errors.append(f"出图评分 schema.properties 缺少：{key}")
+    for key in ["version", "description"]:
+        prop = schema.get("properties", {}).get(key, {})
+        if prop.get("minLength") != 1 or prop.get("pattern") != "\\S":
+            errors.append(f"出图评分 schema.properties.{key} 应设置 minLength=1 且 pattern=\\S")
     evaluation_props = schema.get("$defs", {}).get("evaluation", {}).get("properties", {})
     for key in ["prompt_pack", "character", "scores", "total_score", "decision", "failure_ids"]:
         if key not in evaluation_props:
@@ -72,10 +76,12 @@ def validate_schema_file(schema_path: Path = DEFAULT_SCHEMA) -> list[str]:
     if "jpg" not in image_pattern or "webp" not in image_pattern:
         errors.append("出图评分 schema.evaluation.properties.image_file 应限制为图片文件后缀")
     issues_items = evaluation_props.get("issues", {}).get("items", {})
-    if issues_items.get("minLength") != 1:
-        errors.append("出图评分 schema.evaluation.properties.issues.items 应设置 minLength=1")
-    if evaluation_props.get("notes", {}).get("minLength") != 1:
-        errors.append("出图评分 schema.evaluation.properties.notes 应设置 minLength=1")
+    if issues_items.get("minLength") != 1 or issues_items.get("pattern") != "\\S":
+        errors.append("出图评分 schema.evaluation.properties.issues.items 应设置 minLength=1 且 pattern=\\S")
+    for key in ["next_action", "notes"]:
+        prop = evaluation_props.get(key, {})
+        if prop.get("minLength") != 1 or prop.get("pattern") != "\\S":
+            errors.append(f"出图评分 schema.evaluation.properties.{key} 应设置 minLength=1 且 pattern=\\S")
     if evaluation_props.get("failure_ids", {}).get("uniqueItems") is not True:
         errors.append("出图评分 schema.evaluation.properties.failure_ids 应设置 uniqueItems=true")
     return errors
@@ -100,6 +106,10 @@ def validate_document(
 
     if document.get("$schema") != "output_evaluations.schema.json":
         errors.append("出图评分记录 $schema 必须是 output_evaluations.schema.json")
+    for key in ["version", "description"]:
+        value = document.get(key)
+        if not isinstance(value, str) or not value.strip():
+            errors.append(f"出图评分记录缺少 {key}")
 
     evaluations = document.get("evaluations")
     if not isinstance(evaluations, list) or not evaluations:
