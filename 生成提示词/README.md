@@ -47,12 +47,14 @@ python 工具/build_prompt_pack.py dori_commercial_poster --format markdown --ou
 python 工具/build_prompt_pack.py furina_convention_phone --format json
 ```
 
+每个 Markdown 文件顶部都会给出 `gpt-image-2` 推荐 API 参数；纯文本输出仍只保留可复制提示词，JSON 输出会包含 `api_profile`，方便脚本直接取 `model` / `size` / `quality` / `output_format`。
+
 ## 覆盖矩阵
 
 - [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。
 - [`标签索引.md`](标签索引.md)：按 tags 查找 Prompt Pack。
 - [`标签覆盖矩阵.md`](标签覆盖矩阵.md)：查看每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack。
-- [`prompt_packs.generated.json`](prompt_packs.generated.json)：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256` 方便核对来源配置。
+- [`prompt_packs.generated.json`](prompt_packs.generated.json)：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256`、tags 和 `api_profile` 方便核对来源配置并直接接 API。
 - [`prompt_packs.generated.schema.json`](prompt_packs.generated.schema.json)：JSON bundle 的结构说明。
 - [`prompt_packs.index.csv`](prompt_packs.index.csv)：可用表格软件打开的 Prompt Pack 索引，含 tags 列方便筛选。
 

@@ -9,6 +9,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from validate_gpt_image2_parameters import validate_size_spec
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "配置" / "prompt_packs.json"
 DEFAULT_TAG_TAXONOMY = ROOT / "配置" / "tag_taxonomy.json"
@@ -20,8 +22,20 @@ GENERATED_TAG_INDEX = "标签索引.md"
 GENERATED_TAG_COVERAGE_MATRIX = "标签覆盖矩阵.md"
 
 REQUIRED_CHARACTER_KEYS = ["display_name", "anchor", "must_keep", "avoid"]
-REQUIRED_TEMPLATE_KEYS = ["task_type", "tags", "composition", "lighting", "material", "text_strategy", "safety"]
+REQUIRED_TEMPLATE_KEYS = [
+    "task_type",
+    "tags",
+    "api_profile",
+    "composition",
+    "lighting",
+    "material",
+    "text_strategy",
+    "safety",
+]
 REQUIRED_PACK_KEYS = ["id", "title", "character", "template", "scene", "action", "extra_constraints"]
+API_PROFILE_ORDER = ["model", "size", "quality", "output_format", "output_compression", "background"]
+VALID_API_QUALITIES = {"low", "medium", "high", "auto"}
+VALID_API_OUTPUT_FORMATS = {"png", "jpeg", "webp"}
 
 
 def configure_stdout() -> None:
@@ -152,6 +166,54 @@ def _require_list(data: dict[str, Any], key: str, errors: list[str]) -> list[Any
     return value
 
 
+def validate_api_profile(profile: Any, context: str) -> list[str]:
+    errors: list[str] = []
+    if not isinstance(profile, dict):
+        return [f"{context}.api_profile 必须是 object"]
+
+    required = ["model", "size", "quality", "output_format", "background"]
+    for key in required:
+        if key not in profile:
+            errors.append(f"{context}.api_profile 缺少 {key}")
+
+    if profile.get("model") != "gpt-image-2":
+        errors.append(f"{context}.api_profile.model 必须是 gpt-image-2")
+
+    size = str(profile.get("size", "")).strip()
+    if not size:
+        errors.append(f"{context}.api_profile.size 不能为空")
+    else:
+        try:
+            validation = validate_size_spec(size, require_9_16=True)
+        except ValueError as exc:
+            errors.append(f"{context}.api_profile.size 格式错误：{exc}")
+        else:
+            for item in validation.errors:
+                errors.append(f"{context}.api_profile.size 不符合 gpt-image-2 规格：{item}")
+            for item in validation.warnings:
+                errors.append(f"{context}.api_profile.size 不符合本仓库 9:16 竖图约定：{item}")
+
+    quality = profile.get("quality")
+    if quality not in VALID_API_QUALITIES:
+        errors.append(f"{context}.api_profile.quality 必须是 low / medium / high / auto")
+
+    output_format = profile.get("output_format")
+    if output_format not in VALID_API_OUTPUT_FORMATS:
+        errors.append(f"{context}.api_profile.output_format 必须是 png / jpeg / webp")
+
+    compression = profile.get("output_compression")
+    if output_format in {"jpeg", "webp"}:
+        if type(compression) is not int or not 0 <= compression <= 100:
+            errors.append(f"{context}.api_profile.output_compression 在 jpeg/webp 时必须是 0-100 的整数")
+    elif output_format == "png" and "output_compression" in profile:
+        errors.append(f"{context}.api_profile.output_compression 不应和 png 一起使用")
+
+    if profile.get("background") != "opaque":
+        errors.append(f"{context}.api_profile.background 必须是 opaque")
+
+    return errors
+
+
 def validate_config(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = None) -> list[str]:
     errors: list[str] = []
     characters = _require_dict(data, "characters", errors)
@@ -193,6 +255,7 @@ def validate_config(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = 
         for key in REQUIRED_TEMPLATE_KEYS:
             if key not in template:
                 errors.append(f"templates.{template_id} 缺少 {key}")
+        errors.extend(validate_api_profile(template.get("api_profile"), f"templates.{template_id}"))
         safety = str(template.get("safety", ""))
         for term in ["非低俗", "不性感化"]:
             if term not in safety:
@@ -252,6 +315,14 @@ def get_pack(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
     raise KeyError(f"找不到 pack：{pack_id}。可用：{available}")
 
 
+def format_api_profile(profile: dict[str, Any]) -> str:
+    lines = []
+    for key in API_PROFILE_ORDER:
+        if key in profile:
+            lines.append(f"{key}: {profile[key]}")
+    return "\n".join(lines)
+
+
 def render_pack(data: dict[str, Any], pack_id: str, markdown: bool = False) -> str:
     pack = get_pack(data, pack_id)
     char = data["characters"][pack["character"]]
@@ -260,6 +331,14 @@ def render_pack(data: dict[str, Any], pack_id: str, markdown: bool = False) -> s
     lines: list[str] = []
     if markdown:
         lines.append(f"# {pack['title']}")
+        lines.append("")
+        lines.append("## 推荐 API 参数")
+        lines.append("")
+        lines.append("```yaml")
+        lines.append(format_api_profile(template["api_profile"]))
+        lines.append("```")
+        lines.append("")
+        lines.append("## 提示词")
         lines.append("")
         lines.append("```text")
 
@@ -324,6 +403,7 @@ def render_pack_record(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
     pack = get_pack(data, pack_id)
     char = data["characters"][pack["character"]]
     template = data["templates"][pack["template"]]
+    api_profile = dict(template["api_profile"])
     return {
         "id": pack["id"],
         "title": pack["title"],
@@ -337,7 +417,9 @@ def render_pack_record(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
             "id": pack["template"],
             "task_type": template["task_type"],
             "tags": template.get("tags", []),
+            "api_profile": api_profile,
         },
+        "api_profile": api_profile,
         "tags": render_pack_tags(data, pack),
         "scene": pack["scene"],
         "action": pack["action"],
@@ -370,12 +452,30 @@ def render_json_bundle(data: dict[str, Any]) -> str:
 def render_csv_index(data: dict[str, Any]) -> str:
     buffer = io.StringIO(newline="")
     writer = csv.writer(buffer, lineterminator="\n")
-    writer.writerow(["id", "title", "character_id", "character", "template_id", "template_type", "tags", "file"])
+    writer.writerow(
+        [
+            "id",
+            "title",
+            "character_id",
+            "character",
+            "template_id",
+            "template_type",
+            "api_model",
+            "api_size",
+            "api_quality",
+            "api_output_format",
+            "api_output_compression",
+            "api_background",
+            "tags",
+            "file",
+        ]
+    )
     characters = data.get("characters", {})
     templates = data.get("templates", {})
     for pack in data.get("packs", []):
         char = characters.get(pack.get("character"), {})
         template = templates.get(pack.get("template"), {})
+        api_profile = template.get("api_profile", {})
         writer.writerow(
             [
                 pack.get("id", ""),
@@ -384,6 +484,12 @@ def render_csv_index(data: dict[str, Any]) -> str:
                 char.get("display_name", ""),
                 pack.get("template", ""),
                 template.get("task_type", ""),
+                api_profile.get("model", ""),
+                api_profile.get("size", ""),
+                api_profile.get("quality", ""),
+                api_profile.get("output_format", ""),
+                api_profile.get("output_compression", ""),
+                api_profile.get("background", ""),
                 ";".join(render_pack_tags(data, pack)),
                 generated_filename(str(pack.get("id", ""))),
             ]
@@ -616,6 +722,8 @@ def render_generated_index(data: dict[str, Any]) -> str:
             "```powershell",
             "python 工具/build_prompt_pack.py furina_convention_phone --format json",
             "```",
+            "",
+            "每个 Markdown 文件顶部都会给出 `gpt-image-2` 推荐 API 参数；纯文本输出仍只保留可复制提示词，JSON 输出会包含 `api_profile`，方便脚本直接取 `model` / `size` / `quality` / `output_format`。",
         ]
     )
 
@@ -627,7 +735,7 @@ def render_generated_index(data: dict[str, Any]) -> str:
             "- [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。",
             f"- [`{GENERATED_TAG_INDEX}`]({GENERATED_TAG_INDEX})：按 tags 查找 Prompt Pack。",
             f"- [`{GENERATED_TAG_COVERAGE_MATRIX}`]({GENERATED_TAG_COVERAGE_MATRIX})：查看每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack。",
-            f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256` 方便核对来源配置。",
+            f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256`、tags 和 `api_profile` 方便核对来源配置并直接接 API。",
             f"- [`{GENERATED_JSON_BUNDLE_SCHEMA}`]({GENERATED_JSON_BUNDLE_SCHEMA})：JSON bundle 的结构说明。",
             f"- [`{GENERATED_CSV_INDEX}`]({GENERATED_CSV_INDEX})：可用表格软件打开的 Prompt Pack 索引，含 tags 列方便筛选。",
             "",

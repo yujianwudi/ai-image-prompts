@@ -11,7 +11,7 @@
 用于整理 AI 生图提示词、角色专属设定、固定场景模板和防串提示词。
 当前主要围绕写实 cosplay、室内漫展手机随手拍、9:16 竖图、真实服装材质和非低俗风格来整理。
 
-模板已按 2026-06-10 二次联网复核的 OpenAI `gpt-image-2` 图片生成资料优化：更偏自然语言分段描述，少堆关键词，先明确任务模式，再写不可变主体锚点、必须保留项、场景、构图、光线、材质、文字策略和安全防串约束；严格 9:16 竖图参数优先使用 `1024x1824`。
+模板已按 2026-06-10 二次联网复核的 OpenAI `gpt-image-2` 图片生成资料优化：更偏自然语言分段描述，少堆关键词，先明确任务模式，再写不可变主体锚点、必须保留项、场景、构图、光线、材质、文字策略和安全防串约束；严格 9:16 竖图参数优先使用 `1024x1824`，并在 Prompt Pack 模板里写入可机器读取的 `api_profile`。
 
 ## 预览图
 
@@ -65,7 +65,7 @@ AGENTS.md
 4. 如果要换角色，去 `角色/README.md` 复制对应角色专属词。
 5. 如果要换画面类型，去 `模板/README.md` 选择场景、镜头、灯光、材质和约束。
 6. 使用 OpenAI `gpt-image-2` 时，优先使用自然语言分段写法，不要只堆关键词；角色图先写主体锁定，避免串到芙宁娜。
-   如果不确定尺寸是否合规，可以先跑 `python 工具/validate_gpt_image2_parameters.py --size 1024x1824 --require-9-16`。
+   生成的 Markdown 顶部会列出推荐 API 参数；如果不确定尺寸是否合规，可以先跑 `python 工具/validate_gpt_image2_parameters.py --size 1024x1824 --require-9-16`。
 7. 生成后如果串角色，用 `示例/04-通用gpt-image-2编辑修正.md` 做二次修正。
 8. 出图后用 `评估/出图评分表.md` 判断能不能公开交付。
 
@@ -134,7 +134,7 @@ python 工具/check_prompt_repo.py
 python -m unittest discover -s tests -v
 ```
 
-统一质量门禁会检查 Prompt Pack 配置、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
+统一质量门禁会检查 Prompt Pack 配置、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 
@@ -145,13 +145,14 @@ python -m unittest discover -s tests -v
 - gpt-image-2 一键模板：写实cos、README预览图、角色卡、三视图、九宫格、商业海报、图像编辑。
 - Prompt as Code 字段化：把任务类型、主体锁定、版式、文字策略和防串约束拆开。
 - 机器可读 Prompt Pack：通过 `配置/prompt_packs.json` 和 `工具/build_prompt_pack.py` 自动组合可复制提示词。
+- Prompt Pack API 参数：每个输出模板都绑定 `api_profile`，记录 `model`、`size`、`quality`、`output_format`、压缩率和背景模式，避免复制提示词时漏掉 gpt-image-2 推荐参数。
 - 标签 taxonomy：通过 `配置/tag_taxonomy.json` 约束 Prompt Pack 模板 tags，避免标签同义词漂移，`商业海报图` 这类 alias 不能直接进模板。
-- JSON 输出：`工具/build_prompt_pack.py --format json` 可输出带元数据的提示词记录，方便接 API、脚本或前端。
-- 全量 JSON Bundle：`生成提示词/prompt_packs.generated.json` 自动导出全部 Prompt Pack，并由 `生成提示词/prompt_packs.generated.schema.json` 描述结构；bundle 内含 `source_config_sha256` 和 tags，方便前端或自动化工具核对来源配置并筛选用途。
-- CSV 索引：`生成提示词/prompt_packs.index.csv` 自动列出 Prompt Pack、角色、模板、tags 和文件名，方便表格筛选。
+- JSON 输出：`工具/build_prompt_pack.py --format json` 可输出带 `api_profile` 的提示词记录，方便接 API、脚本或前端。
+- 全量 JSON Bundle：`生成提示词/prompt_packs.generated.json` 自动导出全部 Prompt Pack，并由 `生成提示词/prompt_packs.generated.schema.json` 描述结构；bundle 内含 `source_config_sha256`、tags 和 `api_profile`，方便前端或自动化工具核对来源配置、筛选用途并直接读取推荐参数。
+- CSV 索引：`生成提示词/prompt_packs.index.csv` 自动列出 Prompt Pack、角色、模板、gpt-image-2 推荐参数、tags 和文件名，方便表格筛选。
 - 标签索引：`生成提示词/标签索引.md` 自动按 tags 分组 Prompt Pack，也可以用 `python 工具/build_prompt_pack.py --tag 商业海报` 查询。
 - 标签覆盖矩阵：`生成提示词/标签覆盖矩阵.md` 自动显示每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack，方便发现标签空转或覆盖不足。
-- JSON Schema：`配置/prompt_packs.schema.json` 为 Prompt Pack 配置提供字段结构约束。
+- JSON Schema：`配置/prompt_packs.schema.json` 为 Prompt Pack 配置提供字段结构约束，包括 `api_profile` 的 model、size、quality、output_format、output_compression 和 background。
 - Prompt Pack 覆盖矩阵：通过 `生成提示词/覆盖矩阵.md` 查看每个角色缺哪些输出类型。
 - Prompt Pack 快速复制入口：通过 `生成提示词/README.md` 按「角色 × 用途」直接选提示词。
 - 三角色 × 五输出类型已完整覆盖：写实随手拍、README预览、角色卡、商业海报、竖版封面。

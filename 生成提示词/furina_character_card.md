@@ -1,5 +1,17 @@
 # 芙宁娜角色参考卡
 
+## 推荐 API 参数
+
+```yaml
+model: gpt-image-2
+size: 1088x1936
+quality: high
+output_format: png
+background: opaque
+```
+
+## 提示词
+
 ```text
 生成一张角色参考卡图像。
 

@@ -282,8 +282,8 @@ python 工具/validate_gpt_image2_parameters.py --markdown
 
 ## build_prompt_pack.py
 
-用途：读取 `配置/prompt_packs.json`，把角色锚点、输出类型、场景、构图、光线、材质、安全约束和防串约束组合成可复制提示词。
-校验时还会读取 `配置/tag_taxonomy.json`，确保模板 tags 都来自受控词表，避免同义词漂移。
+用途：读取 `配置/prompt_packs.json`，把角色锚点、输出类型、场景、构图、光线、材质、安全约束、防串约束和 gpt-image-2 推荐 `api_profile` 组合成可复制提示词。
+校验时还会读取 `配置/tag_taxonomy.json`，确保模板 tags 都来自受控词表，并校验 `api_profile` 的 size、quality、output_format、output_compression 和 background，避免同义词或 API 参数漂移。
 不依赖网络，适合本地快速出 prompt。
 
 查看可用组合：
@@ -317,7 +317,7 @@ python 工具/build_prompt_pack.py furina_convention_phone
 python 工具/build_prompt_pack.py citlali_character_card --format markdown --out 示例/自动生成-茜特菈莉角色卡.md
 ```
 
-输出 JSON，方便接脚本、API 或前端：
+输出 JSON，方便接脚本、API 或前端；其中会包含可直接读取的 `api_profile`：
 
 ```powershell
 python 工具/build_prompt_pack.py furina_convention_phone --format json
@@ -346,7 +346,7 @@ python 工具/build_prompt_pack.py --all
 生成提示词/prompt_packs.index.csv
 ```
 
-`生成提示词/README.md` 会自动生成「角色 × 用途」快速复制入口，`生成提示词/覆盖矩阵.md` 用于查看每个角色已经覆盖/缺失的输出类型，`生成提示词/标签索引.md` 用于按 tags 查找 Prompt Pack，`生成提示词/标签覆盖矩阵.md` 用于查看每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack；`生成提示词/prompt_packs.generated.json` 用于脚本、API 或前端读取全部 Prompt Pack，并包含 `source_config_sha256` 和 tags 方便核对来源配置、按用途筛选；`生成提示词/prompt_packs.generated.schema.json` 用于说明 JSON bundle 结构；`生成提示词/prompt_packs.index.csv` 用于表格筛选 Prompt Pack，包含 tags 列。
+`生成提示词/README.md` 会自动生成「角色 × 用途」快速复制入口，单个 Markdown 文件顶部会显示推荐 API 参数；`生成提示词/覆盖矩阵.md` 用于查看每个角色已经覆盖/缺失的输出类型，`生成提示词/标签索引.md` 用于按 tags 查找 Prompt Pack，`生成提示词/标签覆盖矩阵.md` 用于查看每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack；`生成提示词/prompt_packs.generated.json` 用于脚本、API 或前端读取全部 Prompt Pack，并包含 `source_config_sha256`、tags 和 `api_profile` 方便核对来源配置、按用途筛选和直接接 API；`生成提示词/prompt_packs.generated.schema.json` 用于说明 JSON bundle 结构；`生成提示词/prompt_packs.index.csv` 用于表格筛选 Prompt Pack，包含 gpt-image-2 参数列和 tags 列。
 
 `check_prompt_repo.py` 会检查这些导出文件是否和配置一致，也会间接检查 tags 是否已登记到 `配置/tag_taxonomy.json`；如果过期需要重新运行 `--all`。
 
@@ -358,4 +358,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、标签 taxonomy、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、tags 导出、标签索引、标签 taxonomy、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、模板 `api_profile`、标签 taxonomy、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、api_profile 导出、tags 导出、标签索引、标签 taxonomy、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分与汇总、评分骨架生成、失败修正建议、项目仪表盘、gpt-image-2 参数档位和统一质量门禁帮助入口。

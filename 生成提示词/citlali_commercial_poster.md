@@ -1,5 +1,18 @@
 # 茜特菈莉夜神主题联名海报
 
+## 推荐 API 参数
+
+```yaml
+model: gpt-image-2
+size: 1024x1824
+quality: high
+output_format: jpeg
+output_compression: 85
+background: opaque
+```
+
+## 提示词
+
 ```text
 生成一张商业联名海报 / 电商主图图像。
 

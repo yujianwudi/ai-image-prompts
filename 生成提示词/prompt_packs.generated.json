@@ -1,7 +1,7 @@
 {
   "$schema": "prompt_packs.generated.schema.json",
   "source_config": "配置/prompt_packs.json",
-  "source_config_sha256": "9e22d2b8dc61784729f4f12b54c8d3605b0e4e6379a376de98033c28e8570ab6",
+  "source_config_sha256": "e65a6b97e72474f53ddabe34369a0d9765762dbc83f0e2e83b474a5c9e2297f9",
   "generator": "工具/build_prompt_pack.py",
   "version": "2026-06-10-gpt-image-2-web-optimized",
   "description": "Generated copy-ready Prompt Pack bundle. Do not edit by hand.",
@@ -71,6 +71,14 @@
         "无文字",
         "公开安全"
       ],
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "medium",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
+      },
       "composition": "9:16 竖图，写实手机照片，普通观众视角，手持手机随手拍，主体半身或三分之二身清晰，背景有真实漫展现场感并轻微虚化。",
       "lighting": "室内展馆自然顶灯或摊位柔光，脸部曝光自然，眼睛有轻微高光，服装颜色不跑偏。",
       "material": "真实可穿戴 cosplay 质感：布料纹理、缝线、刺绣、金属扣、宝石、皮革、发丝和手部道具细节。",
@@ -87,6 +95,14 @@
         "无文字",
         "公开安全"
       ],
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "medium",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
+      },
       "composition": "9:16 竖图，写实手机照片，画面干净明亮，主体半身或三分之二身清晰，角色服装和配件可辨认，背景有展示感但不杂乱。",
       "lighting": "柔和自然光或室内暖光，脸部清楚，整体适合公开 README 展示。",
       "material": "真实服装材质，布料褶皱、缝线、刺绣、宝石、金属饰件和发丝细节可见。",
@@ -102,6 +118,13 @@
         "短中文标签",
         "公开安全"
       ],
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1088x1936",
+        "quality": "high",
+        "output_format": "png",
+        "background": "opaque"
+      },
       "composition": "清晰分区：主视觉半身图、全身站姿、头饰特写、服装细节、道具特写和气质标签；所有区域保持同一角色。",
       "lighting": "干净均匀的设定图光线，发型、头饰、服装和道具细节可辨认。",
       "material": "所有局部细节与主图一致，服装、头饰、道具材质真实，不要塑料玩具感。",
@@ -118,6 +141,14 @@
         "公开安全",
         "无真实品牌"
       ],
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "high",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
+      },
       "composition": "9:16 竖版商业联名海报，主体居中，前景少量主题道具，中景展示角色，背景是主题装饰和柔和氛围光，预留标题区域。",
       "lighting": "柔和商业布光，层次清楚，主体从背景中分离，但保留写实 cosplay 质感。",
       "material": "真实服装质感、道具材质、包装或海报纸面质感，避免塑料玩具感。",
@@ -133,6 +164,14 @@
         "9:16",
         "公开安全"
       ],
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "high",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
+      },
       "composition": "9:16 竖版封面缩略图，上方短标题区，中间角色半身或三分之二身，下方 2-3 个短标签卡片；主体清楚，背景有层次但不抢主体。",
       "lighting": "明亮清楚，有对比但不过度商业硬光，角色和文字区都易读。",
       "material": "角色服装真实，背景干净，有轻微现场感或主题装饰。",
@@ -171,7 +210,23 @@
           "9:16",
           "无文字",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "medium",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "medium",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "furina",
@@ -221,7 +276,23 @@
           "9:16",
           "无文字",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "medium",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "medium",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "furina",
@@ -270,7 +341,21 @@
           "一致性检查",
           "短中文标签",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1088x1936",
+          "quality": "high",
+          "output_format": "png",
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1088x1936",
+        "quality": "high",
+        "output_format": "png",
+        "background": "opaque"
       },
       "tags": [
         "furina",
@@ -319,7 +404,23 @@
           "9:16",
           "公开安全",
           "无真实品牌"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "high",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "high",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "furina",
@@ -368,7 +469,23 @@
           "短标题",
           "9:16",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "high",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "high",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "furina",
@@ -417,7 +534,23 @@
           "9:16",
           "无文字",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "medium",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "medium",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "citlali",
@@ -467,7 +600,23 @@
           "9:16",
           "无文字",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "medium",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "medium",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "citlali",
@@ -516,7 +665,21 @@
           "一致性检查",
           "短中文标签",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1088x1936",
+          "quality": "high",
+          "output_format": "png",
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1088x1936",
+        "quality": "high",
+        "output_format": "png",
+        "background": "opaque"
       },
       "tags": [
         "citlali",
@@ -565,7 +728,23 @@
           "9:16",
           "公开安全",
           "无真实品牌"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "high",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "high",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "citlali",
@@ -614,7 +793,23 @@
           "短标题",
           "9:16",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "high",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "high",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "citlali",
@@ -664,7 +859,23 @@
           "9:16",
           "无文字",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "medium",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "medium",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "dori",
@@ -715,7 +926,23 @@
           "9:16",
           "无文字",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "medium",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "medium",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "dori",
@@ -765,7 +992,21 @@
           "一致性检查",
           "短中文标签",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1088x1936",
+          "quality": "high",
+          "output_format": "png",
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1088x1936",
+        "quality": "high",
+        "output_format": "png",
+        "background": "opaque"
       },
       "tags": [
         "dori",
@@ -815,7 +1056,23 @@
           "9:16",
           "公开安全",
           "无真实品牌"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "high",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "high",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "dori",
@@ -865,7 +1122,23 @@
           "短标题",
           "9:16",
           "公开安全"
-        ]
+        ],
+        "api_profile": {
+          "model": "gpt-image-2",
+          "size": "1024x1824",
+          "quality": "high",
+          "output_format": "jpeg",
+          "output_compression": 85,
+          "background": "opaque"
+        }
+      },
+      "api_profile": {
+        "model": "gpt-image-2",
+        "size": "1024x1824",
+        "quality": "high",
+        "output_format": "jpeg",
+        "output_compression": 85,
+        "background": "opaque"
       },
       "tags": [
         "dori",

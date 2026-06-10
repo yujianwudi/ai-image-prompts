@@ -4,6 +4,7 @@
 
 ### Added
 
+- Prompt Pack 模板新增 `api_profile`，把 `gpt-image-2` 推荐 `model`、`size`、`quality`、`output_format`、`output_compression` 和 `background` 与每类输出绑定；Markdown、JSON bundle、CSV 索引和单元测试同步导出/校验。
 - 新增 `工具/suggest_failure_fixes.py` 和 `评估/失败修正建议.md`，可把出图评分记录里的 `failure_ids` 自动转换为可复制修正提示词。
 - 新增 `模板/06-gpt-image-2官方规格自检清单.md` 和 `工具/validate_gpt_image2_parameters.py`，把 OpenAI `gpt-image-2` 推荐尺寸档位、9:16 接近度和 API 参数避坑做成可复制清单与本地校验入口。
 - 新增 `配置/tag_taxonomy.json` 和 `配置/tag_taxonomy.schema.json`，把 Prompt Pack 模板 tags 变成受控词表，防止 `商业海报` / `商业海报图` 这类同义词漂移。

@@ -97,6 +97,9 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("packs", schema["properties"])
         self.assertIn("global_quality_constraints", schema["properties"])
         self.assertIn("tags", schema["$defs"]["template"]["properties"])
+        self.assertIn("api_profile", schema["$defs"])
+        self.assertIn("api_profile", schema["$defs"]["template"]["required"])
+        self.assertIn("api_profile", schema["$defs"]["template"]["properties"])
 
         taxonomy = load_tag_taxonomy(DEFAULT_TAG_TAXONOMY)
         self.assertEqual(taxonomy.get("$schema"), "tag_taxonomy.schema.json")
@@ -139,6 +142,10 @@ class PromptPackToolTests(unittest.TestCase):
         pack = self.data["packs"][0]
         rendered = render_pack(self.data, pack["id"], markdown=True)
         self.assertTrue(rendered.startswith(f"# {pack['title']}\n"))
+        self.assertIn("## 推荐 API 参数", rendered)
+        self.assertIn("model: gpt-image-2", rendered)
+        self.assertIn("size: 1024x1824", rendered)
+        self.assertIn("## 提示词", rendered)
         self.assertIn("```text", rendered)
         self.assertTrue(rendered.rstrip().endswith("```"))
 
@@ -150,6 +157,9 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("tags", record)
         self.assertIn("写实cos", record["tags"])
         self.assertIn("tags", record["template"])
+        self.assertEqual(record["api_profile"]["model"], "gpt-image-2")
+        self.assertEqual(record["api_profile"]["size"], "1024x1824")
+        self.assertEqual(record["template"]["api_profile"], record["api_profile"])
         self.assertIn("主体锁定", record["prompt"])
         self.assertIn("非低俗", record["prompt"])
         bundle = json.loads(render_json_bundle(self.data))
@@ -163,7 +173,10 @@ class PromptPackToolTests(unittest.TestCase):
         schema = json.loads((ROOT / "生成提示词" / GENERATED_JSON_BUNDLE_SCHEMA).read_text(encoding="utf-8"))
         self.assertIn("source_config_sha256", schema["properties"])
         self.assertIn("generator", schema["properties"])
+        self.assertIn("api_profile", schema["$defs"])
         self.assertIn("generated_pack", schema["$defs"])
+        self.assertIn("api_profile", schema["$defs"]["generated_pack"]["required"])
+        self.assertIn("api_profile", schema["$defs"]["generated_template_ref"]["required"])
 
     def test_export_all_writes_expected_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -222,9 +235,13 @@ class PromptPackToolTests(unittest.TestCase):
 
     def test_csv_index_lists_prompt_pack_files(self) -> None:
         csv_text = render_csv_index(self.data)
-        self.assertIn("id,title,character_id,character,template_id,template_type,tags,file", csv_text)
+        self.assertIn(
+            "id,title,character_id,character,template_id,template_type,api_model,api_size,api_quality,api_output_format,api_output_compression,api_background,tags,file",
+            csv_text,
+        )
         self.assertIn("furina_convention_phone", csv_text)
         self.assertIn("furina_convention_phone.md", csv_text)
+        self.assertIn("gpt-image-2,1024x1824,medium,jpeg,85,opaque", csv_text)
         self.assertIn("写实cos;手机随手拍", csv_text)
         self.assertIn("茜特菈莉 Citlali", csv_text)
 
@@ -327,6 +344,23 @@ class PromptPackToolTests(unittest.TestCase):
 
         invalid = validate_size_spec("1080x1920", require_9_16=True)
         self.assertIn("width 不是 16 的倍数", invalid.errors)
+
+    def test_prompt_pack_api_profiles_are_gpt_image2_ready(self) -> None:
+        for template_id, template in self.data["templates"].items():
+            profile = template["api_profile"]
+            with self.subTest(template=template_id):
+                self.assertEqual(profile["model"], "gpt-image-2")
+                result = validate_size_spec(profile["size"], require_9_16=True)
+                self.assertEqual(result.errors, ())
+                self.assertEqual(result.warnings, ())
+                self.assertTrue(result.is_near_9_16)
+                self.assertIn(profile["quality"], {"low", "medium", "high", "auto"})
+                self.assertIn(profile["output_format"], {"png", "jpeg", "webp"})
+                self.assertEqual(profile["background"], "opaque")
+                if profile["output_format"] in {"jpeg", "webp"}:
+                    self.assertIsInstance(profile.get("output_compression"), int)
+                else:
+                    self.assertNotIn("output_compression", profile)
 
     def test_gpt_image2_parameter_cli_check_passes(self) -> None:
         result = subprocess.run(

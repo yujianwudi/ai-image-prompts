@@ -1,5 +1,18 @@
 # 茜特菈莉室内漫展手机随手拍
 
+## 推荐 API 参数
+
+```yaml
+model: gpt-image-2
+size: 1024x1824
+quality: medium
+output_format: jpeg
+output_compression: 85
+background: opaque
+```
+
+## 提示词
+
 ```text
 生成一张写实 cos 手机随手拍图像。
 

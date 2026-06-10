@@ -1,5 +1,18 @@
 # 芙宁娜 README 公开预览图
 
+## 推荐 API 参数
+
+```yaml
+model: gpt-image-2
+size: 1024x1824
+quality: medium
+output_format: jpeg
+output_compression: 85
+background: opaque
+```
+
+## 提示词
+
 ```text
 生成一张GitHub README 公开预览图图像。
 

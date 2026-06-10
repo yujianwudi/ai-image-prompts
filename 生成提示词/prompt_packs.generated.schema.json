@@ -77,6 +77,7 @@
         "title",
         "character",
         "template",
+        "api_profile",
         "tags",
         "scene",
         "action",
@@ -98,6 +99,9 @@
         },
         "template": {
           "$ref": "#/$defs/generated_template_ref"
+        },
+        "api_profile": {
+          "$ref": "#/$defs/api_profile"
         },
         "tags": {
           "$ref": "#/$defs/string_list"
@@ -150,7 +154,8 @@
       "required": [
         "id",
         "task_type",
-        "tags"
+        "tags",
+        "api_profile"
       ],
       "additionalProperties": false,
       "properties": {
@@ -164,8 +169,96 @@
         },
         "tags": {
           "$ref": "#/$defs/string_list"
+        },
+        "api_profile": {
+          "$ref": "#/$defs/api_profile"
         }
       }
+    },
+    "api_profile": {
+      "type": "object",
+      "required": [
+        "model",
+        "size",
+        "quality",
+        "output_format",
+        "background"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string",
+          "const": "gpt-image-2"
+        },
+        "size": {
+          "type": "string",
+          "pattern": "^[0-9]+x[0-9]+$"
+        },
+        "quality": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "auto"
+          ]
+        },
+        "output_format": {
+          "enum": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        "output_compression": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "background": {
+          "const": "opaque"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "output_format": {
+                "const": "png"
+              }
+            },
+            "required": [
+              "output_format"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "output_compression"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "output_format": {
+                "enum": [
+                  "jpeg",
+                  "webp"
+                ]
+              }
+            },
+            "required": [
+              "output_format"
+            ]
+          },
+          "then": {
+            "required": [
+              "output_compression"
+            ]
+          }
+        }
+      ]
     }
   }
 }

@@ -96,6 +96,7 @@
       "required": [
         "task_type",
         "tags",
+        "api_profile",
         "composition",
         "lighting",
         "material",
@@ -110,6 +111,9 @@
         },
         "tags": {
           "$ref": "#/$defs/string_list"
+        },
+        "api_profile": {
+          "$ref": "#/$defs/api_profile"
         },
         "composition": {
           "type": "string",
@@ -132,6 +136,91 @@
           "minLength": 1
         }
       }
+    },
+    "api_profile": {
+      "type": "object",
+      "required": [
+        "model",
+        "size",
+        "quality",
+        "output_format",
+        "background"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string",
+          "const": "gpt-image-2"
+        },
+        "size": {
+          "type": "string",
+          "pattern": "^[0-9]+x[0-9]+$"
+        },
+        "quality": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "auto"
+          ]
+        },
+        "output_format": {
+          "enum": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        "output_compression": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "background": {
+          "const": "opaque"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "output_format": {
+                "const": "png"
+              }
+            },
+            "required": [
+              "output_format"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "output_compression"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "output_format": {
+                "enum": [
+                  "jpeg",
+                  "webp"
+                ]
+              }
+            },
+            "required": [
+              "output_format"
+            ]
+          },
+          "then": {
+            "required": [
+              "output_compression"
+            ]
+          }
+        }
+      ]
     },
     "pack": {
       "type": "object",

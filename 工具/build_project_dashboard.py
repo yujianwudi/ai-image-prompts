@@ -79,6 +79,12 @@ def render_dashboard(
     characters = config.get("characters", {})
     templates = config.get("templates", {})
     packs = config.get("packs", [])
+    api_profiles = [
+        template.get("api_profile", {})
+        for template in templates.values()
+        if isinstance(template, dict) and isinstance(template.get("api_profile"), dict)
+    ]
+    api_sizes = sorted({str(profile.get("size", "")) for profile in api_profiles if str(profile.get("size", "")).strip()})
     taxonomy_tags = tag_taxonomy.get("tags", []) if isinstance(tag_taxonomy.get("tags"), list) else []
     used_tags = used_template_tags(config)
     unused_tags = sorted(
@@ -119,6 +125,7 @@ def render_dashboard(
             [
                 ["角色", str(len(characters)), "芙宁娜、茜特菈莉、多莉 / 朵莉亚"],
                 ["Prompt Pack 模板", str(len(templates)), "机器可组合输出类型"],
+                ["API Profiles", f"{len(api_profiles)} / {len(templates)}", "`gpt-image-2` 推荐参数绑定"],
                 ["Prompt Packs", coverage_text, "角色 × 输出类型覆盖"],
                 ["模板文档", str(count_template_docs()), "`模板/` 下可人工复制的 Markdown 文件"],
                 ["正式 tags", str(len(taxonomy_tags)), "`配置/tag_taxonomy.json` 中登记的标签"],
@@ -136,6 +143,10 @@ def render_dashboard(
         lines.append("- Prompt Pack 覆盖：完整。")
     else:
         lines.append("- Prompt Pack 覆盖：存在缺口，请查看 `生成提示词/覆盖矩阵.md`。")
+    if templates and len(api_profiles) == len(templates):
+        lines.append("- API 参数绑定：完整；当前尺寸档位：" + "、".join(f"`{size}`" for size in api_sizes) + "。")
+    else:
+        lines.append("- API 参数绑定：存在缺口，请检查 `配置/prompt_packs.json` 的 `templates.*.api_profile`。")
     if unused_tags:
         lines.append("- 未使用正式 tags：" + "、".join(f"`{tag}`" for tag in unused_tags))
     else:
