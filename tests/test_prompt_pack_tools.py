@@ -284,8 +284,9 @@ class PromptPackToolTests(unittest.TestCase):
         document = load_failure_fix_json(ROOT / "评估" / "failure_fix_lexicon.json")
         result = validate_failure_fix_document(document, self.data)
         self.assertEqual(result.errors, [])
-        self.assertEqual(len(document["rules"]), 10)
+        self.assertEqual(len(document["rules"]), 11)
         self.assertIn("furina_contamination", {rule["id"] for rule in document["rules"]})
+        self.assertIn("composition_ratio_mismatch", {rule["id"] for rule in document["rules"]})
         report_path = ROOT / "评估" / "失败修正词库.md"
         self.assertEqual(report_path.read_text(encoding="utf-8"), render_failure_fix_markdown(document))
 
@@ -306,6 +307,7 @@ class PromptPackToolTests(unittest.TestCase):
         result = validate_evaluation_document(document, self.data)
         self.assertEqual(result.errors, [])
         self.assertEqual(len(document["evaluations"]), 1)
+        self.assertEqual(document["evaluations"][0]["failure_ids"], ["composition_ratio_mismatch"])
 
     def test_output_evaluation_cli_check_passes(self) -> None:
         result = subprocess.run(
@@ -323,6 +325,7 @@ class PromptPackToolTests(unittest.TestCase):
         document = load_evaluation_json(ROOT / "评估" / "output_evaluations.example.json")
         report_path = ROOT / "评估" / "出图评分汇总.md"
         self.assertEqual(report_path.read_text(encoding="utf-8"), render_output_evaluation_summary(document, self.data))
+        self.assertIn("composition_ratio_mismatch", report_path.read_text(encoding="utf-8"))
 
     def test_output_evaluation_summary_cli_check_passes(self) -> None:
         result = subprocess.run(

@@ -13,6 +13,7 @@ from build_prompt_pack import DEFAULT_CONFIG, load_config
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_EVALUATIONS = ROOT / "评估" / "output_evaluations.example.json"
 DEFAULT_SCHEMA = ROOT / "评估" / "output_evaluations.schema.json"
+DEFAULT_FAILURE_FIX_LEXICON = ROOT / "评估" / "failure_fix_lexicon.json"
 
 SCORE_LIMITS = {
     "role_consistency": 25,
@@ -62,16 +63,28 @@ def validate_schema_file(schema_path: Path = DEFAULT_SCHEMA) -> list[str]:
         if key not in schema.get("properties", {}):
             errors.append(f"出图评分 schema.properties 缺少：{key}")
     evaluation_props = schema.get("$defs", {}).get("evaluation", {}).get("properties", {})
-    for key in ["prompt_pack", "character", "scores", "total_score", "decision"]:
+    for key in ["prompt_pack", "character", "scores", "total_score", "decision", "failure_ids"]:
         if key not in evaluation_props:
             errors.append(f"出图评分 schema.evaluation.properties 缺少：{key}")
     return errors
 
 
-def validate_document(document: dict[str, Any], config: dict[str, Any], root: Path = ROOT) -> EvaluationValidationResult:
+def validate_document(
+    document: dict[str, Any],
+    config: dict[str, Any],
+    root: Path = ROOT,
+    failure_lexicon: dict[str, Any] | None = None,
+) -> EvaluationValidationResult:
     errors = validate_schema_file()
     warnings: list[str] = []
     rows: list[list[str]] = []
+    if failure_lexicon is None:
+        failure_lexicon = load_json(DEFAULT_FAILURE_FIX_LEXICON)
+    failure_rule_ids = {
+        str(rule.get("id", ""))
+        for rule in failure_lexicon.get("rules", [])
+        if isinstance(rule, dict) and rule.get("id")
+    }
 
     if document.get("$schema") != "output_evaluations.schema.json":
         errors.append("出图评分记录 $schema 必须是 output_evaluations.schema.json")
@@ -154,6 +167,19 @@ def validate_document(document: dict[str, Any], config: dict[str, Any], root: Pa
         if isinstance(total_score, int) and total_score >= 80 and decision in {"regenerate", "reject"}:
             warnings.append(f"{eval_id} 总分较高但 decision={decision}，请确认是否需要重生成或拒绝")
 
+        failure_ids = item.get("failure_ids")
+        if not isinstance(failure_ids, list):
+            errors.append(f"{eval_id} failure_ids 必须是 array")
+        else:
+            for failure_id in failure_ids:
+                if not isinstance(failure_id, str) or not failure_id.strip():
+                    errors.append(f"{eval_id} failure_ids 不能包含空值")
+                    continue
+                if failure_id not in failure_rule_ids:
+                    errors.append(f"{eval_id} failure_ids 引用不存在的失败类型：{failure_id}")
+            if decision in {"edit", "regenerate", "reject"} and not failure_ids:
+                warnings.append(f"{eval_id} decision={decision}，建议填写 failure_ids 以便统计失败类型")
+
         issues = item.get("issues")
         if not isinstance(issues, list):
             errors.append(f"{eval_id} issues 必须是 array")
@@ -170,6 +196,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Validate structured image output evaluation records.")
     parser.add_argument("--file", type=Path, default=DEFAULT_EVALUATIONS, help="Path to output evaluations JSON")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG, help="Path to prompt_packs.json")
+    parser.add_argument("--failure-lexicon", type=Path, default=DEFAULT_FAILURE_FIX_LEXICON, help="Path to failure_fix_lexicon.json")
     parser.add_argument("--check", action="store_true", help="Validate and exit non-zero on errors")
     return parser.parse_args()
 
@@ -179,7 +206,8 @@ def main() -> int:
     args = parse_args()
     document = load_json(args.file)
     config = load_config(args.config)
-    result = validate_document(document, config)
+    failure_lexicon = load_json(args.failure_lexicon)
+    result = validate_document(document, config, failure_lexicon=failure_lexicon)
 
     print("# 出图评分记录校验")
     print(f"文件：{args.file}")

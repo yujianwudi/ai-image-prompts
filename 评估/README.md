@@ -123,7 +123,7 @@ Markdown 评分表适合人工快速判断；如果要沉淀多轮出图结果�
 python 工具/validate_output_evaluations.py --check
 ```
 
-它会检查评分总分是否等于各项分数之和、Prompt Pack/角色引用是否存在、图片路径是否存在、decision 是否合法。
+它会检查评分总分是否等于各项分数之和、Prompt Pack/角色引用是否存在、图片路径是否存在、decision 是否合法，以及 `failure_ids` 是否引用了 `评估/failure_fix_lexicon.json` 里的真实失败类型。
 
 自动生成汇总：
 

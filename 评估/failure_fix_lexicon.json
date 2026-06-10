@@ -224,6 +224,31 @@
       "next_action": "edit"
     },
     {
+      "id": "composition_ratio_mismatch",
+      "title": "构图比例不符",
+      "category": "composition",
+      "severity": "medium",
+      "applies_to": [
+        "all"
+      ],
+      "detect_terms": [
+        "不是9:16",
+        "横图",
+        "方图",
+        "比例不符",
+        "主体边缘被挤压"
+      ],
+      "problem": "目标是 9:16 竖图，但输出成横图、方图、过窄裁切或主体边缘被挤压，导致不适合正式 Prompt Pack 规格。",
+      "fix_prompt": "请生成 9:16 竖图，主体完整清晰，不要横图，不要方图，不要过窄裁切。角色头饰、上半身服装、手部和关键道具都要完整保留。",
+      "must_include": [
+        "9:16 竖图",
+        "不要横图",
+        "不要方图",
+        "主体完整清晰"
+      ],
+      "next_action": "regenerate"
+    },
+    {
       "id": "bad_crop",
       "title": "裁切错误",
       "category": "composition",

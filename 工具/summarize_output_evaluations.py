@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from build_prompt_pack import DEFAULT_CONFIG, load_config
-from validate_output_evaluations import DEFAULT_EVALUATIONS, SCORE_LIMITS, load_json, validate_document
+from validate_output_evaluations import DEFAULT_EVALUATIONS, DEFAULT_FAILURE_FIX_LEXICON, SCORE_LIMITS, load_json, validate_document
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT = ROOT / "评估" / "出图评分汇总.md"
@@ -44,11 +44,18 @@ def table(headers: list[str], rows: list[list[str]]) -> list[str]:
     return lines
 
 
-def render_summary(document: dict[str, Any], config: dict[str, Any]) -> str:
-    validation = validate_document(document, config)
+def render_summary(document: dict[str, Any], config: dict[str, Any], failure_lexicon: dict[str, Any] | None = None) -> str:
+    if failure_lexicon is None:
+        failure_lexicon = load_json(DEFAULT_FAILURE_FIX_LEXICON)
+    validation = validate_document(document, config, failure_lexicon=failure_lexicon)
     evaluations = document.get("evaluations", []) if isinstance(document.get("evaluations"), list) else []
     packs = {pack.get("id"): pack for pack in config.get("packs", []) if pack.get("id")}
     characters = config.get("characters", {})
+    failure_titles = {
+        str(rule.get("id", "")): str(rule.get("title", ""))
+        for rule in failure_lexicon.get("rules", [])
+        if isinstance(rule, dict) and rule.get("id")
+    }
 
     total_scores = [int(item.get("total_score", 0)) for item in evaluations if isinstance(item, dict)]
     count = len(total_scores)
@@ -101,6 +108,23 @@ def render_summary(document: dict[str, Any], config: dict[str, Any]) -> str:
     else:
         lines.append("暂无。")
 
+    lines.extend(["", "## 失败类型分布", ""])
+    failure_counter: Counter[str] = Counter()
+    for item in evaluations:
+        if not isinstance(item, dict):
+            continue
+        for failure_id in item.get("failure_ids", []):
+            if str(failure_id).strip():
+                failure_counter[str(failure_id)] += 1
+    if failure_counter:
+        rows = [
+            [failure_id, failure_titles.get(failure_id, "未知失败类型"), str(count)]
+            for failure_id, count in failure_counter.most_common()
+        ]
+        lines.extend(table(["失败类型 ID", "名称", "次数"], rows))
+    else:
+        lines.append("暂无。")
+
     lines.extend(["", "## 记录明细", ""])
     detail_rows: list[list[str]] = []
     for item in evaluations:
@@ -117,10 +141,11 @@ def render_summary(document: dict[str, Any], config: dict[str, Any]) -> str:
                 pack.get("title", pack_id),
                 str(item.get("total_score", "")),
                 DECISION_LABELS.get(str(item.get("decision", "")), str(item.get("decision", ""))),
+                "、".join(str(failure_id) for failure_id in item.get("failure_ids", [])),
                 str(item.get("next_action", "")),
             ]
         )
-    lines.extend(table(["ID", "角色", "Prompt Pack", "总分", "决策", "下一步"], detail_rows))
+    lines.extend(table(["ID", "角色", "Prompt Pack", "总分", "决策", "失败类型", "下一步"], detail_rows))
 
     lines.extend(["", "## 校验结果", ""])
     if validation.errors:
@@ -141,6 +166,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Summarize structured image output evaluation records.")
     parser.add_argument("--file", type=Path, default=DEFAULT_EVALUATIONS, help="Path to output evaluations JSON")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG, help="Path to prompt_packs.json")
+    parser.add_argument("--failure-lexicon", type=Path, default=DEFAULT_FAILURE_FIX_LEXICON, help="Path to failure_fix_lexicon.json")
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT, help="Path to generated Markdown summary")
     parser.add_argument("--check", action="store_true", help="Check whether the summary is current and valid")
     return parser.parse_args()
@@ -151,8 +177,9 @@ def main() -> int:
     args = parse_args()
     document = load_json(args.file)
     config = load_config(args.config)
-    validation = validate_document(document, config)
-    report = render_summary(document, config)
+    failure_lexicon = load_json(args.failure_lexicon)
+    validation = validate_document(document, config, failure_lexicon=failure_lexicon)
+    report = render_summary(document, config, failure_lexicon)
 
     if args.check:
         if validation.errors:

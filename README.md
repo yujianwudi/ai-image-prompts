@@ -164,8 +164,8 @@ python -m unittest discover -s tests -v
 - 角色防串审计：`评估/角色防串审计报告.md` 自动汇总三角色锚点、防串、安全和成人化约束覆盖。
 - Prompt 文本质量审计：`评估/Prompt文本质量审计报告.md` 自动检查生成前 prompt 的结构、安全、质量、模板意图、角色词和长度范围。
 - 结构化失败修正词库：`评估/failure_fix_lexicon.json` 记录失败类型、识别线索、修正词和下一步动作，并自动生成 `评估/失败修正词库.md`。
-- 结构化出图评分：`评估/output_evaluations.example.json` 和 `评估/output_evaluations.schema.json` 可记录每张图的评分、问题和下一步动作。
-- 出图评分汇总：`评估/出图评分汇总.md` 自动汇总平均分、决策分布、常见问题和记录明细。
+- 结构化出图评分：`评估/output_evaluations.example.json` 和 `评估/output_evaluations.schema.json` 可记录每张图的评分、问题、失败类型 ID 和下一步动作。
+- 出图评分汇总：`评估/出图评分汇总.md` 自动汇总平均分、决策分布、常见问题、失败类型分布和记录明细。
 
 ## 交付文档
 

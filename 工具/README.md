@@ -145,7 +145,7 @@ python 工具/lint_prompt_quality.py --check
 
 ## validate_output_evaluations.py
 
-用途：校验结构化出图评分记录，检查评分总分、Prompt Pack/角色引用、图片路径、公开安全状态、decision 和下一步动作。
+用途：校验结构化出图评分记录，检查评分总分、Prompt Pack/角色引用、图片路径、公开安全状态、decision、failure_ids 和下一步动作。
 
 默认校验示例文件：
 
@@ -161,7 +161,7 @@ python 工具/validate_output_evaluations.py --file 评估/my_output_evaluations
 
 ## summarize_output_evaluations.py
 
-用途：读取结构化出图评分记录，生成平均分、决策分布、分项平均分、常见问题和明细表。
+用途：读取结构化出图评分记录，生成平均分、决策分布、分项平均分、常见问题、失败类型分布和明细表。
 
 生成默认汇总：
 

@@ -118,6 +118,10 @@ OpenAI `gpt-image-2` 相关模板优先使用自然语言分段，不要只堆�
 
 README 里的预览图必须登记在 manifest 里。
 
+## 出图评分规则
+
+维护 `评估/output_evaluations.example.json` 或新的评分日志时，除了写 `issues` 自由文本，也要写 `failure_ids`。`failure_ids` 必须引用 `评估/failure_fix_lexicon.json` 里已有的失败类型，方便后续汇总常见问题和修正方向。
+
 ## Git 与公开仓库规则
 
 - 提交前确认 `git status --short --branch`。

@@ -21,6 +21,9 @@
       "total_score": 89,
       "public_safe": true,
       "decision": "keep",
+      "failure_ids": [
+        "composition_ratio_mismatch"
+      ],
       "issues": [
         "README 样张为横向展示图，不代表正式 Prompt Pack 的 9:16 输出规格。"
       ],

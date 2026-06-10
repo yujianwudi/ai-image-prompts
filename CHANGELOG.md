@@ -4,6 +4,8 @@
 
 ### Added
 
+- 结构化出图评分记录新增 `failure_ids`，可引用 `评估/failure_fix_lexicon.json` 中的失败类型，并在评分汇总中统计失败类型分布。
+- 失败修正词库新增 `composition_ratio_mismatch`，用于记录 9:16 构图比例不符、横图或方图等问题。
 - 自动导出新增 `生成提示词/标签索引.md`，按 tags 分组 Prompt Pack，方便人工查找。
 - `工具/build_prompt_pack.py` 新增 `--tag`，可按精确 tag 查询 Prompt Pack。
 - Prompt Pack 模板新增 `tags` 元数据，生成的 JSON bundle 和 CSV 索引会带上 tags，方便前端、脚本和表格按用途筛选。
@@ -56,6 +58,7 @@
 
 ### Changed
 
+- `validate_output_evaluations.py` 和 `summarize_output_evaluations.py` 现在会校验并汇总 failure_ids。
 - 质量门禁和单元测试现在会检查标签索引是否与 `配置/prompt_packs.json` 同步。
 - Prompt Pack schema、生成器、JSON bundle schema、CSV 索引和单元测试已同步校验 tags 字段。
 - 统一质量门禁和单元测试现在会检查失败修正词库 JSON 结构、核心失败类型、必含修正词和 Markdown 同步状态。
