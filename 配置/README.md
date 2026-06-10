@@ -46,3 +46,25 @@ python 工具/build_prompt_pack.py dori_commercial_poster --out 示例/自动生
 - `templates` 放输出类型、构图、光线、材质、文字策略和安全约束。
 - `packs` 放具体组合案例，只引用已有角色和模板。
 - 不要把外部仓库的长提示词直接复制进配置，只保留结构化字段。
+
+## 当前覆盖
+
+当前 `prompt_packs.json` 已覆盖三位角色与五类输出类型：
+
+- 芙宁娜 Furina
+- 茜特菈莉 Citlali
+- 多莉 Dori
+
+输出类型：
+
+- 写实 cos 手机随手拍
+- GitHub README 公开预览图
+- 角色参考卡
+- 商业联名海报 / 电商主图
+- 竖版社媒封面缩略图
+
+具体覆盖情况看：
+
+```text
+生成提示词/覆盖矩阵.md
+```

@@ -1,5 +1,5 @@
 {
-  "version": "2026-06-10",
+  "version": "2026-06-10-full-coverage",
   "description": "机器可读 Prompt Pack：把角色锚点、输出类型、场景、构图、光线、材质和约束拆成可组合字段。",
   "characters": {
     "furina": {
@@ -123,6 +123,66 @@
       ]
     },
     {
+      "id": "furina_character_card",
+      "title": "芙宁娜角色参考卡",
+      "character": "furina",
+      "template": "character_card",
+      "scene": "简洁浅蓝白设定页背景，带少量水滴、金色线条和歌剧舞台纹样。",
+      "action": "主视觉是自信微笑的半身图，细节区展示蓝黑礼帽、白蓝短发、领结、金色纽扣、水滴宝石和手套。",
+      "extra_constraints": [
+        "所有分区都是同一个芙宁娜",
+        "不要出现茜特菈莉的细辫或多莉的方形眼镜"
+      ]
+    },
+    {
+      "id": "furina_commercial_poster",
+      "title": "芙宁娜枫丹甜品联名海报",
+      "character": "furina",
+      "template": "commercial_poster",
+      "scene": "枫丹歌剧院风甜品联名视觉，前景有蓝白甜点、透明杯、金色小托盘和水滴装饰，不出现真实品牌 logo。",
+      "action": "她优雅地拿着甜点盘，表情自信俏皮，像活动主视觉里的真实 coser。",
+      "extra_constraints": [
+        "标题区保持干净",
+        "不要把贵族歌剧服改成普通公主裙"
+      ]
+    },
+    {
+      "id": "furina_vertical_thumbnail",
+      "title": "芙宁娜角色防串教程封面",
+      "character": "furina",
+      "template": "vertical_thumbnail",
+      "scene": "蓝白渐变背景，点缀少量水滴、金色装饰线和舞台帷幕元素。",
+      "action": "她站在画面中间偏右，微微抬头看向镜头，左上方预留短标题区。",
+      "extra_constraints": [
+        "标题建议：芙宁娜防串",
+        "保留蓝黑小礼帽和白蓝短发"
+      ]
+    },
+    {
+      "id": "citlali_convention_phone",
+      "title": "茜特菈莉室内漫展手机随手拍",
+      "character": "citlali",
+      "template": "realistic_convention_phone",
+      "scene": "室内漫展展馆休息区，背景有黑紫色灯牌、展位边缘、路人和轻微虚化的海报墙。",
+      "action": "她被朋友喊住后轻轻回头，表情冷淡安静，有点不情愿但不阴暗。",
+      "extra_constraints": [
+        "不要把长发变成白蓝短发",
+        "不要戴芙宁娜礼帽或多莉商人帽"
+      ]
+    },
+    {
+      "id": "citlali_readme_preview",
+      "title": "茜特菈莉 README 公开预览图",
+      "character": "citlali",
+      "template": "readme_preview",
+      "scene": "干净明亮的展馆角落或咖啡座，背景有柔和黑紫装饰和浅色桌面。",
+      "action": "她安静坐在桌边，手边有小吊饰和几何纹样布料，气质神秘但画面清爽。",
+      "extra_constraints": [
+        "画面适合公开仓库展示",
+        "不要过暗、不要恐怖感、不要擦边"
+      ]
+    },
+    {
       "id": "citlali_character_card",
       "title": "茜特菈莉角色参考卡",
       "character": "citlali",
@@ -132,6 +192,18 @@
       "extra_constraints": [
         "所有分区都是同一个茜特菈莉",
         "不要出现芙宁娜礼帽或多莉眼镜"
+      ]
+    },
+    {
+      "id": "citlali_commercial_poster",
+      "title": "茜特菈莉夜神主题联名海报",
+      "character": "citlali",
+      "template": "commercial_poster",
+      "scene": "夜神部落主题饰品或饮品联名视觉，前景有星点、几何纹样小卡片、紫蓝渐变杯和小吊饰，不出现真实品牌 logo。",
+      "action": "她安静站在主视觉中央，手指轻轻扶着小吊饰，表情冷淡神秘。",
+      "extra_constraints": [
+        "商业感要克制干净",
+        "不要混成枫丹贵族或须弥商人"
       ]
     },
     {
@@ -147,6 +219,42 @@
       ]
     },
     {
+      "id": "dori_convention_phone",
+      "title": "多莉室内漫展手机随手拍",
+      "character": "dori",
+      "template": "realistic_convention_phone",
+      "scene": "室内漫展摊位旁，背景有小商品展示架、暖色灯牌、路人和轻微虚化的展位桌面。",
+      "action": "她笑眯眯地看向镜头，一只手扶着小灯壶，一只手像在招呼朋友拍照。",
+      "extra_constraints": [
+        "必须是成年 coser",
+        "可爱但不儿童化、不性感化"
+      ]
+    },
+    {
+      "id": "dori_readme_preview",
+      "title": "多莉 README 公开预览图",
+      "character": "dori",
+      "template": "readme_preview",
+      "scene": "明亮商场或漫展小摊位，背景有整齐的宝石道具、金币装饰和浅色桌面。",
+      "action": "她站在摊位旁笑眯眯展示小灯壶，道具数量适中，整体安全可爱。",
+      "extra_constraints": [
+        "适合公开仓库展示",
+        "不要低俗、不要儿童化、不要过度夸张道具"
+      ]
+    },
+    {
+      "id": "dori_character_card",
+      "title": "多莉角色参考卡",
+      "character": "dori",
+      "template": "character_card",
+      "scene": "简洁浅紫和金色设定页背景，带少量商人小包、金币和灯壶图标。",
+      "action": "主视觉是笑眯眯半身图，细节区展示粉色卷发、方形眼镜、紫金商人帽、钱袋、小灯壶和宝石饰品。",
+      "extra_constraints": [
+        "所有分区都是同一个成年多莉 coser",
+        "不要儿童化，不要混入芙宁娜礼帽或茜特菈莉细辫"
+      ]
+    },
+    {
       "id": "dori_commercial_poster",
       "title": "多莉商业联名海报",
       "character": "dori",
@@ -156,6 +264,18 @@
       "extra_constraints": [
         "必须是成年 coser",
         "可爱但不儿童化、不性感化"
+      ]
+    },
+    {
+      "id": "dori_vertical_thumbnail",
+      "title": "多莉角色防串教程封面",
+      "character": "dori",
+      "template": "vertical_thumbnail",
+      "scene": "紫金渐变背景，点缀金币、宝石、小灯壶和简洁卡片元素。",
+      "action": "她站在画面中间偏右，笑眯眯地扶着方形眼镜，左上方预留短标题区。",
+      "extra_constraints": [
+        "标题建议：多莉防串",
+        "必须保留方形眼镜和紫金大商人帽"
       ]
     }
   ],

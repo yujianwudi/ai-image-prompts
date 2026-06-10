@@ -4,6 +4,7 @@
 
 ### Added
 
+- 补齐三位角色 × 五类输出类型的 Prompt Pack，共 15 个自动组合提示词。
 - 新增 `生成提示词/覆盖矩阵.md`，展示角色与输出类型覆盖情况。
 - 新增 `tests/test_prompt_pack_tools.py`，覆盖 Prompt Pack 配置、渲染、批量导出和 CLI。
 - `工具/build_prompt_pack.py` 新增 `--all` 批量导出能力。
@@ -30,6 +31,7 @@
 
 ### Changed
 
+- 覆盖矩阵现在显示三位角色已完整覆盖全部输出类型。
 - 质量门禁和单元测试现在会检查覆盖矩阵是否与配置同步。
 - `工具/build_prompt_pack.py --all` 现在会同时导出覆盖矩阵。
 - 质量门禁现在要求 `tests/` 测试目录存在。
