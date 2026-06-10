@@ -149,7 +149,7 @@ python -m unittest discover -s tests -v
 - Prompt Pack API 参数：每个输出模板都绑定 `api_profile`，记录 `model`、`size`、`quality`、`output_format`、压缩率和背景模式，避免复制提示词时漏掉 gpt-image-2 推荐参数。
 - 标签 taxonomy：通过 `配置/tag_taxonomy.json` 约束 Prompt Pack 模板 tags，避免标签同义词漂移，`商业海报图` 这类 alias 不能直接进模板。
 - JSON 输出：`工具/build_prompt_pack.py --format json` 可输出带 `api_profile` 的提示词记录，方便接 API、脚本或前端。
-- 全量 JSON Bundle：`生成提示词/prompt_packs.generated.json` 自动导出全部 Prompt Pack，并由 `生成提示词/prompt_packs.generated.schema.json` 描述结构；bundle 内含 `source_config_sha256`、tags 和 `api_profile`，方便前端或自动化工具核对来源配置、筛选用途并直接读取推荐参数。
+- 全量 JSON Bundle：`生成提示词/prompt_packs.generated.json` 自动导出全部 Prompt Pack，`生成提示词/prompt_packs.generated.schema.json` 也由导出工具同步生成并描述结构；bundle 内含 `source_config_sha256`、tags 和 `api_profile`，方便前端或自动化工具核对来源配置、筛选用途并直接读取推荐参数。
 - API 请求 JSONL：`生成提示词/prompt_packs.api_requests.jsonl` 自动导出 15 条逐行请求草稿，`生成提示词/prompt_packs.api_requests.schema.json` 记录每行结构，`工具/build_prompt_pack.py --format api-json` 可输出单条 payload，`工具/validate_api_requests.py --check` 可单独校验是否过期，并拦截未知字段、空白 title/prompt 和重复 tags。
 - CSV 索引：`生成提示词/prompt_packs.index.csv` 自动列出 Prompt Pack、角色、模板、gpt-image-2 推荐参数、tags 和文件名，方便表格筛选。
 - 标签索引：`生成提示词/标签索引.md` 自动按 tags 分组 Prompt Pack，也可以用 `python 工具/build_prompt_pack.py --tag 商业海报` 查询。

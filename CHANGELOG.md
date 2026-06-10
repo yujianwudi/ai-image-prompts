@@ -4,6 +4,7 @@
 
 ### Added
 
+- 全量 JSON bundle schema 现在由 `工具/build_prompt_pack.py --all` 自动导出，并在质量门禁中与生成器结果比对同步；schema 也新增非空白文本、slug propertyNames 和列表去重约束。
 - API 请求 JSONL schema 和校验器新增未知字段、非空白 title/prompt、tags 去重与 tags 同步检查，减少批量请求草稿在脚本读取时才暴露的数据问题。
 - 失败修正词库 schema 和校验器新增未知字段、非空白文本与 applies_to / detect_terms / must_include 去重检查，避免草稿字段、空白修正词或重复识别线索污染修正建议。
 - 结构化出图评分校验器新增未知顶层/记录字段检查，并要求评分记录 `id` 与 schema 一样使用小写 slug，避免草稿字段或不稳定 ID 混入评估数据。

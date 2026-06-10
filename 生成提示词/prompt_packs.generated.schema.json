@@ -19,7 +19,8 @@
   "additionalProperties": false,
   "properties": {
     "$schema": {
-      "type": "string"
+      "type": "string",
+      "const": "prompt_packs.generated.schema.json"
     },
     "source_config": {
       "type": "string",
@@ -35,11 +36,13 @@
     },
     "version": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "\\S"
     },
     "description": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "\\S"
     },
     "pack_count": {
       "type": "integer",
@@ -47,11 +50,17 @@
     },
     "characters": {
       "type": "object",
-      "minProperties": 1
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z0-9_]+$"
+      }
     },
     "templates": {
       "type": "object",
-      "minProperties": 1
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z0-9_]+$"
+      }
     },
     "packs": {
       "type": "array",
@@ -65,9 +74,11 @@
     "string_list": {
       "type": "array",
       "minItems": 1,
+      "uniqueItems": true,
       "items": {
         "type": "string",
-        "minLength": 1
+        "minLength": 1,
+        "pattern": "\\S"
       }
     },
     "generated_pack": {
@@ -92,7 +103,8 @@
         },
         "title": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "character": {
           "$ref": "#/$defs/generated_character_ref"
@@ -108,18 +120,21 @@
         },
         "scene": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "action": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "extra_constraints": {
           "$ref": "#/$defs/string_list"
         },
         "prompt": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         }
       }
     },
@@ -135,11 +150,12 @@
       "properties": {
         "id": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[a-z0-9_]+$"
         },
         "display_name": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "must_keep": {
           "$ref": "#/$defs/string_list"
@@ -161,11 +177,12 @@
       "properties": {
         "id": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[a-z0-9_]+$"
         },
         "task_type": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S"
         },
         "tags": {
           "$ref": "#/$defs/string_list"

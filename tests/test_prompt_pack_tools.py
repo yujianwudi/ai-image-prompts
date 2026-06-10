@@ -34,6 +34,7 @@ from build_prompt_pack import (  # noqa: E402
     render_csv_index,
     render_generated_index,
     render_json_bundle,
+    render_json_bundle_schema,
     render_pack,
     render_pack_record,
     render_tag_coverage_matrix,
@@ -223,6 +224,12 @@ class PromptPackToolTests(unittest.TestCase):
         self.assertIn("generated_pack", schema["$defs"])
         self.assertIn("api_profile", schema["$defs"]["generated_pack"]["required"])
         self.assertIn("api_profile", schema["$defs"]["generated_template_ref"]["required"])
+        self.assertEqual(schema, json.loads(render_json_bundle_schema()))
+        self.assertEqual(schema["properties"]["$schema"]["const"], GENERATED_JSON_BUNDLE_SCHEMA)
+        self.assertEqual(schema["properties"]["version"]["pattern"], "\\S")
+        self.assertTrue(schema["$defs"]["string_list"]["uniqueItems"])
+        self.assertEqual(schema["$defs"]["generated_pack"]["properties"]["prompt"]["pattern"], "\\S")
+        self.assertEqual(schema["$defs"]["generated_character_ref"]["properties"]["id"]["pattern"], "^[a-z0-9_]+$")
         api_schema = json.loads(render_api_requests_schema())
         self.assertEqual(api_schema["title"], "Generated Prompt Pack API Request JSONL Record")
         self.assertIn("api_request", api_schema["$defs"])
@@ -237,6 +244,7 @@ class PromptPackToolTests(unittest.TestCase):
                 GENERATED_TAG_INDEX,
                 GENERATED_TAG_COVERAGE_MATRIX,
                 GENERATED_JSON_BUNDLE,
+                GENERATED_JSON_BUNDLE_SCHEMA,
                 GENERATED_API_REQUESTS_JSONL,
                 GENERATED_API_REQUESTS_SCHEMA,
                 GENERATED_CSV_INDEX,
@@ -249,6 +257,7 @@ class PromptPackToolTests(unittest.TestCase):
             self.assertEqual((out_dir / GENERATED_TAG_INDEX).read_text(encoding="utf-8"), render_tag_index(self.data))
             self.assertEqual((out_dir / GENERATED_TAG_COVERAGE_MATRIX).read_text(encoding="utf-8"), render_tag_coverage_matrix(self.data))
             self.assertEqual((out_dir / GENERATED_JSON_BUNDLE).read_text(encoding="utf-8"), render_json_bundle(self.data))
+            self.assertEqual((out_dir / GENERATED_JSON_BUNDLE_SCHEMA).read_text(encoding="utf-8"), render_json_bundle_schema())
             self.assertEqual((out_dir / GENERATED_API_REQUESTS_JSONL).read_text(encoding="utf-8"), render_api_requests_jsonl(self.data))
             self.assertEqual((out_dir / GENERATED_API_REQUESTS_SCHEMA).read_text(encoding="utf-8"), render_api_requests_schema())
             self.assertEqual((out_dir / GENERATED_CSV_INDEX).read_text(encoding="utf-8"), render_csv_index(self.data))

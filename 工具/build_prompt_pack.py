@@ -463,6 +463,131 @@ def render_json_bundle(data: dict[str, Any]) -> str:
     return json.dumps(bundle, ensure_ascii=False, indent=2) + "\n"
 
 
+def render_json_bundle_schema() -> str:
+    schema = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://github.com/yujianwudi/ai-image-prompts/blob/main/生成提示词/prompt_packs.generated.schema.json",
+        "title": "Generated AI Image Prompt Pack Bundle",
+        "description": "Schema for generated copy-ready Prompt Pack bundle.",
+        "type": "object",
+        "required": [
+            "$schema",
+            "source_config",
+            "source_config_sha256",
+            "generator",
+            "version",
+            "description",
+            "pack_count",
+            "characters",
+            "templates",
+            "packs",
+        ],
+        "additionalProperties": False,
+        "properties": {
+            "$schema": {"type": "string", "const": GENERATED_JSON_BUNDLE_SCHEMA},
+            "source_config": {"type": "string", "const": "配置/prompt_packs.json"},
+            "source_config_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "generator": {"type": "string", "const": "工具/build_prompt_pack.py"},
+            "version": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            "description": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            "pack_count": {"type": "integer", "minimum": 1},
+            "characters": {
+                "type": "object",
+                "minProperties": 1,
+                "propertyNames": {"pattern": "^[a-z0-9_]+$"},
+            },
+            "templates": {
+                "type": "object",
+                "minProperties": 1,
+                "propertyNames": {"pattern": "^[a-z0-9_]+$"},
+            },
+            "packs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/generated_pack"}},
+        },
+        "$defs": {
+            "string_list": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": True,
+                "items": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            },
+            "generated_pack": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "title",
+                    "character",
+                    "template",
+                    "api_profile",
+                    "tags",
+                    "scene",
+                    "action",
+                    "extra_constraints",
+                    "prompt",
+                ],
+                "additionalProperties": False,
+                "properties": {
+                    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+                    "title": {"type": "string", "minLength": 1, "pattern": "\\S"},
+                    "character": {"$ref": "#/$defs/generated_character_ref"},
+                    "template": {"$ref": "#/$defs/generated_template_ref"},
+                    "api_profile": {"$ref": "#/$defs/api_profile"},
+                    "tags": {"$ref": "#/$defs/string_list"},
+                    "scene": {"type": "string", "minLength": 1, "pattern": "\\S"},
+                    "action": {"type": "string", "minLength": 1, "pattern": "\\S"},
+                    "extra_constraints": {"$ref": "#/$defs/string_list"},
+                    "prompt": {"type": "string", "minLength": 1, "pattern": "\\S"},
+                },
+            },
+            "generated_character_ref": {
+                "type": "object",
+                "required": ["id", "display_name", "must_keep", "avoid"],
+                "additionalProperties": False,
+                "properties": {
+                    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+                    "display_name": {"type": "string", "minLength": 1, "pattern": "\\S"},
+                    "must_keep": {"$ref": "#/$defs/string_list"},
+                    "avoid": {"$ref": "#/$defs/string_list"},
+                },
+            },
+            "generated_template_ref": {
+                "type": "object",
+                "required": ["id", "task_type", "tags", "api_profile"],
+                "additionalProperties": False,
+                "properties": {
+                    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+                    "task_type": {"type": "string", "minLength": 1, "pattern": "\\S"},
+                    "tags": {"$ref": "#/$defs/string_list"},
+                    "api_profile": {"$ref": "#/$defs/api_profile"},
+                },
+            },
+            "api_profile": {
+                "type": "object",
+                "required": ["model", "size", "quality", "output_format", "background"],
+                "additionalProperties": False,
+                "properties": {
+                    "model": {"type": "string", "const": "gpt-image-2"},
+                    "size": {"type": "string", "pattern": "^[0-9]+x[0-9]+$"},
+                    "quality": {"enum": ["low", "medium", "high", "auto"]},
+                    "output_format": {"enum": ["png", "jpeg", "webp"]},
+                    "output_compression": {"type": "integer", "minimum": 0, "maximum": 100},
+                    "background": {"const": "opaque"},
+                },
+                "allOf": [
+                    {
+                        "if": {"properties": {"output_format": {"const": "png"}}, "required": ["output_format"]},
+                        "then": {"not": {"required": ["output_compression"]}},
+                    },
+                    {
+                        "if": {"properties": {"output_format": {"enum": ["jpeg", "webp"]}}, "required": ["output_format"]},
+                        "then": {"required": ["output_compression"]},
+                    },
+                ],
+            },
+        },
+    }
+    return json.dumps(schema, ensure_ascii=False, indent=2) + "\n"
+
+
 def render_api_request_payload(data: dict[str, Any], pack_id: str) -> dict[str, Any]:
     pack = get_pack(data, pack_id)
     template = data["templates"][pack["template"]]
@@ -882,6 +1007,9 @@ def export_all(data: dict[str, Any], out_dir: Path = DEFAULT_OUTPUT_DIR) -> list
     json_bundle_path = out_dir / GENERATED_JSON_BUNDLE
     json_bundle_path.write_text(render_json_bundle(data), encoding="utf-8", newline="\n")
     written.append(json_bundle_path)
+    json_bundle_schema_path = out_dir / GENERATED_JSON_BUNDLE_SCHEMA
+    json_bundle_schema_path.write_text(render_json_bundle_schema(), encoding="utf-8", newline="\n")
+    written.append(json_bundle_schema_path)
     api_requests_path = out_dir / GENERATED_API_REQUESTS_JSONL
     api_requests_path.write_text(render_api_requests_jsonl(data), encoding="utf-8", newline="\n")
     written.append(api_requests_path)
