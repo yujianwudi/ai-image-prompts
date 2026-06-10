@@ -1,0 +1,62 @@
+{
+  "$schema": "prompt_quality_rules.schema.json",
+  "version": "2026-06-10-prompt-quality-rules",
+  "description": "Prompt Pack 生成前文本质量预检规则。用于检查自动生成 prompt 是否保留结构、安全、防串、模板意图和角色锚点。",
+  "length": {
+    "min_chars": 500,
+    "max_chars": 2600
+  },
+  "required_sections": [
+    "主体锁定",
+    "必须保留",
+    "场景环境",
+    "动作/表情",
+    "版式构图",
+    "光线色彩",
+    "材质细节",
+    "文字策略",
+    "安全约束",
+    "防串约束",
+    "质量约束"
+  ],
+  "required_safety_terms": [
+    "非低俗",
+    "不性感化",
+    "不要水印",
+    "不要混入",
+    "乱码"
+  ],
+  "required_quality_terms": [
+    "写实",
+    "真实",
+    "材质",
+    "服装"
+  ],
+  "template_terms": {
+    "realistic_convention_phone": [
+      "写实手机照片",
+      "9:16",
+      "真实漫展"
+    ],
+    "readme_preview": [
+      "GitHub README",
+      "9:16",
+      "公开 README"
+    ],
+    "character_card": [
+      "角色参考卡",
+      "同一角色",
+      "头饰特写"
+    ],
+    "commercial_poster": [
+      "商业联名海报",
+      "9:16",
+      "不使用真实品牌 logo"
+    ],
+    "vertical_thumbnail": [
+      "竖版社媒封面缩略图",
+      "9:16",
+      "短标题"
+    ]
+  }
+}

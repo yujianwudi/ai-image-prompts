@@ -33,6 +33,11 @@ from check_prompt_repo import (  # noqa: E402
     image_dimensions,
     reduced_aspect_ratio,
 )
+from lint_prompt_quality import (  # noqa: E402
+    lint as lint_prompt_quality,
+    load_rules,
+    render_report as render_prompt_quality_report,
+)
 from sync_preview_manifest import (  # noqa: E402
     render_manifest as render_preview_manifest,
     sync_manifest,
@@ -204,6 +209,25 @@ class PromptPackToolTests(unittest.TestCase):
             check=True,
         )
         self.assertIn("OK：角色防串审计通过", result.stdout)
+
+    def test_prompt_quality_report_is_current(self) -> None:
+        rules = load_rules()
+        result = lint_prompt_quality(self.data, rules)
+        self.assertEqual(result.errors, [])
+        report_path = ROOT / "评估" / "Prompt文本质量审计报告.md"
+        self.assertEqual(report_path.read_text(encoding="utf-8"), render_prompt_quality_report(self.data, rules))
+
+    def test_prompt_quality_cli_check_passes(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "lint_prompt_quality.py"), "--check"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("OK：Prompt 文本质量审计通过", result.stdout)
 
     def test_preview_manifest_matches_images(self) -> None:
         preview_dir = ROOT / "预览图"

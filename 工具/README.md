@@ -66,6 +66,7 @@ python 工具/run_quality_gate.py
 ```text
 python 工具/build_prompt_pack.py --validate
 python 工具/audit_character_prompts.py --check
+python 工具/lint_prompt_quality.py --check
 python 工具/sync_preview_manifest.py --check
 python 工具/check_prompt_repo.py
 python -m unittest discover -s tests -v
@@ -99,6 +100,28 @@ python 工具/audit_character_prompts.py
 
 ```powershell
 python 工具/audit_character_prompts.py --check
+```
+
+## lint_prompt_quality.py
+
+用途：根据 `配置/prompt_packs.json` 和 `评估/prompt_quality_rules.json` 自动检查渲染后的 Prompt Pack 文本质量，覆盖结构段落、安全词、质量词、模板意图词、角色识别点和长度范围。
+
+生成报告：
+
+```powershell
+python 工具/lint_prompt_quality.py
+```
+
+默认输出：
+
+```text
+评估/Prompt文本质量审计报告.md
+```
+
+检查报告是否过期：
+
+```powershell
+python 工具/lint_prompt_quality.py --check
 ```
 
 ## build_prompt_pack.py
@@ -168,4 +191,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI、预览图 manifest 同步、角色防串审计和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、Prompt 文本质量审计、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI、预览图 manifest 同步、角色防串审计、Prompt 文本质量审计和统一质量门禁帮助入口。

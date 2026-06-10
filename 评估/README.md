@@ -55,6 +55,30 @@ python 工具/audit_character_prompts.py --check
 
 统一质量门禁会自动检查这份报告是否过期。
 
+## Prompt 文本质量审计
+
+如果是维护 Prompt Pack 文本结构、模板字段或全局质量约束，优先看：
+
+```text
+评估/Prompt文本质量审计报告.md
+```
+
+规则文件：
+
+```text
+评估/prompt_quality_rules.json
+评估/prompt_quality_rules.schema.json
+```
+
+生成或检查报告：
+
+```powershell
+python 工具/lint_prompt_quality.py
+python 工具/lint_prompt_quality.py --check
+```
+
+统一质量门禁会自动检查这份报告是否过期。
+
 
 ## 仓库质量门禁
 

@@ -56,11 +56,13 @@ def main() -> int:
     if args.refresh_generated:
         steps.append(("重新导出 Prompt Pack", [python, "工具/build_prompt_pack.py", "--all"]))
         steps.append(("重新生成角色防串审计报告", [python, "工具/audit_character_prompts.py"]))
+        steps.append(("重新生成 Prompt 文本质量审计报告", [python, "工具/lint_prompt_quality.py"]))
 
     steps.extend(
         [
             ("校验 Prompt Pack 配置", [python, "工具/build_prompt_pack.py", "--validate"]),
             ("校验角色防串审计报告", [python, "工具/audit_character_prompts.py", "--check"]),
+            ("校验 Prompt 文本质量审计报告", [python, "工具/lint_prompt_quality.py", "--check"]),
             ("校验预览图 manifest 尺寸元数据", [python, "工具/sync_preview_manifest.py", "--check"]),
             ("检查仓库结构与安全约束", [python, "工具/check_prompt_repo.py"]),
             ("运行单元测试", [python, "-m", "unittest", "discover", "-s", "tests", "-v"]),

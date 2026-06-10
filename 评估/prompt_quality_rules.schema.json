@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yujianwudi/ai-image-prompts/blob/main/评估/prompt_quality_rules.schema.json",
+  "title": "Prompt Quality Rules",
+  "description": "Schema for prompt text preflight quality rules.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "version",
+    "description",
+    "length",
+    "required_sections",
+    "required_safety_terms",
+    "required_quality_terms",
+    "template_terms"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "length": {
+      "type": "object",
+      "required": [
+        "min_chars",
+        "max_chars"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "min_chars": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_chars": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "required_sections": {
+      "$ref": "#/$defs/string_list"
+    },
+    "required_safety_terms": {
+      "$ref": "#/$defs/string_list"
+    },
+    "required_quality_terms": {
+      "$ref": "#/$defs/string_list"
+    },
+    "template_terms": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/string_list"
+      }
+    }
+  },
+  "$defs": {
+    "string_list": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
