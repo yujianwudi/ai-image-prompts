@@ -26,7 +26,12 @@ from build_prompt_pack import (  # noqa: E402
     validate_config,
 )
 from audit_character_prompts import audit, render_report  # noqa: E402
-from check_prompt_repo import SECRET_PATTERNS  # noqa: E402
+from check_prompt_repo import (  # noqa: E402
+    SECRET_PATTERNS,
+    classify_orientation,
+    image_dimensions,
+    reduced_aspect_ratio,
+)
 
 
 class PromptPackToolTests(unittest.TestCase):
@@ -206,6 +211,11 @@ class PromptPackToolTests(unittest.TestCase):
         for item in manifest["images"]:
             self.assertTrue(item["public_safe"])
             self.assertIn(item["prompt_pack"], {pack["id"] for pack in self.data["packs"]})
+            width, height = image_dimensions(preview_dir / item["file"])
+            self.assertEqual(item["width"], width)
+            self.assertEqual(item["height"], height)
+            self.assertEqual(item["aspect_ratio"], reduced_aspect_ratio(width, height))
+            self.assertEqual(item["orientation"], classify_orientation(width, height))
 
     def test_gitignore_keeps_local_noise_out(self) -> None:
         gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")

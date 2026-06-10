@@ -45,6 +45,7 @@
 ### Changed
 
 - README 预览图数量徽章现在会跟随 `预览图/manifest.json` 自动校验，避免公开预览图数量过期。
+- 预览图 manifest 现在记录真实 `width`、`height`、`aspect_ratio` 和 `orientation`，质量门禁会核对实际图片尺寸。
 - 质量门禁现在会检查授权与使用边界文件及 SECURITY 入口。
 - 质量门禁新增轻量密钥扫描，检查常见 API key、GitHub token、AWS key 和高风险明文 secret。
 - 扩展 `.gitignore`，并将 Python 缓存、虚拟环境、本地密钥和原始素材忽略规则纳入质量门禁。

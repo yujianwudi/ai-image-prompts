@@ -4,7 +4,7 @@
 
 ## refresh_reference_summary.py
 
-用途：读取三个参考仓库的 GitHub 基本信息，输出 Markdown 摘要。  
+用途：读取三个参考仓库的 GitHub 基本信息，输出 Markdown 摘要。
 依赖：需要本机已安装并登录 `gh` CLI。
 
 运行：
@@ -22,7 +22,7 @@ python 工具/refresh_reference_summary.py
 
 ## check_prompt_repo.py
 
-用途：检查仓库结构、Markdown 本地链接、README 预览图、预览图 manifest、角色安全约束和参考仓库追踪。  
+用途：检查仓库结构、Markdown 本地链接、README 预览图、预览图 manifest 尺寸/方向、角色安全约束和参考仓库追踪。
 不依赖网络，适合本地和 GitHub Actions 使用。
 
 运行：
@@ -35,7 +35,7 @@ python 工具/check_prompt_repo.py
 
 ## run_quality_gate.py
 
-用途：统一运行本仓库的本地质量门禁，避免手动漏跑配置校验、仓库检查或单元测试。  
+用途：统一运行本仓库的本地质量门禁，避免手动漏跑配置校验、仓库检查或单元测试。
 不依赖网络，GitHub Actions 也使用这个入口。
 
 运行：
@@ -85,7 +85,7 @@ python 工具/audit_character_prompts.py --check
 
 ## build_prompt_pack.py
 
-用途：读取 `配置/prompt_packs.json`，把角色锚点、输出类型、场景、构图、光线、材质、安全约束和防串约束组合成可复制提示词。  
+用途：读取 `配置/prompt_packs.json`，把角色锚点、输出类型、场景、构图、光线、材质、安全约束和防串约束组合成可复制提示词。
 不依赖网络，适合本地快速出 prompt。
 
 查看可用组合：
@@ -150,4 +150,4 @@ python 工具/build_prompt_pack.py --all
 python 工具/run_quality_gate.py
 ```
 
-统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、仓库结构、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI、角色防串审计和统一质量门禁帮助入口。
+统一质量门禁会覆盖 Prompt Pack 配置、角色防串审计、仓库结构、预览图尺寸、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI、预览图 manifest、角色防串审计和统一质量门禁帮助入口。

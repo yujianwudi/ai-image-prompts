@@ -2,7 +2,9 @@
 
 import json
 import re
+import struct
 import sys
+from math import gcd
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -129,6 +131,88 @@ def clean_target(target: str) -> str:
     target = target.split("#", 1)[0]
     target = target.split("?", 1)[0]
     return unquote(target)
+
+
+def image_dimensions(path: Path) -> tuple[int, int]:
+    data = path.read_bytes()
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        if len(data) < 24:
+            raise ValueError("PNG 文件过短，无法读取尺寸")
+        return struct.unpack(">II", data[16:24])
+    if data.startswith(b"\xff\xd8"):
+        return jpeg_dimensions(data)
+    if data.startswith(b"RIFF") and data[8:12] == b"WEBP":
+        return webp_dimensions(data)
+    raise ValueError("不支持的图片格式或无法读取尺寸")
+
+
+def jpeg_dimensions(data: bytes) -> tuple[int, int]:
+    sof_markers = {0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF}
+    pos = 2
+    while pos < len(data):
+        while pos < len(data) and data[pos] != 0xFF:
+            pos += 1
+        while pos < len(data) and data[pos] == 0xFF:
+            pos += 1
+        if pos >= len(data):
+            break
+        marker = data[pos]
+        pos += 1
+        if marker in {0x01, 0xD8, 0xD9} or 0xD0 <= marker <= 0xD7:
+            continue
+        if pos + 2 > len(data):
+            break
+        segment_length = int.from_bytes(data[pos : pos + 2], "big")
+        if segment_length < 2:
+            break
+        if marker in sof_markers:
+            if pos + 7 > len(data):
+                break
+            height = int.from_bytes(data[pos + 3 : pos + 5], "big")
+            width = int.from_bytes(data[pos + 5 : pos + 7], "big")
+            return width, height
+        pos += segment_length
+    raise ValueError("JPEG 文件无法读取尺寸")
+
+
+def webp_dimensions(data: bytes) -> tuple[int, int]:
+    pos = 12
+    while pos + 8 <= len(data):
+        chunk_type = data[pos : pos + 4]
+        chunk_size = int.from_bytes(data[pos + 4 : pos + 8], "little")
+        payload = pos + 8
+        if payload + chunk_size > len(data):
+            break
+        if chunk_type == b"VP8X" and chunk_size >= 10:
+            width = int.from_bytes(data[payload + 4 : payload + 7], "little") + 1
+            height = int.from_bytes(data[payload + 7 : payload + 10], "little") + 1
+            return width, height
+        if chunk_type == b"VP8L" and chunk_size >= 5 and data[payload] == 0x2F:
+            bits = int.from_bytes(data[payload + 1 : payload + 5], "little")
+            width = (bits & 0x3FFF) + 1
+            height = ((bits >> 14) & 0x3FFF) + 1
+            return width, height
+        if chunk_type == b"VP8 " and chunk_size >= 10:
+            frame = payload + 6
+            if data[frame - 3 : frame] == b"\x9d\x01\x2a":
+                width = int.from_bytes(data[frame : frame + 2], "little") & 0x3FFF
+                height = int.from_bytes(data[frame + 2 : frame + 4], "little") & 0x3FFF
+                return width, height
+        pos = payload + chunk_size + (chunk_size % 2)
+    raise ValueError("WebP 文件无法读取尺寸")
+
+
+def reduced_aspect_ratio(width: int, height: int) -> str:
+    common = gcd(width, height)
+    return f"{width // common}:{height // common}"
+
+
+def classify_orientation(width: int, height: int) -> str:
+    if width > height:
+        return "landscape"
+    if width < height:
+        return "portrait"
+    return "square"
 
 
 def check_readme_badges(errors: list[str]) -> None:
@@ -359,6 +443,22 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
             errors.append(f"预览图清单 file 只能是文件名：{file_name}")
         if file_name not in actual_files:
             errors.append(f"预览图清单引用不存在的图片：{file_name}")
+        else:
+            image_path = preview_dir / file_name
+            try:
+                width, height = image_dimensions(image_path)
+            except Exception as exc:  # noqa: BLE001
+                errors.append(f"预览图无法读取尺寸：{file_name} -> {exc}")
+            else:
+                expected_metadata = {
+                    "width": width,
+                    "height": height,
+                    "aspect_ratio": reduced_aspect_ratio(width, height),
+                    "orientation": classify_orientation(width, height),
+                }
+                for field, expected in expected_metadata.items():
+                    if entry.get(field) != expected:
+                        errors.append(f"预览图清单 {file_name} 的 {field} 应为 {expected}")
         for field in ["character", "scene", "prompt_pack", "caption", "notes"]:
             if not str(entry.get(field, "")).strip():
                 errors.append(f"预览图清单 {file_name} 缺少字段：{field}")
@@ -410,6 +510,14 @@ def check_preview_manifest_schema(manifest: dict, errors: list[str]) -> None:
     for key in ["version", "description", "images"]:
         if key not in schema.get("properties", {}):
             errors.append(f"预览图 manifest schema.properties 缺少：{key}")
+    preview_props = schema.get("$defs", {}).get("preview_image", {}).get("properties", {})
+    for key in ["width", "height", "aspect_ratio", "orientation"]:
+        if key not in preview_props:
+            errors.append(f"预览图 manifest schema.preview_image.properties 缺少：{key}")
+    preview_required = set(schema.get("$defs", {}).get("preview_image", {}).get("required", []))
+    for key in ["width", "height", "aspect_ratio", "orientation"]:
+        if key not in preview_required:
+            errors.append(f"预览图 manifest schema.preview_image.required 缺少：{key}")
 
 
 def check_prompt_pack_config(errors: list[str]) -> None:
@@ -585,7 +693,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、预览图清单/schema、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

@@ -1,10 +1,14 @@
 {
   "$schema": "manifest.schema.json",
   "version": "2026-06-10-preview-manifest",
-  "description": "公开 README 预览图清单。所有图片都应压缩、非低俗、不性感化、无水印、无真实品牌 logo。",
+  "description": "公开 README 预览图清单。所有图片都应压缩、非低俗、不性感化、无水印、无真实品牌 logo；尺寸字段记录 README 展示样张的实际图像尺寸。",
   "images": [
     {
       "file": "furina-dessert-01.jpg",
+      "width": 720,
+      "height": 540,
+      "aspect_ratio": "4:3",
+      "orientation": "landscape",
       "character": "芙宁娜 Furina",
       "scene": "甜品店场景",
       "prompt_pack": "furina_readme_preview",
@@ -14,6 +18,10 @@
     },
     {
       "file": "furina-dessert-02.jpg",
+      "width": 720,
+      "height": 540,
+      "aspect_ratio": "4:3",
+      "orientation": "landscape",
       "character": "芙宁娜 Furina",
       "scene": "甜品店场景",
       "prompt_pack": "furina_readme_preview",
@@ -23,6 +31,10 @@
     },
     {
       "file": "furina-night-01.jpg",
+      "width": 720,
+      "height": 540,
+      "aspect_ratio": "4:3",
+      "orientation": "landscape",
       "character": "芙宁娜 Furina",
       "scene": "城市夜景",
       "prompt_pack": "furina_readme_preview",
@@ -32,6 +44,10 @@
     },
     {
       "file": "furina-night-02.jpg",
+      "width": 720,
+      "height": 540,
+      "aspect_ratio": "4:3",
+      "orientation": "landscape",
       "character": "芙宁娜 Furina",
       "scene": "城市夜景",
       "prompt_pack": "furina_readme_preview",
