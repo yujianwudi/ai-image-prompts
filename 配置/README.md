@@ -26,6 +26,14 @@ python 工具/build_prompt_pack.py --list
 python 工具/build_prompt_pack.py furina_convention_phone
 ```
 
+批量导出：
+
+```powershell
+python 工具/build_prompt_pack.py --all
+```
+
+默认输出到 `生成提示词/`。
+
 保存到文件：
 
 ```powershell

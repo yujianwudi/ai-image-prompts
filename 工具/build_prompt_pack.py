@@ -8,6 +8,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "配置" / "prompt_packs.json"
+DEFAULT_OUTPUT_DIR = ROOT / "生成提示词"
 
 REQUIRED_CHARACTER_KEYS = ["display_name", "anchor", "must_keep", "avoid"]
 REQUIRED_TEMPLATE_KEYS = ["task_type", "composition", "lighting", "material", "text_strategy", "safety"]
@@ -164,6 +165,56 @@ def render_pack(data: dict[str, Any], pack_id: str, markdown: bool = False) -> s
     return "\n".join(lines).rstrip() + "\n"
 
 
+def generated_filename(pack_id: str) -> str:
+    return f"{pack_id}.md"
+
+
+def render_generated_index(data: dict[str, Any]) -> str:
+    lines = [
+        "# 自动生成提示词",
+        "",
+        "这里的文件由 `工具/build_prompt_pack.py --all` 根据 `配置/prompt_packs.json` 生成。",
+        "如果要修改内容，请优先修改配置，然后重新导出，不要手改生成文件。",
+        "",
+        "## 重新生成",
+        "",
+        "```powershell",
+        "python 工具/build_prompt_pack.py --all",
+        "```",
+        "",
+        "## 文件列表",
+        "",
+        "| Prompt Pack | 文件 | 说明 |",
+        "| --- | --- | --- |",
+    ]
+    for pack in data.get("packs", []):
+        pack_id = pack["id"]
+        filename = generated_filename(pack_id)
+        lines.append(f"| `{pack_id}` | `{filename}` | {pack['title']} |")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def export_all(data: dict[str, Any], out_dir: Path = DEFAULT_OUTPUT_DIR) -> list[Path]:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    written: list[Path] = []
+    index_path = out_dir / "README.md"
+    index_path.write_text(render_generated_index(data), encoding="utf-8")
+    written.append(index_path)
+    expected_names = {"README.md"}
+    for pack in data.get("packs", []):
+        pack_id = pack["id"]
+        filename = generated_filename(pack_id)
+        expected_names.add(filename)
+        path = out_dir / filename
+        path.write_text(render_pack(data, pack_id, markdown=True), encoding="utf-8")
+        written.append(path)
+    for stale in out_dir.glob("*.md"):
+        if stale.name not in expected_names:
+            stale.unlink()
+    return written
+
+
 def list_packs(data: dict[str, Any]) -> str:
     rows = ["可用 Prompt Pack："]
     for pack in data.get("packs", []):
@@ -181,6 +232,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG, help="Path to prompt_packs.json")
     parser.add_argument("--list", action="store_true", help="List available Prompt Packs")
     parser.add_argument("--validate", action="store_true", help="Validate config and exit")
+    parser.add_argument("--all", action="store_true", help="Export every Prompt Pack as Markdown")
+    parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUTPUT_DIR, help="Directory for --all exports")
     parser.add_argument("--format", choices=["text", "markdown"], default="text", help="Output format")
     parser.add_argument("--out", type=Path, help="Write output to a file")
     return parser.parse_args()
@@ -203,6 +256,14 @@ def main() -> int:
 
     if args.list:
         print(list_packs(data), end="")
+        return 0
+
+    if args.all:
+        out_dir = args.out_dir if args.out_dir.is_absolute() else ROOT / args.out_dir
+        written = export_all(data, out_dir)
+        print(f"已导出 {len(written)} 个文件到：{out_dir}")
+        for path in written:
+            print(f"- {path}")
         return 0
 
     if not args.pack_id:

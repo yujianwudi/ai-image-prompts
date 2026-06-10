@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote
 
-from build_prompt_pack import load_config, render_pack, validate_config
+from build_prompt_pack import generated_filename, load_config, render_generated_index, render_pack, validate_config
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -18,6 +18,7 @@ REQUIRED_DIRS = [
     "工具",
     "预览图",
     "配置",
+    "生成提示词",
 ]
 
 REQUIRED_FILES = [
@@ -44,6 +45,7 @@ REQUIRED_FILES = [
     "工具/build_prompt_pack.py",
     "配置/README.md",
     "配置/prompt_packs.json",
+    "生成提示词/README.md",
 ]
 
 REFERENCE_REPOS = [
@@ -187,6 +189,43 @@ def check_prompt_pack_config(errors: list[str]) -> None:
                 errors.append(f"Prompt Pack 输出缺少必要字段“{term}”：{pack_id}")
 
 
+def check_generated_prompt_outputs(errors: list[str]) -> None:
+    config_path = ROOT / "配置" / "prompt_packs.json"
+    out_dir = ROOT / "生成提示词"
+    if not config_path.exists() or not out_dir.exists():
+        return
+    try:
+        data = load_config(config_path)
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"无法校验自动生成提示词：{exc}")
+        return
+
+    index_path = out_dir / "README.md"
+    expected_index = render_generated_index(data)
+    if not index_path.exists():
+        errors.append("缺少自动生成提示词索引：生成提示词/README.md")
+    elif index_path.read_text(encoding="utf-8") != expected_index:
+        errors.append("自动生成提示词索引已过期，请运行：python 工具/build_prompt_pack.py --all")
+
+    expected_files = {"README.md"}
+    for pack in data.get("packs", []):
+        pack_id = pack.get("id")
+        if not pack_id:
+            continue
+        filename = generated_filename(pack_id)
+        expected_files.add(filename)
+        path = out_dir / filename
+        expected = render_pack(data, pack_id, markdown=True)
+        if not path.exists():
+            errors.append(f"缺少自动生成提示词文件：生成提示词/{filename}")
+        elif path.read_text(encoding="utf-8") != expected:
+            errors.append(f"自动生成提示词文件已过期：生成提示词/{filename}")
+
+    for path in out_dir.glob("*.md"):
+        if path.name not in expected_files:
+            errors.append(f"自动生成提示词目录存在多余 Markdown：生成提示词/{path.name}")
+
+
 def main() -> int:
     configure_stdout()
     errors: list[str] = []
@@ -200,6 +239,7 @@ def main() -> int:
     check_reference_tracking(errors)
     check_preview_images(errors, warnings)
     check_prompt_pack_config(errors)
+    check_generated_prompt_outputs(errors)
 
     print("# 提示词仓库质量检查")
     print()
@@ -218,7 +258,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、角色安全约束、参考仓库追踪和 Prompt Pack 配置通过。")
+        print("\nOK：结构、链接、角色安全约束、参考仓库追踪、Prompt Pack 配置和自动导出文件通过。")
         return 0
     return 1
 

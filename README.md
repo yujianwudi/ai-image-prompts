@@ -42,6 +42,7 @@
 参考仓库/
 工具/
 配置/
+生成提示词/
 预览图/
 ```
 
@@ -91,7 +92,13 @@
 python 工具/check_prompt_repo.py
 ```
 
-这个脚本会检查目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪和 Prompt Pack 配置。GitHub Actions 也会在 push / pull request 时自动运行。
+如果想重新导出全部 Prompt Pack：
+
+```powershell
+python 工具/build_prompt_pack.py --all
+```
+
+这个脚本会检查目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、Prompt Pack 配置和自动导出文件。GitHub Actions 也会在 push / pull request 时自动运行。
 
 ## 当前重点
 
@@ -113,6 +120,7 @@ python 工具/check_prompt_repo.py
 - `参考仓库/README.md`：外部 awesome 仓库追踪与分类映射。
 - `工具/README.md`：维护脚本说明。
 - `配置/README.md`：机器可读 Prompt Pack 配置说明。
+- `生成提示词/README.md`：由 Prompt Pack 自动导出的可复制提示词。
 - `CONTRIBUTING.md`：新增角色和模板的规则。
 - `免责声明.md`：公开使用、版权和安全提醒。
 - `CHANGELOG.md`：变更记录。

@@ -61,3 +61,17 @@ python 工具/build_prompt_pack.py furina_convention_phone
 ```powershell
 python 工具/build_prompt_pack.py citlali_character_card --format markdown --out 示例/自动生成-茜特菈莉角色卡.md
 ```
+
+批量导出全部 Prompt Pack：
+
+```powershell
+python 工具/build_prompt_pack.py --all
+```
+
+默认输出到：
+
+```text
+生成提示词/
+```
+
+`check_prompt_repo.py` 会检查这些导出文件是否和配置一致，如果过期需要重新运行 `--all`。

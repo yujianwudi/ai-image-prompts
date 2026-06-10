@@ -14,6 +14,7 @@
 参考仓库/ 放外部仓库追踪、分类映射和持续优化流程
 工具/     放维护脚本
 配置/     放机器可读 Prompt Pack 配置
+生成提示词/ 放自动导出的可复制提示词
 ```
 
 ## 新增角色
@@ -86,7 +87,7 @@
 - 新角色放进 `characters`，必须写 `must_keep` 和 `avoid`。
 - 新输出类型放进 `templates`，必须写 `safety`，并包含“非低俗、不性感化”。
 - 新组合放进 `packs`，只能引用已存在的角色和模板。
-- 修改后运行 `python 工具/build_prompt_pack.py --validate` 和 `python 工具/check_prompt_repo.py`。
+- 修改后运行 `python 工具/build_prompt_pack.py --validate`、`python 工具/build_prompt_pack.py --all` 和 `python 工具/check_prompt_repo.py`。
 
 ## 提交前检查
 
