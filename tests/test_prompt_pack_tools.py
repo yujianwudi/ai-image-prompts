@@ -659,6 +659,26 @@ class PromptPackToolTests(unittest.TestCase):
         )
         self.assertIn("composition_ratio_mismatch", failures.stdout)
 
+    def test_new_output_evaluation_cli_rejects_non_image_file(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(TOOLS_DIR / "new_output_evaluation.py"),
+                "--prompt-pack",
+                "furina_readme_preview",
+                "--image-file",
+                "README.md",
+            ],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("image_file 必须是图片文件：README.md", result.stderr)
+
     def test_output_evaluation_cli_check_passes(self) -> None:
         result = subprocess.run(
             [sys.executable, str(TOOLS_DIR / "validate_output_evaluations.py"), "--check"],

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from build_prompt_pack import DEFAULT_CONFIG, get_pack, load_config
-from validate_output_evaluations import DEFAULT_FAILURE_FIX_LEXICON, SCORE_LIMITS, load_json
+from validate_output_evaluations import DEFAULT_FAILURE_FIX_LEXICON, SCORE_LIMITS, load_json, validate_document
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -17,8 +17,9 @@ ID_RE = re.compile(r"[^a-z0-9_-]+")
 
 
 def configure_stdout() -> None:
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    for stream in [sys.stdout, sys.stderr]:
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
 
 
 def slugify(value: str, fallback: str = "evaluation") -> str:
@@ -189,6 +190,14 @@ def main() -> int:
         )
     except Exception as exc:  # noqa: BLE001
         print(f"生成出图评分骨架失败：{exc}", file=sys.stderr)
+        return 1
+
+    validation_document = build_document([record])
+    validation = validate_document(validation_document, config, failure_lexicon=failure_lexicon)
+    if validation.errors:
+        print("生成出图评分骨架失败：生成结果未通过结构校验。", file=sys.stderr)
+        for item in validation.errors:
+            print(f"- {item}", file=sys.stderr)
         return 1
 
     payload = record if args.record_only else build_document([record])

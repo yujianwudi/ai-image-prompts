@@ -4,6 +4,7 @@
 
 ### Added
 
+- `工具/new_output_evaluation.py` 现在会在输出前复用结构化评分校验器，直接拦截非图片 `image_file` 等无效评分骨架，并保证 Windows 管道下的错误输出为 UTF-8。
 - 结构化出图评分校验和 schema 新增 `image_file` 图片后缀约束，只允许 jpg/jpeg/png/webp，避免把 README 或其他非图片文件误登记为评分图片。
 - 失败修正建议现在只为 `edit` / `regenerate` / `reject` 评分记录输出待修提示，避免 `keep` 记录被误当成仍需修正。
 - 结构化出图评分 schema、校验器和评分骨架工具新增 `failure_ids` 去重检查，避免同一失败类型在汇总与修正建议中被重复统计。

@@ -165,7 +165,7 @@ python 工具/validate_output_evaluations.py --file 评估/my_output_evaluations
 
 ## new_output_evaluation.py
 
-用途：根据 Prompt Pack 和图片路径生成一条结构化出图评分记录骨架，减少手写 JSON 漏字段、图片路径填成非图片、写错角色、写错或重复填写 `failure_ids` 的概率。
+用途：根据 Prompt Pack 和图片路径生成一条结构化出图评分记录骨架，并在输出前复用结构化评分校验器，减少手写 JSON 漏字段、图片路径填成非图片、写错角色、写错或重复填写 `failure_ids` 的概率。
 
 查看可用失败类型：
 

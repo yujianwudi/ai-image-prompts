@@ -164,7 +164,7 @@ python -m unittest discover -s tests -v
 - 预览图元数据同步：通过 `工具/sync_preview_manifest.py` 自动刷新 manifest 中的宽高、比例和方向。
 - 评估迭代：出图评分、失败修正词库、迭代记录模板。
 - 项目仪表盘：`评估/项目仪表盘.md` 自动汇总角色、Prompt Pack、tags、预览图、失败规则和评分记录数量。
-- 出图评分骨架：通过 `工具/new_output_evaluation.py` 从 Prompt Pack 和图片路径生成结构化评分 JSON，减少手写漏字段、图片路径填成非图片、failure_id 写错或重复。
+- 出图评分骨架：通过 `工具/new_output_evaluation.py` 从 Prompt Pack 和图片路径生成结构化评分 JSON，并在输出前即时校验，减少手写漏字段、图片路径填成非图片、failure_id 写错或重复。
 - Issue / PR 模板：规范角色新增、模板优化、出图问题反馈和提交检查。
 - 仓库格式规范：通过 `.gitattributes` 和 `.editorconfig` 固定 UTF-8、LF 和缩进规则，质量门禁会检查实际文本文件无 CRLF、无 UTF-8 BOM 且保留末尾换行。
 - 忽略规则：通过 `.gitignore` 避免提交缓存、虚拟环境、本地密钥和未压缩原图。
