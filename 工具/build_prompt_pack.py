@@ -509,9 +509,9 @@ def render_api_requests_schema() -> str:
         "additionalProperties": False,
         "properties": {
             "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
-            "title": {"type": "string", "minLength": 1},
-            "character": {"type": "string", "minLength": 1},
-            "template": {"type": "string", "minLength": 1},
+            "title": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            "character": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+            "template": {"type": "string", "pattern": "^[a-z0-9_]+$"},
             "tags": {"$ref": "#/$defs/string_list"},
             "source_config_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
             "request": {"$ref": "#/$defs/api_request"},
@@ -520,7 +520,8 @@ def render_api_requests_schema() -> str:
             "string_list": {
                 "type": "array",
                 "minItems": 1,
-                "items": {"type": "string", "minLength": 1},
+                "uniqueItems": True,
+                "items": {"type": "string", "minLength": 1, "pattern": "\\S"},
             },
             "api_request": {
                 "type": "object",
@@ -528,7 +529,7 @@ def render_api_requests_schema() -> str:
                 "additionalProperties": False,
                 "properties": {
                     "model": {"type": "string", "const": "gpt-image-2"},
-                    "prompt": {"type": "string", "minLength": 1},
+                    "prompt": {"type": "string", "minLength": 1, "pattern": "\\S"},
                     "size": {"type": "string", "pattern": "^[0-9]+x[0-9]+$"},
                     "quality": {"enum": ["low", "medium", "high", "auto"]},
                     "output_format": {"enum": ["png", "jpeg", "webp"]},

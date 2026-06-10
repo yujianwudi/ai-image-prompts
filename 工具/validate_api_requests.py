@@ -14,12 +14,16 @@ from build_prompt_pack import (
     config_digest,
     load_config,
     render_api_request_payload,
+    render_api_request_record,
     render_api_requests_jsonl,
     render_api_requests_schema,
 )
 
 DEFAULT_API_REQUESTS = DEFAULT_OUTPUT_DIR / GENERATED_API_REQUESTS_JSONL
 DEFAULT_API_REQUESTS_SCHEMA = DEFAULT_OUTPUT_DIR / GENERATED_API_REQUESTS_SCHEMA
+API_RECORD_FIELDS = {"id", "title", "character", "template", "tags", "source_config_sha256", "request"}
+API_REQUEST_FIELDS = {"model", "prompt", "size", "quality", "output_format", "output_compression", "background"}
+COMPRESSED_FORMATS = {"jpeg", "webp"}
 
 
 def configure_stdout() -> None:
@@ -56,17 +60,38 @@ def validate_api_request_records(data: dict[str, Any], records: list[dict[str, A
     pack_by_id = {str(pack.get("id", "")): pack for pack in packs}
 
     for record in records:
+        extra_fields = sorted(set(record) - API_RECORD_FIELDS)
+        if extra_fields:
+            errors.append(f"API 请求 JSONL 记录存在未知字段：{', '.join(extra_fields)}")
         pack_id = str(record.get("id", ""))
         pack = pack_by_id.get(pack_id)
         if not pack:
             errors.append(f"API 请求 JSONL 包含配置中不存在的 pack：{pack_id}")
             continue
+        expected_record = render_api_request_record(data, pack_id)
+        if record.get("title") != expected_record.get("title"):
+            errors.append(f"{pack_id}.title 与配置不一致")
         if record.get("source_config_sha256") != digest:
             errors.append(f"{pack_id}.source_config_sha256 与当前配置不一致")
         if record.get("character") != pack.get("character"):
             errors.append(f"{pack_id}.character 与配置不一致")
         if record.get("template") != pack.get("template"):
             errors.append(f"{pack_id}.template 与配置不一致")
+        tags = record.get("tags")
+        if not isinstance(tags, list) or not tags:
+            errors.append(f"{pack_id}.tags 必须是非空 array")
+        else:
+            cleaned_tags: list[str] = []
+            for tag in tags:
+                if not isinstance(tag, str) or not tag.strip():
+                    errors.append(f"{pack_id}.tags 不能包含空值")
+                    continue
+                cleaned_tags.append(tag)
+            duplicate_tags = sorted({tag for tag in cleaned_tags if cleaned_tags.count(tag) > 1})
+            if duplicate_tags:
+                errors.append(f"{pack_id}.tags 存在重复值：{', '.join(duplicate_tags)}")
+            if tags != expected_record.get("tags"):
+                errors.append(f"{pack_id}.tags 与当前 Prompt Pack 渲染结果不一致")
         if pack.get("character") not in characters:
             errors.append(f"{pack_id} 引用了不存在的角色：{pack.get('character')}")
         if pack.get("template") not in templates:
@@ -75,6 +100,9 @@ def validate_api_request_records(data: dict[str, Any], records: list[dict[str, A
         if not isinstance(request, dict):
             errors.append(f"{pack_id}.request 必须是 object")
             continue
+        extra_request_fields = sorted(set(request) - API_REQUEST_FIELDS)
+        if extra_request_fields:
+            errors.append(f"{pack_id}.request 存在未知字段：{', '.join(extra_request_fields)}")
         expected_request = render_api_request_payload(data, pack_id)
         if request != expected_request:
             errors.append(f"{pack_id}.request 与当前 Prompt Pack 渲染结果不一致")
@@ -82,6 +110,12 @@ def validate_api_request_records(data: dict[str, Any], records: list[dict[str, A
             errors.append(f"{pack_id}.request.model 必须是 gpt-image-2")
         if not str(request.get("prompt", "")).strip():
             errors.append(f"{pack_id}.request.prompt 不能为空")
+        output_format = request.get("output_format")
+        compression = request.get("output_compression")
+        if output_format in COMPRESSED_FORMATS and (type(compression) is not int or not 0 <= compression <= 100):
+            errors.append(f"{pack_id}.request.output_compression 在 jpeg/webp 时必须是 0-100 的整数")
+        if output_format == "png" and "output_compression" in request:
+            errors.append(f"{pack_id}.request.output_compression 不应和 png 一起使用")
 
     return errors
 

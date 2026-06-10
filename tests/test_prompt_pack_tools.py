@@ -302,11 +302,36 @@ class PromptPackToolTests(unittest.TestCase):
 
     def test_api_request_jsonl_exports_are_valid(self) -> None:
         records = [json.loads(line) for line in render_api_requests_jsonl(self.data).splitlines()]
+        schema = json.loads(render_api_requests_schema())
+        self.assertFalse(schema["additionalProperties"])
+        self.assertFalse(schema["$defs"]["api_request"]["additionalProperties"])
+        self.assertTrue(schema["$defs"]["string_list"]["uniqueItems"])
+        self.assertEqual(schema["$defs"]["string_list"]["items"]["pattern"], "\\S")
+        self.assertEqual(schema["properties"]["title"]["pattern"], "\\S")
+        self.assertEqual(schema["properties"]["character"]["pattern"], "^[a-z0-9_]+$")
+        self.assertEqual(schema["$defs"]["api_request"]["properties"]["prompt"]["pattern"], "\\S")
         self.assertEqual(validate_api_request_records(self.data, records), [])
         self.assertEqual(validate_api_request_files(DEFAULT_CONFIG, DEFAULT_API_REQUESTS, DEFAULT_API_REQUESTS_SCHEMA), [])
         disk_records = load_api_request_jsonl_records(DEFAULT_API_REQUESTS)
         self.assertEqual(len(disk_records), len(self.data["packs"]))
         self.assertEqual(disk_records[0]["request"], render_api_request_payload(self.data, "furina_convention_phone"))
+
+    def test_api_request_validator_rejects_dirty_records(self) -> None:
+        records = [json.loads(line) for line in render_api_requests_jsonl(self.data).splitlines()]
+        mutated = json.loads(json.dumps(records, ensure_ascii=False))
+        first = mutated[0]
+        first["draft_note"] = "临时字段"
+        first["title"] = "错误标题"
+        first["tags"].append(first["tags"][0])
+        first["request"]["draft_param"] = True
+        first["request"]["prompt"] = "   "
+        errors = validate_api_request_records(self.data, mutated)
+        self.assertTrue(any("API 请求 JSONL 记录存在未知字段：draft_note" in error for error in errors))
+        self.assertTrue(any("furina_convention_phone.title 与配置不一致" in error for error in errors))
+        self.assertTrue(any("furina_convention_phone.tags 存在重复值" in error for error in errors))
+        self.assertTrue(any("furina_convention_phone.tags 与当前 Prompt Pack 渲染结果不一致" in error for error in errors))
+        self.assertTrue(any("furina_convention_phone.request 存在未知字段：draft_param" in error for error in errors))
+        self.assertTrue(any("furina_convention_phone.request.prompt 不能为空" in error for error in errors))
 
     def test_coverage_matrix_lists_characters_and_templates(self) -> None:
         matrix = render_coverage_matrix(self.data)
