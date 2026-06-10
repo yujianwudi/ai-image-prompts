@@ -57,6 +57,7 @@ REQUIRED_FILES = [
     "配置/prompt_packs.schema.json",
     "预览图/README.md",
     "预览图/manifest.json",
+    "预览图/manifest.schema.json",
     "生成提示词/README.md",
     "tests/test_prompt_pack_tools.py",
     ".github/workflows/validate.yml",
@@ -258,6 +259,7 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
     except Exception as exc:  # noqa: BLE001
         errors.append(f"预览图清单无法读取：{exc}")
         return
+    check_preview_manifest_schema(manifest, errors)
 
     entries = manifest.get("images")
     if not isinstance(entries, list) or not entries:
@@ -311,6 +313,33 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
             file_name = Path(target).name
             if file_name not in manifest_files:
                 errors.append(f"README 引用的预览图未登记到 manifest：{target}")
+
+
+def check_preview_manifest_schema(manifest: dict, errors: list[str]) -> None:
+    schema_ref = manifest.get("$schema")
+    if not schema_ref:
+        errors.append("预览图 manifest 缺少 $schema 引用")
+        return
+    schema_path = (ROOT / "预览图" / str(schema_ref)).resolve()
+    try:
+        schema_path.relative_to((ROOT / "预览图").resolve())
+    except ValueError:
+        errors.append(f"预览图 manifest $schema 不能指向预览图目录之外：{schema_ref}")
+        return
+    if not schema_path.exists():
+        errors.append(f"预览图 manifest schema 文件不存在：预览图/{schema_ref}")
+        return
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"预览图 manifest schema 无法读取：{exc}")
+        return
+    for key in ["$schema", "title", "type", "required", "properties", "$defs"]:
+        if key not in schema:
+            errors.append(f"预览图 manifest schema 缺少字段：{key}")
+    for key in ["version", "description", "images"]:
+        if key not in schema.get("properties", {}):
+            errors.append(f"预览图 manifest schema.properties 缺少：{key}")
 
 
 def check_prompt_pack_config(errors: list[str]) -> None:
@@ -444,7 +473,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、内容安全政策、角色安全约束、角色防串审计、预览图清单、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、内容安全政策、角色安全约束、角色防串审计、预览图清单/schema、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

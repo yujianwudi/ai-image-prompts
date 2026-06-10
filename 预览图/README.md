@@ -8,6 +8,7 @@
 
 ```text
 manifest.json
+manifest.schema.json
 ```
 
 每张图片都需要记录：
@@ -34,4 +35,4 @@ manifest.json
 python 工具/run_quality_gate.py
 ```
 
-质量门禁会检查图片文件、README 引用和 `manifest.json` 是否一致。
+质量门禁会检查图片文件、README 引用、`manifest.json` 和 `manifest.schema.json` 是否一致。

@@ -157,6 +157,12 @@ class PromptPackToolTests(unittest.TestCase):
         preview_dir = ROOT / "预览图"
         manifest_path = preview_dir / "manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        self.assertEqual(manifest["$schema"], "manifest.schema.json")
+        schema_path = preview_dir / manifest["$schema"]
+        self.assertTrue(schema_path.exists())
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        self.assertIn("images", schema["properties"])
+        self.assertIn("preview_image", schema["$defs"])
         manifest_files = {item["file"] for item in manifest["images"]}
         actual_files = {path.name for path in preview_dir.iterdir() if path.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}}
         self.assertEqual(manifest_files, actual_files)

@@ -1,4 +1,5 @@
 {
+  "$schema": "manifest.schema.json",
   "version": "2026-06-10-preview-manifest",
   "description": "公开 README 预览图清单。所有图片都应压缩、非低俗、不性感化、无水印、无真实品牌 logo。",
   "images": [

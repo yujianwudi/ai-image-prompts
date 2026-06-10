@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yujianwudi/ai-image-prompts/blob/main/预览图/manifest.schema.json",
+  "title": "AI Image Prompt Preview Manifest",
+  "description": "Schema for public-safe README preview images used by this repository.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "version",
+    "description",
+    "images"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "images": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/preview_image"
+      }
+    }
+  },
+  "$defs": {
+    "preview_image": {
+      "type": "object",
+      "required": [
+        "file",
+        "character",
+        "scene",
+        "prompt_pack",
+        "caption",
+        "public_safe",
+        "notes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "type": "string",
+          "pattern": "^[^/\\\\]+\\.(jpg|jpeg|png|webp)$"
+        },
+        "character": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scene": {
+          "type": "string",
+          "minLength": 1
+        },
+        "prompt_pack": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "caption": {
+          "type": "string",
+          "minLength": 1
+        },
+        "public_safe": {
+          "const": true
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
