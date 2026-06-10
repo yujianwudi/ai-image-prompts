@@ -565,6 +565,7 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
 
     actual_files = {image.name for image in images}
     manifest_files: set[str] = set()
+    manifest_file_order: list[str] = []
     manifest_captions: dict[str, str] = {}
     pack_ids: set[str] = set()
     config_path = ROOT / "配置" / "prompt_packs.json"
@@ -582,7 +583,10 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
         if not file_name:
             errors.append(f"预览图清单 images[{index}] 缺少 file")
             continue
+        if file_name in manifest_files:
+            errors.append(f"预览图清单 file 重复：{file_name}")
         manifest_files.add(file_name)
+        manifest_file_order.append(file_name)
         if "/" in file_name or "\\" in file_name:
             errors.append(f"预览图清单 file 只能是文件名：{file_name}")
         if file_name not in actual_files:
@@ -622,13 +626,17 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
     if readme_path.exists():
         readme = readme_path.read_text(encoding="utf-8")
         readme_preview_imgs: set[str] = set()
+        readme_preview_order: list[str] = []
         for match in HTML_IMG_RE.finditer(readme):
             attrs = html_tag_attrs(match.group(0))
             target = clean_target(attrs.get("src", ""))
             if not target.startswith("预览图/"):
                 continue
             file_name = Path(target).name
+            if file_name in readme_preview_imgs:
+                errors.append(f"README 预览图重复展示：{target}")
             readme_preview_imgs.add(file_name)
+            readme_preview_order.append(file_name)
             if file_name not in manifest_files:
                 errors.append(f"README 引用的预览图未登记到 manifest：{target}")
                 continue
@@ -653,6 +661,12 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
                 errors.append(f"README 缺少预览图展示：预览图/{file_name}")
             if f"<sub>{caption}</sub>" not in readme:
                 errors.append(f"README 预览图缺少 manifest caption 展示：预览图/{file_name} -> {caption}")
+        if readme_preview_order and set(readme_preview_order) == set(manifest_file_order):
+            if readme_preview_order != manifest_file_order:
+                errors.append(
+                    "README 预览图展示顺序应与 manifest.images 一致："
+                    f"当前 {', '.join(readme_preview_order)}；应为 {', '.join(manifest_file_order)}"
+                )
 
 
 def check_preview_manifest_schema(manifest: dict, errors: list[str]) -> None:
@@ -966,7 +980,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、文本文件卫生、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、README 预览图 alt/caption、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、标签覆盖矩阵、API 请求 JSONL、Python 源码编译、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、文本文件卫生、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、评分骨架工具、失败修正建议、项目仪表盘、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、README 预览图 alt/caption/顺序、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、标签覆盖矩阵、API 请求 JSONL、Python 源码编译、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

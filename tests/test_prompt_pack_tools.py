@@ -54,6 +54,7 @@ from check_prompt_repo import (  # noqa: E402
     check_text_file_hygiene,
     check_unified_quality_gate,
     classify_orientation,
+    clean_target,
     find_unclosed_markdown_fence,
     html_tag_attrs,
     image_dimensions,
@@ -733,6 +734,21 @@ class PromptPackToolTests(unittest.TestCase):
         warnings: list[str] = []
         check_preview_images(errors, warnings)
         self.assertFalse([error for error in errors if "README 预览图" in error or "README 缺少预览图" in error])
+
+    def test_readme_preview_order_matches_manifest_order(self) -> None:
+        manifest = json.loads((ROOT / "预览图" / "manifest.json").read_text(encoding="utf-8"))
+        manifest_order = [item["file"] for item in manifest["images"]]
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        readme_order: list[str] = []
+        for match in HTML_IMG_RE.finditer(readme):
+            attrs = html_tag_attrs(match.group(0))
+            target = clean_target(attrs.get("src", ""))
+            if target.startswith("预览图/"):
+                readme_order.append(Path(target).name)
+
+        self.assertEqual(len(manifest_order), len(set(manifest_order)))
+        self.assertEqual(len(readme_order), len(set(readme_order)))
+        self.assertEqual(readme_order, manifest_order)
 
     def test_preview_manifest_sync_tool_is_current(self) -> None:
         preview_dir = ROOT / "预览图"

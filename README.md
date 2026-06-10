@@ -135,7 +135,7 @@ python -m compileall -q 工具 tests
 python -m unittest discover -s tests -v
 ```
 
-统一质量门禁会检查 Prompt Pack 配置、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、Markdown 代码块闭合、README 预览图引用、alt 和 caption、角色安全约束、参考仓库追踪、自动导出文件、文本文件 LF / BOM / 末尾换行、Python 源码编译和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
+统一质量门禁会检查 Prompt Pack 配置、模板 `api_profile`、标签 taxonomy、角色防串审计报告、Prompt 文本质量审计、失败修正词库、结构化出图评分记录与汇总、失败修正建议、gpt-image-2 参数档位、预览图 manifest 尺寸元数据、目录结构、本地链接、Markdown 代码块闭合、README 预览图引用、alt、caption 和展示顺序、角色安全约束、参考仓库追踪、自动导出文件、文本文件 LF / BOM / 末尾换行、Python 源码编译和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 

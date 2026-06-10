@@ -4,6 +4,7 @@
 
 ### Added
 
+- 质量门禁新增预览图 manifest 与 README 展示顺序/重复检查，避免公开预览区加图时出现重复或排序漂移。
 - README 预览图新增与 manifest caption 对齐的 `alt` 文本，质量门禁和单元测试会阻止预览图展示文案漂移。
 - Prompt Pack 模板新增 `api_profile`，把 `gpt-image-2` 推荐 `model`、`size`、`quality`、`output_format`、`output_compression` 和 `background` 与每类输出绑定；Markdown、JSON bundle、CSV 索引和单元测试同步导出/校验。
 - 新增 `工具/build_prompt_pack.py --format api-json` 和 `生成提示词/prompt_packs.api_requests.jsonl`，可导出单条或批量 `gpt-image-2` 请求 payload 草稿。
