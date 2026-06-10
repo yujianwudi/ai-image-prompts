@@ -1,6 +1,6 @@
 # 完整示例提示词
 
-这里放可直接复制的完整提示词。  
+这里放可直接复制的完整提示词。
 如果只是想快速试图，从这里开始最方便。
 
 ## 示例列表
@@ -23,10 +23,9 @@
 
 ```text
 model: gpt-image-2
-size: 1024x1536
+size: 1024x1824
 quality: medium 或 high
 output_format: jpeg
 ```
 
 5. 如果要编辑已有图，使用 `04-通用gpt-image-2编辑修正.md`。
-
