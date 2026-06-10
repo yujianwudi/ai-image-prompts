@@ -288,12 +288,13 @@ python 工具/build_prompt_pack.py --all
 ```text
 生成提示词/覆盖矩阵.md
 生成提示词/标签索引.md
+生成提示词/标签覆盖矩阵.md
 生成提示词/prompt_packs.generated.json
 生成提示词/prompt_packs.generated.schema.json
 生成提示词/prompt_packs.index.csv
 ```
 
-`生成提示词/README.md` 会自动生成「角色 × 用途」快速复制入口，`生成提示词/覆盖矩阵.md` 用于查看每个角色已经覆盖/缺失的输出类型，`生成提示词/标签索引.md` 用于按 tags 查找 Prompt Pack；`生成提示词/prompt_packs.generated.json` 用于脚本、API 或前端读取全部 Prompt Pack，并包含 `source_config_sha256` 和 tags 方便核对来源配置、按用途筛选；`生成提示词/prompt_packs.generated.schema.json` 用于说明 JSON bundle 结构；`生成提示词/prompt_packs.index.csv` 用于表格筛选 Prompt Pack，包含 tags 列。
+`生成提示词/README.md` 会自动生成「角色 × 用途」快速复制入口，`生成提示词/覆盖矩阵.md` 用于查看每个角色已经覆盖/缺失的输出类型，`生成提示词/标签索引.md` 用于按 tags 查找 Prompt Pack，`生成提示词/标签覆盖矩阵.md` 用于查看每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack；`生成提示词/prompt_packs.generated.json` 用于脚本、API 或前端读取全部 Prompt Pack，并包含 `source_config_sha256` 和 tags 方便核对来源配置、按用途筛选；`生成提示词/prompt_packs.generated.schema.json` 用于说明 JSON bundle 结构；`生成提示词/prompt_packs.index.csv` 用于表格筛选 Prompt Pack，包含 tags 列。
 
 `check_prompt_repo.py` 会检查这些导出文件是否和配置一致，也会间接检查 tags 是否已登记到 `配置/tag_taxonomy.json`；如果过期需要重新运行 `--all`。
 

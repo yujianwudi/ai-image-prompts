@@ -150,6 +150,7 @@ python -m unittest discover -s tests -v
 - 全量 JSON Bundle：`生成提示词/prompt_packs.generated.json` 自动导出全部 Prompt Pack，并由 `生成提示词/prompt_packs.generated.schema.json` 描述结构；bundle 内含 `source_config_sha256` 和 tags，方便前端或自动化工具核对来源配置并筛选用途。
 - CSV 索引：`生成提示词/prompt_packs.index.csv` 自动列出 Prompt Pack、角色、模板、tags 和文件名，方便表格筛选。
 - 标签索引：`生成提示词/标签索引.md` 自动按 tags 分组 Prompt Pack，也可以用 `python 工具/build_prompt_pack.py --tag 商业海报` 查询。
+- 标签覆盖矩阵：`生成提示词/标签覆盖矩阵.md` 自动显示每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack，方便发现标签空转或覆盖不足。
 - JSON Schema：`配置/prompt_packs.schema.json` 为 Prompt Pack 配置提供字段结构约束。
 - Prompt Pack 覆盖矩阵：通过 `生成提示词/覆盖矩阵.md` 查看每个角色缺哪些输出类型。
 - Prompt Pack 快速复制入口：通过 `生成提示词/README.md` 按「角色 × 用途」直接选提示词。

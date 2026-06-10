@@ -12,6 +12,7 @@ from build_prompt_pack import (
     GENERATED_CSV_INDEX,
     GENERATED_JSON_BUNDLE,
     GENERATED_JSON_BUNDLE_SCHEMA,
+    GENERATED_TAG_COVERAGE_MATRIX,
     GENERATED_TAG_INDEX,
     generated_filename,
     load_config,
@@ -19,6 +20,7 @@ from build_prompt_pack import (
     render_csv_index,
     render_generated_index,
     render_json_bundle,
+    render_tag_coverage_matrix,
     render_tag_index,
     render_pack,
     validate_config,
@@ -656,6 +658,13 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
     elif tag_index_path.read_text(encoding="utf-8") != expected_tag_index:
         errors.append(f"自动生成标签索引已过期：生成提示词/{GENERATED_TAG_INDEX}")
 
+    tag_coverage_path = out_dir / GENERATED_TAG_COVERAGE_MATRIX
+    expected_tag_coverage = render_tag_coverage_matrix(data)
+    if not tag_coverage_path.exists():
+        errors.append(f"缺少自动生成标签覆盖矩阵：生成提示词/{GENERATED_TAG_COVERAGE_MATRIX}")
+    elif tag_coverage_path.read_text(encoding="utf-8") != expected_tag_coverage:
+        errors.append(f"自动生成标签覆盖矩阵已过期：生成提示词/{GENERATED_TAG_COVERAGE_MATRIX}")
+
     json_bundle_path = out_dir / GENERATED_JSON_BUNDLE
     expected_json_bundle = render_json_bundle(data)
     if not json_bundle_path.exists():
@@ -672,7 +681,7 @@ def check_generated_prompt_outputs(errors: list[str]) -> None:
     elif csv_index_path.read_text(encoding="utf-8") != expected_csv_index:
         errors.append(f"自动生成 CSV 索引已过期：生成提示词/{GENERATED_CSV_INDEX}")
 
-    expected_files = {"README.md", "覆盖矩阵.md", GENERATED_TAG_INDEX}
+    expected_files = {"README.md", "覆盖矩阵.md", GENERATED_TAG_INDEX, GENERATED_TAG_COVERAGE_MATRIX}
     for pack in data.get("packs", []):
         pack_id = pack.get("id")
         if not pack_id:
@@ -789,7 +798,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、失败修正建议、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、统一质量门禁和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、忽略规则、密钥扫描、协作模板、内容安全政策、授权边界、角色安全约束、角色防串审计、Prompt 文本质量审计、失败修正词库、结构化出图评分/汇总、失败修正建议、gpt-image-2 参数自检、预览图清单/schema/尺寸方向、参考仓库追踪、Prompt Pack 配置/schema、标签 taxonomy、标签覆盖矩阵、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

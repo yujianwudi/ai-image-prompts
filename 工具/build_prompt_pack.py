@@ -17,6 +17,7 @@ GENERATED_JSON_BUNDLE = "prompt_packs.generated.json"
 GENERATED_JSON_BUNDLE_SCHEMA = "prompt_packs.generated.schema.json"
 GENERATED_CSV_INDEX = "prompt_packs.index.csv"
 GENERATED_TAG_INDEX = "标签索引.md"
+GENERATED_TAG_COVERAGE_MATRIX = "标签覆盖矩阵.md"
 
 REQUIRED_CHARACTER_KEYS = ["display_name", "anchor", "must_keep", "avoid"]
 REQUIRED_TEMPLATE_KEYS = ["task_type", "tags", "composition", "lighting", "material", "text_strategy", "safety"]
@@ -474,6 +475,80 @@ def render_tag_index(data: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def render_tag_coverage_matrix(data: dict[str, Any], tag_taxonomy: dict[str, Any] | None = None) -> str:
+    if tag_taxonomy is None:
+        tag_taxonomy = load_tag_taxonomy(DEFAULT_TAG_TAXONOMY) if DEFAULT_TAG_TAXONOMY.exists() else {"tags": []}
+
+    characters = data.get("characters", {})
+    templates = data.get("templates", {})
+    packs = data.get("packs", [])
+
+    category_names = {
+        str(category.get("id", "")): str(category.get("name", category.get("id", "")))
+        for category in tag_taxonomy.get("categories", [])
+        if isinstance(category, dict)
+    }
+    official_tags = [tag for tag in tag_taxonomy.get("tags", []) if isinstance(tag, dict)]
+    official_tag_ids = [str(tag.get("id", "")).strip() for tag in official_tags if str(tag.get("id", "")).strip()]
+    used_tag_ids = sorted({str(tag) for template in templates.values() for tag in template.get("tags", [])})
+    tag_order = official_tag_ids + [tag for tag in used_tag_ids if tag not in official_tag_ids]
+
+    tag_meta = {str(tag.get("id", "")).strip(): tag for tag in official_tags}
+
+    lines = [
+        "# Prompt Pack 标签覆盖矩阵",
+        "",
+        "这个矩阵由 `工具/build_prompt_pack.py --all` 自动生成，用来检查 tags 在模板、角色和 Prompt Pack 中的覆盖情况。",
+        "新增标签前请先登记到 `配置/tag_taxonomy.json`，再写入 `配置/prompt_packs.json`。",
+        "",
+        "## Tag × 角色覆盖",
+        "",
+    ]
+    header = ["Tag", "分类", "模板数量", "Prompt Pack 数量"] + [char["display_name"] for char in characters.values()] + ["模板"]
+    lines.append("| " + " | ".join(header) + " |")
+    lines.append("| " + " | ".join(["---"] * len(header)) + " |")
+
+    unused_tags: list[str] = []
+    for tag_id in tag_order:
+        tagged_templates = [
+            (template_id, template)
+            for template_id, template in templates.items()
+            if tag_id in template.get("tags", [])
+        ]
+        tagged_template_ids = {template_id for template_id, _template in tagged_templates}
+        tagged_packs = [pack for pack in packs if str(pack.get("template", "")) in tagged_template_ids]
+        char_counts = {
+            char_id: sum(1 for pack in tagged_packs if pack.get("character") == char_id)
+            for char_id in characters
+        }
+        if not tagged_templates:
+            unused_tags.append(tag_id)
+        meta = tag_meta.get(tag_id, {})
+        category_id = str(meta.get("category", "未登记"))
+        category = category_names.get(category_id, category_id)
+        template_links = [
+            f"`{template_id}`"
+            for template_id, _template in tagged_templates
+        ]
+        row = [
+            f"`{tag_id}`",
+            category,
+            str(len(tagged_templates)),
+            str(len(tagged_packs)),
+            *[str(char_counts[char_id]) for char_id in characters],
+            "<br>".join(template_links) if template_links else "—",
+        ]
+        lines.append("| " + " | ".join(row) + " |")
+
+    lines.extend(["", "## 未使用的正式标签", ""])
+    if unused_tags:
+        lines.extend(f"- `{tag}`" for tag in unused_tags)
+    else:
+        lines.append("无。")
+    lines.append("")
+    return "\n".join(lines)
+
+
 def render_generated_index(data: dict[str, Any]) -> str:
     templates = list(data.get("templates", {}).items())
     characters = list(data.get("characters", {}).items())
@@ -546,19 +621,20 @@ def render_generated_index(data: dict[str, Any]) -> str:
 
     lines.extend(
         [
-        "",
-        "## 覆盖矩阵",
-        "",
-        "- [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。",
-        f"- [`{GENERATED_TAG_INDEX}`]({GENERATED_TAG_INDEX})：按 tags 查找 Prompt Pack。",
-        f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256` 方便核对来源配置。",
-        f"- [`{GENERATED_JSON_BUNDLE_SCHEMA}`]({GENERATED_JSON_BUNDLE_SCHEMA})：JSON bundle 的结构说明。",
-        f"- [`{GENERATED_CSV_INDEX}`]({GENERATED_CSV_INDEX})：可用表格软件打开的 Prompt Pack 索引，含 tags 列方便筛选。",
-        "",
-        "## 文件列表",
-        "",
-        "| Prompt Pack | 文件 | 说明 |",
-        "| --- | --- | --- |",
+            "",
+            "## 覆盖矩阵",
+            "",
+            "- [`覆盖矩阵.md`](覆盖矩阵.md)：查看每个角色已覆盖/未覆盖的输出类型。",
+            f"- [`{GENERATED_TAG_INDEX}`]({GENERATED_TAG_INDEX})：按 tags 查找 Prompt Pack。",
+            f"- [`{GENERATED_TAG_COVERAGE_MATRIX}`]({GENERATED_TAG_COVERAGE_MATRIX})：查看每个正式 tag 覆盖了哪些模板、角色和 Prompt Pack。",
+            f"- [`{GENERATED_JSON_BUNDLE}`]({GENERATED_JSON_BUNDLE})：全部 Prompt Pack 的机器可读 JSON bundle，包含 `source_config_sha256` 方便核对来源配置。",
+            f"- [`{GENERATED_JSON_BUNDLE_SCHEMA}`]({GENERATED_JSON_BUNDLE_SCHEMA})：JSON bundle 的结构说明。",
+            f"- [`{GENERATED_CSV_INDEX}`]({GENERATED_CSV_INDEX})：可用表格软件打开的 Prompt Pack 索引，含 tags 列方便筛选。",
+            "",
+            "## 文件列表",
+            "",
+            "| Prompt Pack | 文件 | 说明 |",
+            "| --- | --- | --- |",
         ]
     )
     for pack in data.get("packs", []):
@@ -581,13 +657,16 @@ def export_all(data: dict[str, Any], out_dir: Path = DEFAULT_OUTPUT_DIR) -> list
     tag_index_path = out_dir / GENERATED_TAG_INDEX
     tag_index_path.write_text(render_tag_index(data), encoding="utf-8")
     written.append(tag_index_path)
+    tag_coverage_path = out_dir / GENERATED_TAG_COVERAGE_MATRIX
+    tag_coverage_path.write_text(render_tag_coverage_matrix(data), encoding="utf-8")
+    written.append(tag_coverage_path)
     json_bundle_path = out_dir / GENERATED_JSON_BUNDLE
     json_bundle_path.write_text(render_json_bundle(data), encoding="utf-8")
     written.append(json_bundle_path)
     csv_index_path = out_dir / GENERATED_CSV_INDEX
     csv_index_path.write_text(render_csv_index(data), encoding="utf-8")
     written.append(csv_index_path)
-    expected_names = {"README.md", "覆盖矩阵.md", GENERATED_TAG_INDEX}
+    expected_names = {"README.md", "覆盖矩阵.md", GENERATED_TAG_INDEX, GENERATED_TAG_COVERAGE_MATRIX}
     for pack in data.get("packs", []):
         pack_id = pack["id"]
         filename = generated_filename(pack_id)

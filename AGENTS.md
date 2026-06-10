@@ -51,7 +51,7 @@ python 工具/run_quality_gate.py --refresh-generated
 
 1. 改 `配置/prompt_packs.json` 或生成脚本。
 2. 运行 `python 工具/run_quality_gate.py --refresh-generated`。
-3. 检查 `生成提示词/README.md`、`生成提示词/覆盖矩阵.md`、`生成提示词/标签索引.md`、JSON bundle 和 CSV 索引是否符合预期。
+3. 检查 `生成提示词/README.md`、`生成提示词/覆盖矩阵.md`、`生成提示词/标签索引.md`、`生成提示词/标签覆盖矩阵.md`、JSON bundle 和 CSV 索引是否符合预期。
 
 ## 提示词风格规则
 
