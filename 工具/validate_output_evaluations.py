@@ -71,6 +71,11 @@ def validate_schema_file(schema_path: Path = DEFAULT_SCHEMA) -> list[str]:
     image_pattern = evaluation_props.get("image_file", {}).get("pattern", "")
     if "jpg" not in image_pattern or "webp" not in image_pattern:
         errors.append("出图评分 schema.evaluation.properties.image_file 应限制为图片文件后缀")
+    issues_items = evaluation_props.get("issues", {}).get("items", {})
+    if issues_items.get("minLength") != 1:
+        errors.append("出图评分 schema.evaluation.properties.issues.items 应设置 minLength=1")
+    if evaluation_props.get("notes", {}).get("minLength") != 1:
+        errors.append("出图评分 schema.evaluation.properties.notes 应设置 minLength=1")
     if evaluation_props.get("failure_ids", {}).get("uniqueItems") is not True:
         errors.append("出图评分 schema.evaluation.properties.failure_ids 应设置 uniqueItems=true")
     return errors
@@ -203,9 +208,14 @@ def validate_document(
         issues = item.get("issues")
         if not isinstance(issues, list):
             errors.append(f"{eval_id} issues 必须是 array")
-        next_action = str(item.get("next_action", ""))
-        if not next_action.strip():
+        elif any(not isinstance(issue, str) or not issue.strip() for issue in issues):
+            errors.append(f"{eval_id} issues 不能包含空值")
+        next_action = item.get("next_action", "")
+        if not isinstance(next_action, str) or not next_action.strip():
             errors.append(f"{eval_id} 缺少 next_action")
+        notes = item.get("notes", "")
+        if not isinstance(notes, str) or not notes.strip():
+            errors.append(f"{eval_id} 缺少 notes")
 
         rows.append([eval_id, prompt_pack, character, str(total_score), str(public_safe), decision])
 

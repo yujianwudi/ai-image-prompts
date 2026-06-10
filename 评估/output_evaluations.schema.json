@@ -103,7 +103,8 @@
         "issues": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "next_action": {
@@ -111,7 +112,8 @@
           "minLength": 1
         },
         "notes": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         }
       }
     },
