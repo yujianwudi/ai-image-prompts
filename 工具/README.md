@@ -33,6 +33,33 @@ python 工具/check_prompt_repo.py
 
 如果输出 `OK`，说明当前仓库基础质量门禁通过。
 
+## run_quality_gate.py
+
+用途：统一运行本仓库的本地质量门禁，避免手动漏跑配置校验、仓库检查或单元测试。  
+不依赖网络，GitHub Actions 也使用这个入口。
+
+运行：
+
+```powershell
+python 工具/run_quality_gate.py
+```
+
+默认会依次执行：
+
+```text
+python 工具/build_prompt_pack.py --validate
+python 工具/check_prompt_repo.py
+python -m unittest discover -s tests -v
+```
+
+如果修改了 `配置/prompt_packs.json`，并且需要先刷新 `生成提示词/`：
+
+```powershell
+python 工具/run_quality_gate.py --refresh-generated
+```
+
+注意：CI 默认不使用 `--refresh-generated`，这样才能发现自动导出文件是否过期。
+
 ## build_prompt_pack.py
 
 用途：读取 `配置/prompt_packs.json`，把角色锚点、输出类型、场景、构图、光线、材质、安全约束和防串约束组合成可复制提示词。  
@@ -89,7 +116,7 @@ python 工具/build_prompt_pack.py --all
 运行：
 
 ```powershell
-python -m unittest discover -s tests -v
+python 工具/run_quality_gate.py
 ```
 
-这些测试会覆盖 Prompt Pack 配置、渲染、批量导出和质量门禁 CLI。
+统一质量门禁会覆盖 Prompt Pack 配置、仓库结构、安全约束、自动导出文件和单元测试。单元测试本身会覆盖 Prompt Pack 渲染、批量导出、CLI 和统一质量门禁帮助入口。

@@ -93,25 +93,28 @@
 
 ## 质量检查
 
-每次新增角色、模板、预览图后，建议运行：
+每次新增角色、模板、预览图后，优先运行统一质量门禁：
 
 ```powershell
-python 工具/check_prompt_repo.py
+python 工具/run_quality_gate.py
 ```
 
-如果想跑工具单元测试：
+如果修改了 `配置/prompt_packs.json`，并且需要先重新导出全部 Prompt Pack：
 
 ```powershell
-python -m unittest discover -s tests -v
+python 工具/run_quality_gate.py --refresh-generated
 ```
 
-如果想重新导出全部 Prompt Pack：
+也可以单独运行底层命令：
 
 ```powershell
 python 工具/build_prompt_pack.py --all
+python 工具/build_prompt_pack.py --validate
+python 工具/check_prompt_repo.py
+python -m unittest discover -s tests -v
 ```
 
-这个脚本会检查目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、Prompt Pack 配置和自动导出文件。GitHub Actions 也会在 push / pull request 时自动运行质量检查和单元测试。
+统一质量门禁会检查 Prompt Pack 配置、目录结构、本地链接、README 预览图引用、角色安全约束、参考仓库追踪、自动导出文件和单元测试。GitHub Actions 也会在 push / pull request 时自动运行同一个入口。
 
 ## 当前重点
 
@@ -130,6 +133,7 @@ python 工具/build_prompt_pack.py --all
 - Issue / PR 模板：规范角色新增、模板优化、出图问题反馈和提交检查。
 - 仓库格式规范：通过 `.gitattributes` 和 `.editorconfig` 固定 UTF-8、LF 和缩进规则。
 - 内容安全政策：明确非低俗、不性感化、不儿童化、隐私和真实品牌 logo 规则。
+- 统一质量门禁：`工具/run_quality_gate.py` 统一串起 Prompt Pack 校验、仓库检查和单元测试。
 
 ## 交付文档
 

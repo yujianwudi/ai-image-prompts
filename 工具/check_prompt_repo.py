@@ -48,11 +48,13 @@ REQUIRED_FILES = [
     "工具/README.md",
     "工具/refresh_reference_summary.py",
     "工具/build_prompt_pack.py",
+    "工具/run_quality_gate.py",
     "配置/README.md",
     "配置/prompt_packs.json",
     "配置/prompt_packs.schema.json",
     "生成提示词/README.md",
     "tests/test_prompt_pack_tools.py",
+    ".github/workflows/validate.yml",
     ".github/ISSUE_TEMPLATE/output_issue.yml",
     ".github/ISSUE_TEMPLATE/template_optimization.yml",
     ".github/ISSUE_TEMPLATE/character_prompt.yml",
@@ -198,6 +200,15 @@ def check_content_safety_policy(errors: list[str]) -> None:
             errors.append("SECURITY.md 应指向 内容安全政策.md")
 
 
+def check_github_workflow(errors: list[str]) -> None:
+    path = ROOT / ".github" / "workflows" / "validate.yml"
+    if not path.exists():
+        return
+    text = path.read_text(encoding="utf-8")
+    if "工具/run_quality_gate.py" not in text:
+        errors.append("GitHub Actions 应调用统一质量门禁：python 工具/run_quality_gate.py")
+
+
 def check_role_safety(errors: list[str]) -> None:
     role_dir = ROOT / "角色"
     for path in sorted(role_dir.glob("*.md")):
@@ -341,6 +352,7 @@ def main() -> int:
     check_local_links(errors)
     check_readme_badges(errors)
     check_content_safety_policy(errors)
+    check_github_workflow(errors)
     check_role_safety(errors)
     check_reference_tracking(errors)
     check_preview_images(errors, warnings)
@@ -364,7 +376,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、内容安全政策、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema 和自动导出文件通过。")
+        print("\nOK：结构、链接、README 徽章、仓库格式配置、协作模板、内容安全政策、角色安全约束、参考仓库追踪、Prompt Pack 配置/schema、统一质量门禁和自动导出文件通过。")
         return 0
     return 1
 

@@ -114,6 +114,18 @@ class PromptPackToolTests(unittest.TestCase):
         )
         self.assertIn("错误：0", result.stdout)
 
+    def test_unified_quality_gate_help(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "run_quality_gate.py"), "--help"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertIn("--refresh-generated", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

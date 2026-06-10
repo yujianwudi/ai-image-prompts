@@ -99,7 +99,7 @@
 - 新角色放进 `characters`，必须写 `must_keep` 和 `avoid`。
 - 新输出类型放进 `templates`，必须写 `safety`，并包含“非低俗、不性感化”。
 - 新组合放进 `packs`，只能引用已存在的角色和模板。
-- 修改后运行 `python 工具/build_prompt_pack.py --validate`、`python 工具/build_prompt_pack.py --all` 和 `python 工具/check_prompt_repo.py`。
+- 修改后运行 `python 工具/run_quality_gate.py --refresh-generated`，确保配置、自动导出文件、仓库检查和测试都同步通过。
 - 新增 pack 后检查 `生成提示词/覆盖矩阵.md`，确认覆盖缺口符合预期。
 
 ## 格式规范
@@ -118,8 +118,7 @@
 提交前建议运行：
 
 ```powershell
-python 工具/check_prompt_repo.py
-python -m unittest discover -s tests -v
+python 工具/run_quality_gate.py
 ```
 
 必须保证：

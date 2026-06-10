@@ -16,9 +16,5 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Run prompt repository checks
-        run: python 工具/check_prompt_repo.py
-
-
-      - name: Run unit tests
-        run: python -m unittest discover -s tests -v
+      - name: Run quality gate
+        run: python 工具/run_quality_gate.py
