@@ -5,6 +5,8 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote
 
+from build_prompt_pack import load_config, render_pack, validate_config
+
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_DIRS = [
@@ -15,6 +17,7 @@ REQUIRED_DIRS = [
     "参考仓库",
     "工具",
     "预览图",
+    "配置",
 ]
 
 REQUIRED_FILES = [
@@ -38,6 +41,9 @@ REQUIRED_FILES = [
     "参考仓库/持续优化流程.md",
     "工具/README.md",
     "工具/refresh_reference_summary.py",
+    "工具/build_prompt_pack.py",
+    "配置/README.md",
+    "配置/prompt_packs.json",
 ]
 
 REFERENCE_REPOS = [
@@ -160,6 +166,27 @@ def check_preview_images(errors: list[str], warnings: list[str]) -> None:
             warnings.append(f"预览图超过 2MB，建议压缩：{rel(image)}")
 
 
+def check_prompt_pack_config(errors: list[str]) -> None:
+    path = ROOT / "配置" / "prompt_packs.json"
+    if not path.exists():
+        return
+    try:
+        data = load_config(path)
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"Prompt Pack 配置无法读取：{exc}")
+        return
+    for item in validate_config(data):
+        errors.append(f"Prompt Pack 配置错误：{item}")
+    for pack in data.get("packs", []):
+        pack_id = pack.get("id")
+        if not pack_id:
+            continue
+        rendered = render_pack(data, pack_id)
+        for term in ["主体锁定", "安全约束", "防串约束", "非低俗", "不性感化", "不要混入"]:
+            if term not in rendered:
+                errors.append(f"Prompt Pack 输出缺少必要字段“{term}”：{pack_id}")
+
+
 def main() -> int:
     configure_stdout()
     errors: list[str] = []
@@ -172,6 +199,7 @@ def main() -> int:
     check_role_safety(errors)
     check_reference_tracking(errors)
     check_preview_images(errors, warnings)
+    check_prompt_pack_config(errors)
 
     print("# 提示词仓库质量检查")
     print()
@@ -190,7 +218,7 @@ def main() -> int:
             print(f"- {item}")
 
     if not errors:
-        print("\nOK：结构、链接、角色安全约束和参考仓库追踪通过。")
+        print("\nOK：结构、链接、角色安全约束、参考仓库追踪和 Prompt Pack 配置通过。")
         return 0
     return 1
 

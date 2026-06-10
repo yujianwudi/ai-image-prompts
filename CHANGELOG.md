@@ -4,6 +4,9 @@
 
 ### Added
 
+- 新增 Prompt Pack 自动组合示例文档。
+- 新增 `工具/build_prompt_pack.py`，支持列出、校验和输出可复制提示词。
+- 新增 `配置/prompt_packs.json`，把角色锚点、模板字段和组合案例做成机器可读 Prompt Pack。
 - 新增 GitHub Actions 工作流，push / pull request 时自动运行仓库质量检查。
 - 新增 `工具/check_prompt_repo.py`，可本地检查仓库结构、链接、角色约束和参考仓库追踪。
 - 新增仓库质量门禁文档，用于约束目录、链接、预览图和角色安全规则。
@@ -23,6 +26,7 @@
 
 ### Changed
 
+- 质量门禁现在会校验 Prompt Pack 配置引用和生成结果中的安全/防串字段。
 - 补齐芙宁娜、茜特菈莉、多莉角色文件中的统一安全与防串约束。
 - 修复参考仓库摘要脚本在 Windows GBK 控制台遇到 emoji 描述时报错的问题。
 - 将原本的大模板文件拆分为分类文件，减少混淆。

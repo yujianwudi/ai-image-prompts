@@ -1,0 +1,168 @@
+{
+  "version": "2026-06-10",
+  "description": "机器可读 Prompt Pack：把角色锚点、输出类型、场景、构图、光线、材质和约束拆成可组合字段。",
+  "characters": {
+    "furina": {
+      "display_name": "芙宁娜 Furina",
+      "anchor": "芙宁娜 Furina cosplay，白色短发带浅蓝色挑染，小巧蓝黑色礼帽，枫丹蓝白贵族歌剧服，自信俏皮、优雅戏剧化，像舞台演员被朋友随手拍到的真实 coser。",
+      "must_keep": [
+        "白蓝短发",
+        "蓝黑小礼帽",
+        "枫丹蓝白贵族歌剧服",
+        "金色纽扣与水滴宝石",
+        "自信俏皮的戏剧化气质"
+      ],
+      "avoid": [
+        "茜特菈莉的粉紫长发和黑紫纳塔萨满服",
+        "多莉的方形眼镜和紫金商人帽",
+        "普通蓝白公主裙",
+        "低俗或性感化姿势"
+      ]
+    },
+    "citlali": {
+      "display_name": "茜特菈莉 Citlali",
+      "anchor": "茜特菈莉 Citlali cosplay，淡粉紫色长发，前侧细长辫，黑紫纳塔夜神部落萨满服，冷淡安静、神秘傲娇，像被朋友喊住后不太情愿回头的真实 coser。",
+      "must_keep": [
+        "粉紫长发",
+        "前侧细辫",
+        "黑紫纳塔萨满服",
+        "蓝紫冷色眼睛",
+        "冷淡神秘傲娇气质"
+      ],
+      "avoid": [
+        "芙宁娜的白蓝短发、蓝黑礼帽和枫丹歌剧服",
+        "多莉的方形眼镜、金币和紫金商人帽",
+        "蓝白贵族歌剧风",
+        "低俗或性感化姿势"
+      ]
+    },
+    "dori": {
+      "display_name": "多莉 Dori",
+      "anchor": "多莉 Dori cosplay，小个子成年 coser，粉色卷发，方形小眼镜，紫金大商人帽，须弥商人风格，机灵爱财、笑眯眯但安全可爱的真实 coser。",
+      "must_keep": [
+        "小个子成年 coser",
+        "粉色卷发",
+        "方形小眼镜",
+        "紫金大商人帽",
+        "金币钱袋、小灯壶和须弥商人道具",
+        "机灵爱财气质"
+      ],
+      "avoid": [
+        "芙宁娜的白蓝短发、蓝黑礼帽和枫丹歌剧服",
+        "茜特菈莉的粉紫长直发、前侧细辫和黑紫萨满服",
+        "儿童化或性感化",
+        "低俗擦边姿势"
+      ]
+    }
+  },
+  "templates": {
+    "realistic_convention_phone": {
+      "task_type": "写实 cos 手机随手拍",
+      "composition": "9:16 竖图，普通观众视角，手机随手拍，主体半身或三分之二身清晰，背景轻微虚化。",
+      "lighting": "室内展馆自然顶灯，脸部曝光自然，服装颜色不跑偏。",
+      "material": "真实布料纹理、缝线、刺绣、金属扣、宝石、皮革和发丝细节。",
+      "text_strategy": "不需要文字，不要水印、logo 或乱码。",
+      "safety": "端庄自然，非低俗，不性感化，不暴露化，不卧室暧昧感。"
+    },
+    "readme_preview": {
+      "task_type": "GitHub README 公开预览图",
+      "composition": "9:16 竖图，画面干净明亮，角色服装和配件清晰，背景有展示感但不杂乱。",
+      "lighting": "柔和自然光或室内暖光，适合公开展示，整体明亮清楚。",
+      "material": "服装材质真实，布料褶皱、刺绣、宝石和金属饰件可见。",
+      "text_strategy": "不要生成可读文字，不要水印、logo 或乱码。",
+      "safety": "必须适合公开 README 展示，非低俗，不性感化，不擦边。"
+    },
+    "character_card": {
+      "task_type": "角色参考卡",
+      "composition": "主视觉半身图、全身站姿、头饰特写、服装细节、道具特写和气质标签组成清晰分区。",
+      "lighting": "干净均匀的设定图光线，细节可辨认。",
+      "material": "所有局部细节与主图一致，服装、头饰、道具材质真实。",
+      "text_strategy": "只使用少量短中文标签，文字清晰可读，不要乱码。",
+      "safety": "端庄自然，非低俗，不性感化。所有区域保持同一角色。"
+    },
+    "commercial_poster": {
+      "task_type": "商业联名海报 / 电商主图",
+      "composition": "主体居中，前景少量道具，中景展示角色，背景是主题装饰和柔和氛围光，预留标题区域。",
+      "lighting": "柔和商业布光，层次清楚，主体从背景中分离。",
+      "material": "真实服装质感、道具材质、包装或海报纸面质感。",
+      "text_strategy": "可预留短标题区；如果生成文字，只使用短中文，清晰可读，不要乱码。",
+      "safety": "端庄自然，非低俗，不性感化，不使用真实品牌 logo。"
+    },
+    "vertical_thumbnail": {
+      "task_type": "竖版社媒封面缩略图",
+      "composition": "9:16 竖版，上方短标题区，中间角色半身或三分之二身，下方 2-3 个短标签卡片。",
+      "lighting": "明亮清楚，有对比但不过度商业硬光。",
+      "material": "角色服装真实，背景干净，有轻微现场感。",
+      "text_strategy": "短标题不超过 8 个字，标签不超过 4 个字，文字清晰，不要乱码。",
+      "safety": "端庄自然，非低俗，不性感化，不标题党，不擦边。"
+    }
+  },
+  "packs": [
+    {
+      "id": "furina_convention_phone",
+      "title": "芙宁娜室内漫展手机随手拍",
+      "character": "furina",
+      "template": "realistic_convention_phone",
+      "scene": "室内漫展通道，背景有人群、展位灯牌、海报墙和轻微玻璃反光。",
+      "action": "她微微侧身看向镜头，表情自信、俏皮，像朋友刚好喊她回头。",
+      "extra_constraints": [
+        "不要把短发变成长发",
+        "不要把礼帽换成商人帽或萨满头饰"
+      ]
+    },
+    {
+      "id": "furina_readme_preview",
+      "title": "芙宁娜 README 公开预览图",
+      "character": "furina",
+      "template": "readme_preview",
+      "scene": "明亮甜品店或展馆休息区，背景干净，有浅色桌面和柔和装饰。",
+      "action": "她坐在桌边轻轻托着甜点盘，保持优雅又俏皮的表情。",
+      "extra_constraints": [
+        "画面适合公开仓库展示",
+        "不要卧室暧昧感"
+      ]
+    },
+    {
+      "id": "citlali_character_card",
+      "title": "茜特菈莉角色参考卡",
+      "character": "citlali",
+      "template": "character_card",
+      "scene": "简洁浅灰背景，带少量黑紫和蓝紫装饰纹样。",
+      "action": "主视觉是安静回头，细节区展示前侧细辫、发饰、披帛、部落纹样和小吊饰。",
+      "extra_constraints": [
+        "所有分区都是同一个茜特菈莉",
+        "不要出现芙宁娜礼帽或多莉眼镜"
+      ]
+    },
+    {
+      "id": "citlali_vertical_thumbnail",
+      "title": "茜特菈莉角色防串教程封面",
+      "character": "citlali",
+      "template": "vertical_thumbnail",
+      "scene": "干净的黑紫渐变背景，点缀少量星点和几何纹样。",
+      "action": "她站在画面中间偏右，冷淡看向镜头，左上方预留短标题区。",
+      "extra_constraints": [
+        "标题建议：角色防串",
+        "文字少而清楚"
+      ]
+    },
+    {
+      "id": "dori_commercial_poster",
+      "title": "多莉商业联名海报",
+      "character": "dori",
+      "template": "commercial_poster",
+      "scene": "须弥风小摊位，前景有金币、宝石、钱袋和小灯壶，道具数量克制。",
+      "action": "她笑眯眯地举起小灯壶，像在招呼朋友看新商品。",
+      "extra_constraints": [
+        "必须是成年 coser",
+        "可爱但不儿童化、不性感化"
+      ]
+    }
+  ],
+  "global_quality_constraints": [
+    "写实自然，不插画风，不 CG 渲染，不塑料皮肤。",
+    "角色发型、头饰、服装配色、关键配件和气质必须准确。",
+    "不要混入其他角色设定。",
+    "不要水印、乱码、随机英文或真实平台 logo。"
+  ]
+}

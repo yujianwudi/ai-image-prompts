@@ -13,6 +13,7 @@
 评估/     放评分表、失败修正和迭代记录
 参考仓库/ 放外部仓库追踪、分类映射和持续优化流程
 工具/     放维护脚本
+配置/     放机器可读 Prompt Pack 配置
 ```
 
 ## 新增角色
@@ -71,6 +72,21 @@
 - 没有明显乱码、水印或错误logo。
 - 文件已压缩，不要直接提交超大原图。
 - 能说明对应模板的用途。
+
+## 新增 Prompt Pack
+
+新增自动组合提示词时，优先修改：
+
+```text
+配置/prompt_packs.json
+```
+
+规则：
+
+- 新角色放进 `characters`，必须写 `must_keep` 和 `avoid`。
+- 新输出类型放进 `templates`，必须写 `safety`，并包含“非低俗、不性感化”。
+- 新组合放进 `packs`，只能引用已存在的角色和模板。
+- 修改后运行 `python 工具/build_prompt_pack.py --validate` 和 `python 工具/check_prompt_repo.py`。
 
 ## 提交前检查
 
