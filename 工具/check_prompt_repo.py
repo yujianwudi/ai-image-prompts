@@ -38,6 +38,7 @@ REQUIRED_DIRS = [
 ]
 
 REQUIRED_FILES = [
+    "AGENTS.md",
     "README.md",
     "CONTRIBUTING.md",
     "CHANGELOG.md",
@@ -370,6 +371,29 @@ def check_content_safety_policy(errors: list[str]) -> None:
         for term in ["不是法律意见", "第三方 IP", "不代表官方授权", "预览图", "商用", "LICENSE"]:
             if term not in text:
                 errors.append(f"授权与使用边界缺少关键说明：{term}")
+
+
+def check_agent_guidance(errors: list[str]) -> None:
+    path = ROOT / "AGENTS.md"
+    if not path.exists():
+        return
+    text = path.read_text(encoding="utf-8")
+    required_terms = [
+        "python 工具/run_quality_gate.py",
+        "--refresh-generated",
+        "不要手工编辑",
+        "生成提示词/",
+        "gpt-image-2",
+        "1024x1824",
+        "非低俗",
+        "不性感化",
+        "不要添加正式 `LICENSE` 文件",
+        "不要把 Midjourney 参数写进 OpenAI API 参数",
+        "不要把 token、临时脚本或密钥提交进仓库",
+    ]
+    for term in required_terms:
+        if term not in text:
+            errors.append(f"AGENTS.md 缺少维护指引：{term}")
 
 
 def check_github_workflow(errors: list[str]) -> None:
@@ -707,6 +731,7 @@ def main() -> int:
     check_readme_badges(errors)
     check_secret_leaks(errors)
     check_content_safety_policy(errors)
+    check_agent_guidance(errors)
     check_github_workflow(errors)
     check_role_safety(errors)
     check_reference_tracking(errors)

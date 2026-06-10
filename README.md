@@ -45,6 +45,7 @@
 这个项目按目录分类放：
 
 ```text
+AGENTS.md
 角色/
 模板/
 示例/
@@ -177,6 +178,7 @@ python -m unittest discover -s tests -v
 - `生成提示词/README.md`：由 Prompt Pack 自动导出的可复制提示词。
 - `预览图/README.md`：公开预览图入库规则和 manifest 维护说明。
 - `CONTRIBUTING.md`：新增角色和模板的规则。
+- `AGENTS.md`：后续 Codex / 自动化维护者的仓库操作指引。
 - `免责声明.md`：公开使用、版权和安全提醒。
 - `授权与使用边界.md`：原创提示词、第三方 IP、预览图和正式许可证边界说明。
 - `内容安全政策.md`：公开预览图、Issue/PR 和 Prompt Pack 的安全规则。

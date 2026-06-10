@@ -4,6 +4,7 @@
 
 ### Added
 
+- 新增 `AGENTS.md`，记录 Codex / 自动化维护者的质量门禁、生成文件、gpt-image-2 参数、内容安全和 GitHub CI 检查规则。
 - 新增 `授权与使用边界.md`，说明原创模板、第三方 IP、预览图和商用场景边界。
 - `工具/build_prompt_pack.py` 新增 `--format json`，可输出带角色、模板和 prompt 的机器可读记录。
 - `工具/build_prompt_pack.py --all` 现在会导出 `生成提示词/prompt_packs.generated.json` 全量 JSON bundle。
@@ -50,6 +51,7 @@
 
 ### Changed
 
+- 质量门禁现在会检查 `AGENTS.md` 是否存在，并校验关键维护指引没有丢失。
 - 根据 2026-06-10 二次联网复核的 OpenAI `gpt-image-2` 图片生成资料，强化模板的任务模式、不可变主体锚点、必须保留项、短文字策略和编辑保留/修改/禁止结构。
 - 将 OpenAI 竖图参数建议从默认 `1024x1536` 调整为更接近严格 9:16 的 `1024x1824`，并标注 `1024x1536` 是 2:3 备选。
 - README 预览图数量徽章现在会跟随 `预览图/manifest.json` 自动校验，避免公开预览图数量过期。
