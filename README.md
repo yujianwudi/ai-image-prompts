@@ -1,3 +1,5 @@
+
+
 # AI 生图提示词模板库
 
 [![validate-prompt-repo](https://github.com/yujianwudi/ai-image-prompts/actions/workflows/validate.yml/badge.svg)](https://github.com/yujianwudi/ai-image-prompts/actions/workflows/validate.yml)
@@ -61,7 +63,7 @@ AGENTS.md
 
 1. 想最快开始，可以打开 `生成提示词/README.md`，按「角色 × 用途」直接复制自动生成提示词。
 2. 也可以运行 `python 工具/build_prompt_pack.py --list` 查看可自动组合的提示词。
-3. 打开 `示例/README.md`，复制一个完整示例提示词。
+3. 打开 `示例/01-芙宁娜-甜品店README预览.md`，复制一个完整示例提示词。
 4. 如果要换角色，去 `角色/README.md` 复制对应角色专属词。
 5. 如果要换画面类型，去 `模板/README.md` 选择场景、镜头、灯光、材质和约束。
 6. 使用 OpenAI `gpt-image-2` 时，优先使用自然语言分段写法，不要只堆关键词；角色图先写主体锁定，避免串到芙宁娜。
